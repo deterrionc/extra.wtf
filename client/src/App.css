@@ -5,3 +5,11 @@
 .bg-article-card, .bg-video-card {
   background-color: rgb(33, 29, 27);
 }
+
+.w-narrow-sidebar {
+  width: 4.5rem !important;
+}
+
+.w-narrow-sidebar-icon {
+  font-size: 2rem;
+}
