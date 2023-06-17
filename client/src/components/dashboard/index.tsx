@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaIcon } from '../../container/atoms/FaIcon';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -8,10 +8,42 @@ import PropTypes from 'prop-types';
 
 const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
   let navigate = useNavigate();
+
   const [isNarrow, setIsNarrow] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(64);
+
+  const [windowSize, setWindowSize] = useState([
+    window.innerWidth,
+    window.innerHeight
+  ]);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowSize([window.innerWidth, window.innerHeight]);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (windowSize[0] < 769) {
+      setIsNarrow(true);
+      setSidebarWidth(24);
+    }
+  }, [windowSize]);
 
   const toggleSidebar = () => {
-    setIsNarrow(!isNarrow);
+    if (isNarrow) {
+      setSidebarWidth(64);
+      setIsNarrow(false);
+    } else {
+      setSidebarWidth(24);
+      setIsNarrow(true);
+    }
   };
 
   if (!isAuthenticated) {
@@ -20,11 +52,7 @@ const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
 
   return (
     <div className="flex h-screen bg-gray-200">
-      <div
-        className={`xl:w-64 lg:w-64 md:w-24 sm:w-24 xs:w-24 bg-gray-800 text-white p-3 w-${
-          isNarrow ? 'narrow-sidebar' : '64'
-        } `}
-      >
+      <div className={`bg-gray-800 text-white p-3 w-${sidebarWidth} `}>
         <div className="flex justify-end">
           <button
             className={`mb-5 py-2 px-3 rounded bg-blue-500 text-white hidden xl:block lg:block ${
@@ -42,7 +70,10 @@ const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
             className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
           >
             {isNarrow ? (
-              <FaIcon iconName="fa-home" className="w-6 w-narrow-sidebar-icon" />
+              <FaIcon
+                iconName="fa-home"
+                className="w-narrow-sidebar-icon"
+              />
             ) : (
               <>
                 <FaIcon iconName="fa-home" className="w-6" />
@@ -57,7 +88,10 @@ const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
             className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
           >
             {isNarrow ? (
-              <FaIcon iconName="fa-file-movie-o" className="w-6 w-narrow-sidebar-icon" />
+              <FaIcon
+                iconName="fa-file-movie-o"
+                className="w-narrow-sidebar-icon"
+              />
             ) : (
               <>
                 <FaIcon iconName="fa-video-camera" className="w-6" />
@@ -72,7 +106,10 @@ const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
             className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
           >
             {isNarrow ? (
-              <FaIcon iconName="fa-file-text" className="w-6 w-narrow-sidebar-icon" />
+              <FaIcon
+                iconName="fa-file-text"
+                className="w-narrow-sidebar-icon"
+              />
             ) : (
               <>
                 <FaIcon iconName="fa-file-text" className="w-6" />
@@ -102,7 +139,10 @@ const AdminDashboard: React.FC = ({ logout, isAuthenticated }: any) => {
             className="flex items-center space-x-2 p-2 absolute bottom-0 mb-6"
           >
             {isNarrow ? (
-              <FaIcon iconName="fa-sign-out" className="w-6 w-narrow-sidebar-icon" />
+              <FaIcon
+                iconName="fa-sign-out"
+                className="w-narrow-sidebar-icon"
+              />
             ) : (
               <>
                 <FaIcon iconName="fa-sign-out" className="w-6" />
