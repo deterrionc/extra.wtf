@@ -12,7 +12,7 @@ const Videos = () => {
         <Link to='/videos'>
           <h5 className="m-1 pb-3 text-lg font-bold leading-6">Videos <FaIcon iconName="fa-arrow-right" /></h5>
         </Link>
-        <div className="grid grid-cols-6 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {topVideos.length && topVideos.map((video, index) =>
             <Video key={index} video={video} />
           )}
