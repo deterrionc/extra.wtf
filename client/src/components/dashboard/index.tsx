@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardTheme from '../../container/theme/DashboardTheme';
 import Dashboard from './_default';
+import DashboardVideoContainer from './videos';
+import DashboardChannelContainer from './channels';
 
 const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
   let navigate = useNavigate();
@@ -18,7 +20,8 @@ const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
       <DashboardSidebar />
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/videos/*" element={<Dashboard />} />
+        <Route path="/channels/*" element={<DashboardChannelContainer />} />
+        <Route path="/videos/*" element={<DashboardVideoContainer />} />
         <Route path="/articles/*" element={<Dashboard />} />
       </Routes>
     </DashboardTheme>

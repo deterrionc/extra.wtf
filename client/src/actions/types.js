@@ -8,3 +8,7 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
 export const LOGOUT = 'LOGOUT';
 export const ACCOUNT_DELETED = 'ACCOUNT_DELETED';
+
+// CHANNEL
+export const CHANNELS_LOADED = 'CHANNELS_LOADED';
+export const CHANNEL_LOADED = 'CHANNEL_LOADED';

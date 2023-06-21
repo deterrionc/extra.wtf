@@ -15,6 +15,7 @@ app.use('/files/', express.static('files'))
 // Define Routes
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/channels', require('./routes/api/channels'));
 
 // Serve frontend built
 app.use(express.static(__dirname + '/client/build'))
