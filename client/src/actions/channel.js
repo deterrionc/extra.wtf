@@ -32,3 +32,11 @@ export const getChannel = channelID => async dispatch => {
     })
   }
 }
+
+export const deleteChannel = channelID => async dispatch => {
+  const res = await api.delete(`/channels/delete-channel/${channelID}`)
+
+  if (res.data.success) {
+    dispatch(getChannels())
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +8,11 @@ const DashboardChannelCreate = ({ createChannel }) => {
   let navigate = useNavigate();
   const [channelName, setChannelName] = useState('');
   const [channelImage, setChannelImage] = useState(null);
-  const [videos, setVideos] = useState(null);
+  const [videos, setVideos] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-
-    // Create FormData object from state
     let formData = new FormData();
     formData.append('name', channelName);
     formData.append('image', channelImage);
@@ -22,9 +20,13 @@ const DashboardChannelCreate = ({ createChannel }) => {
     for (let i = 0; i < videos.length; i++) {
       formData.append('videos', videos[i]);
     }
-    
-    // Send the form data to the server
-    createChannel(formData, navigate)
+
+    createChannel(formData, navigate);
+  };
+
+  const handleVideoChange = (event) => {
+    let files = Array.from(event.target.files);
+    setVideos(files);
   };
 
   return (
@@ -64,24 +66,44 @@ const DashboardChannelCreate = ({ createChannel }) => {
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+          {channelImage && (
+            <img
+              src={URL.createObjectURL(channelImage)}
+              alt="Uploadedimage"
+              className="mt-2 w-32"
+            />
+          )}
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap">
           <label
             htmlFor="videos"
-            className="block text-gray-700 font-medium mb-2"
+            className="block text-gray-700 font-medium mb-2 w-full"
           >
             Videos:
           </label>
+
           <input
             type="file"
             accept="video/*"
             multiple
             id="videos"
-            onChange={(event) => setVideos(event.target.files)}
+            onChange={handleVideoChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+
+          <div className="w-full flex flex-wrap">
+            {videos.map((video, index) => (
+              <video
+                key={index}
+                src={URL.createObjectURL(video)}
+                alt="Uploaded video"
+                className="mt-2 w-32 mr-2"
+                controls
+              />
+            ))}
+          </div>
         </div>
 
         <button

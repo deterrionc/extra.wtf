@@ -8,6 +8,9 @@ const Video = require('../../models/Video');
 // FILE UPLOAD
 const fileUpload = require('../../utils/fileUpload');
 
+// FILE DELETE
+var fs = require('fs');
+
 router.post(
   '/create-channel',
   fileUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'videos' }]),
@@ -42,7 +45,6 @@ router.post(
 );
 
 router.get('/get-channels', async (req, res) => {
-  console.log('ok')
   const channels = await Channel.find().populate(['videos'])
 
   res.json({
@@ -52,8 +54,12 @@ router.get('/get-channels', async (req, res) => {
 });
 
 router.get('/get-channel/:id', async (req, res) => {
+  const channelID = req.params.id
+  const channel = await Channel.findById(channelID).populate(['videos'])
+
   res.json({
-    success: true
+    success: true,
+    channel
   });
 });
 
@@ -64,6 +70,22 @@ router.post('/update-channel/:id', async (req, res) => {
 });
 
 router.delete('/delete-channel/:id', async (req, res) => {
+  const channelID = req.params.id
+  const channel = await Channel.findById(channelID).populate(['videos'])
+
+  try {
+    // DELETE CHANNEL IMAGE
+    fs.unlinkSync(channel.image)
+    // DELETE CHANNEL VIDEOS
+    channel.videos.forEach(video => {
+      fs.unlinkSync(video.path)
+    })
+  } catch (e) {
+    console.log(e)
+  }
+
+  await Channel.findByIdAndDelete(channelID)
+
   res.json({
     success: true
   });
