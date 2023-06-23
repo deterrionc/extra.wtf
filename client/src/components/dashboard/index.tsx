@@ -7,6 +7,7 @@ import DashboardTheme from '../../container/theme/DashboardTheme';
 import Dashboard from './_default';
 import DashboardVideoContainer from './videos';
 import DashboardChannelContainer from './channels';
+import CategoryContainer from './categories';
 
 const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
   let navigate = useNavigate();
@@ -18,12 +19,15 @@ const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
   return (
     <DashboardTheme>
       <DashboardSidebar />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/channels/*" element={<DashboardChannelContainer />} />
-        <Route path="/videos/*" element={<DashboardVideoContainer />} />
-        <Route path="/articles/*" element={<Dashboard />} />
-      </Routes>
+      <div className='overflow-auto flex-1 p-3'>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/channels/*" element={<DashboardChannelContainer />} />
+          <Route path="/categories/*" element={<CategoryContainer />} />
+          <Route path="/videos/*" element={<DashboardVideoContainer />} />
+          <Route path="/articles/*" element={<Dashboard />} />
+        </Routes>
+      </div>
     </DashboardTheme>
   );
 };
