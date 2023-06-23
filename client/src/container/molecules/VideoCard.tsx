@@ -11,7 +11,7 @@ interface VideoProps {
 const VideoCard = ({ video }: VideoProps) => {
   return (
     <Link to={"/videos/" + video.id} className="m-1 width-calc bg-video-card rounded overflow-hidden">
-      <img alt={video.title} src={video.image} className="w-full aspect-w-2 aspect-h-3" />
+      <img alt={video.title} src={video.image} className="w-full aspect-[3/2]" />
       <div className="p-2">
         <div className="text-base">{video.title}</div>
       </div>

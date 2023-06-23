@@ -51,12 +51,12 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
                 <td className="py-3 px-6 text-left">
                   <Link
                     to={`/dashboard/categories/edit/${category._id}`}
-                    className="py-2 px-3 rounded bg-blue-500 text-white mx-1"
+                    className="py-2 px-3 rounded bg-teal-800 text-white mx-1"
                   >
                     <FaIcon iconName="fa fa-edit" />
                   </Link>
                   <button
-                    className="py-2 px-3 rounded bg-red-500 text-white mx-1"
+                    className="py-2 px-3 rounded bg-orange-700 text-white mx-1"
                     onClick={() => {
                       if (
                         window.confirm(

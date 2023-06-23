@@ -107,7 +107,7 @@ const DashboardChannelCreate = ({ createChannel }) => {
 
       <button
         type="submit"
-        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+        className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
       >
         Upload
       </button>
