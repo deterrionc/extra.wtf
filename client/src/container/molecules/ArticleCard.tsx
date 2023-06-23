@@ -10,7 +10,7 @@ interface ArticleProps {
 const ArticleCard = ({ article }: ArticleProps) => {
   return (
     <div className="m-1 width-calc bg-article-card rounded overflow-hidden">
-      <img alt={article.tag} src={article.image} />
+      <img alt={article.tag} src={article.image} className="w-full aspect-w-2 aspect-h-3" />
       <div className="p-2">
         <div className="text-base">{article.tag}</div>
         <h4 className="text-xl font-bold leading-6">{article.title}</h4>
