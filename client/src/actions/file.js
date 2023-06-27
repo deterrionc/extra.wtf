@@ -13,7 +13,6 @@ export const createFile = (formData, navigate) => async dispatch => {
 
 export const getFiles = () => async dispatch => {
   const res = await api.get('/files/get-files')
-  console.log(res.data)
 
   if (res.data.success) {
     dispatch({

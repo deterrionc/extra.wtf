@@ -24,31 +24,47 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table-auto w-full">
+        <table className="table-auto w-full min-w-max md:table">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left">No</th>
-              <th className="py-3 px-6 text-left">Type</th>
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Path</th>
-              <th className="py-3 px-6 text-left">Action</th>
+            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal md:table-row">
+              <th className="py-3 px-6 text-left md:table-cell">No</th>
+              <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                Type
+              </th>
+              <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                Name
+              </th>
+              <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                Path
+              </th>
+              <th className="py-3 px-6 text-left md:table-cell">Action</th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm font-light">
+          <tbody className="text-gray-600 text-sm font-light md:table-row-group">
             {categories.map((category, index) => (
               <tr
                 key={index}
-                className="border-b border-gray-200 hover:bg-gray-100"
+                className="border-b border-gray-200 hover:bg-gray-100 md:table-row"
               >
-                <td className="py-3 px-6 text-left whitespace-nowrap">
+                <td className="py-3 px-6 text-left whitespace-nowrap md:table-cell">
                   {index + 1}
                 </td>
-                <td className="py-3 px-6 text-left">{category.type}</td>
-                <td className="py-3 px-6 text-left font-medium">
+                <td className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                  {category.type}
+                </td>
+                <td className="py-3 px-6 text-left font-medium md:table-cell max-w-xs overflow-x-auto">
                   {category.name}
                 </td>
-                <td className="py-3 px-6 text-left">{category.path}</td>
-                <td className="py-3 px-6 text-left">
+                <td className="py-3 px-6 text-left md:table-cell">
+                  {category.path}
+                </td>
+                <td className="py-3 px-6 text-left md:table-cell">
+                  <Link
+                    to={`/dashboard/categories/videos/${category._id}`}
+                    className="py-2 px-3 rounded bg-blue-800 text-white mx-1"
+                  >
+                    <FaIcon iconName="fa fa-file-video-o" />
+                  </Link>
                   <Link
                     to={`/dashboard/categories/edit/${category._id}`}
                     className="py-2 px-3 rounded bg-teal-800 text-white mx-1"

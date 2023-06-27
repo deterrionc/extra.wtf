@@ -17,7 +17,8 @@ router.get('/get-files', async (req, res) => {
     const allFiles = getAllFiles(dirPath); // get all files
 
     const mediaFiles = allFiles.filter(file => {
-      return file.type === 'image' || file.type === 'video'; // check if the file is an image or a video
+      // return file.type === 'image' || file.type === 'video'; // check if the file is an image or a video
+      return file.type === 'video'; // check if the file is an image or a video
     });
 
     res.json({
