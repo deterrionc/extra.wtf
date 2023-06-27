@@ -17,6 +17,7 @@ app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/channels', require('./routes/api/channels'));
 app.use('/api/categories', require('./routes/api/categories'));
+app.use('/api/files', require('./routes/api/files'));
 
 // Serve frontend built
 app.use(express.static(__dirname + '/client/build'))
