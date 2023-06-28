@@ -50,8 +50,8 @@ const ChannelRoom = ({ getChannel, channel }) => {
 
   return (
     <div className="relative z-0 min-h-screen">
-      <Link to="/video-channels" className="absolute top-0 left-0 p-3 z-20">
-        <h5 className="m-1 pb-3 text-lg font-bold leading-6">
+      <Link to="/video-channels" className="absolute top-0 left-0 p-1 z-20">
+        <h5 className="m-1 text-xs sm:text-sm lg:text-lg font-bold leading-6">
           Channels <FaIcon iconName="fa-arrow-right" />
         </h5>
       </Link>
@@ -60,7 +60,7 @@ const ChannelRoom = ({ getChannel, channel }) => {
         <video
           ref={videoRef}
           onEnded={handleVideoEnd}
-          className="fixed z-10 inset-0 w-screen max-h-screen object-cover"
+          className="fixed z-10 inset-0 w-screen h-screen object-cover"
           autoPlay
           controls={false}
         >
@@ -71,11 +71,11 @@ const ChannelRoom = ({ getChannel, channel }) => {
         </video>
       )}
 
-      <div className="absolute right-0 bottom-20 p-3 z-20 bg-white bg-opacity-50">
+      <div className="absolute right-0 bottom-5 p-3 z-20 bg-white bg-opacity-50">
         <div className="flex justify-center">
-          <img src={`/${channel.image}`} alt={channel.name} width="200px" />
+          <img src={`/${channel.image}`} alt={channel.name} className="w-24 sm:w-48 lg:w-64" />
         </div>
-        <div className="text-center mb-4">{channel.name}</div>
+        <div className="text-center mb-0">{channel.name}</div>
       </div>
     </div>
   );
