@@ -62,7 +62,7 @@ const CategoryVideos = ({
               </tr>
             </thead>
             <tbody className="text-gray-600 text-sm font-light md:table-row-group">
-              {category.videos.map((file, index) => (
+              {category.videos && category.videos.map((file, index) => (
                 <tr
                   key={index}
                   className="border-b border-gray-200 hover:bg-gray-100 md:table-row"
