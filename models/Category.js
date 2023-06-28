@@ -12,6 +12,12 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     default: 'news'
   },
+  videos: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'video'
+    }
+  ],
   date: {
     type: Date,
     default: Date.now

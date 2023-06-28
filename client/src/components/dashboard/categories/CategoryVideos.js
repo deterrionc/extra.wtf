@@ -1,96 +1,154 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { updateCategory, getCategory } from '../../../actions/category';
+import { getCategory, addVideoToCategory } from '../../../actions/category';
 import { useParams } from 'react-router-dom';
+import { getFiles } from '../../../actions/file';
+import Spinner from '../../../container/organisms/Spinner';
 
-const CategoryVideos = ({ updateCategory, getCategory, category }) => {
+const CategoryVideos = ({
+  files,
+  getFiles,
+  getCategory,
+  category,
+  addVideoToCategory,
+  isLoading
+}) => {
   const params = useParams();
   const categoryID = params.id;
-  let navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [type, setType] = useState('music');
 
   useEffect(() => {
+    getFiles();
     getCategory(categoryID);
-  }, [getCategory, categoryID]);
-
-  useEffect(() => {
-    category?._id && setName(category.name);
-    category?._id && setType(category.type);
-  }, [category]);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (name === category.name && type === category.type) {
-      alert('There is no change.');
-      return;
-    }
-    let formData = { name, type };
-    updateCategory(categoryID, formData, navigate);
-  };
+  }, [getFiles, getCategory, categoryID]);
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 bg-gray-100 rounded-lg">
+    <div className="p-3 bg-gray-100 rounded-lg">
       <h2 className="text-xl font-medium mb-4">Edit a Category</h2>
 
-      <div className="mb-4">
+      <div className="mb-2 flex">
         <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
           Category Name:
         </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        />
+        <p className="pl-3">{category.name}</p>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex">
         <label htmlFor="type" className="block text-gray-700 font-medium mb-2">
           Category Type:
         </label>
-        <select
-          id="type"
-          value={type}
-          onChange={(event) => setType(event.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option value="news">News</option>
-          <option value="music">Music</option>
-        </select>
+        <p className="pl-3">{category.type}</p>
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="type" className="block text-orange-700 font-small mb-2">
-          Category is used to save the videos and also it indicates the
-          directory path. For example, if category name is set 'National' and
-          type is 'News', the directory is set '/files/news/national'
-        </label>
-      </div>
-
-      <button
-        type="submit"
-        className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-      >
-        Update
-      </button>
-    </form>
+      {isLoading && <Spinner />}
+      {!isLoading && (
+        <div className="overflow-x-auto md:overflow-visible">
+          <label
+            htmlFor="name"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            Category Videos:
+          </label>
+          <table className="table-auto w-full md:table mb-8">
+            <thead>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal md:table-row">
+                <th className="py-3 px-6 text-left md:table-cell">No</th>
+                <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
+                  Name
+                </th>
+                <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
+                  Path
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+              {category.videos.map((file, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-gray-200 hover:bg-gray-100 md:table-row"
+                >
+                  <td className="py-3 px-6 text-left whitespace-nowrap md:table-cell">
+                    {index + 1}
+                  </td>
+                  <td className="py-3 px-6 text-left font-medium md:table-cell max-w-xs overflow-x-auto">
+                    {file.name}
+                  </td>
+                  <td className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                    {file.path}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <label
+            htmlFor="name"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            Outer Videos:
+          </label>
+          <table className="table-auto w-full md:table">
+            <thead>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal md:table-row">
+                <th className="py-3 px-6 text-left md:table-cell">No</th>
+                <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
+                  Name
+                </th>
+                <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
+                  Path
+                </th>
+                <th className="py-3 px-6 text-left md:table-cell">Action</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+              {files.map((file, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-gray-200 hover:bg-gray-100 md:table-row"
+                >
+                  <td className="py-3 px-6 text-left whitespace-nowrap md:table-cell">
+                    {index + 1}
+                  </td>
+                  <td className="py-3 px-6 text-left font-medium md:table-cell max-w-xs overflow-x-auto">
+                    {file.name}
+                  </td>
+                  <td className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                    {file.path}
+                  </td>
+                  <td className="py-3 px-6 text-left md:table-cell">
+                    <button
+                      className="py-2 px-3 rounded bg-teal-700 text-white mx-1"
+                      onClick={() => {
+                        addVideoToCategory(categoryID, file);
+                      }}
+                    >
+                      Move to this Category
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 };
 
 CategoryVideos.propTypes = {
+  getFiles: PropTypes.func.isRequired,
   updateCategory: PropTypes.func.isRequired,
-  getCategory: PropTypes.func.isRequired
+  getCategory: PropTypes.func.isRequired,
+  addVideoToCategory: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  category: state.category.category
+  files: state.file.files,
+  category: state.category.category,
+  isLoading: state.spinner.isLoading
 });
 
-export default connect(mapStateToProps, { updateCategory, getCategory })(
-  CategoryVideos
-);
+export default connect(mapStateToProps, {
+  getFiles,
+  getCategory,
+  addVideoToCategory
+})(CategoryVideos);

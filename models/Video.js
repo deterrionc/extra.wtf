@@ -7,9 +7,9 @@ const VideoSchema = new mongoose.Schema({
   path: {
     type: String
   },
-  channel: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'channel'
+    ref: 'category'
   }
 })
 

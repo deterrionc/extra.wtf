@@ -3,6 +3,7 @@ const router = express.Router();
 
 // DB MODEL
 const Category = require('../../models/Category');
+const Video = require('../../models/Video');
 
 // FILE MANAGE
 var fs = require('fs');
@@ -62,7 +63,7 @@ router.get('/get-categories', async (req, res) => {
 
 router.get('/get-category/:id', async (req, res) => {
   const categoryID = req.params.id;
-  const category = await Category.findById(categoryID);
+  const category = await Category.findById(categoryID).populate(['videos']);
 
   res.json({
     success: true,
@@ -131,6 +132,40 @@ router.delete('/delete-category/:id', async (req, res) => {
   }
 
   await Category.findByIdAndDelete(categoryID);
+
+  res.json({
+    success: true
+  });
+});
+
+router.post('/add-video-to-category', async (req, res) => {
+  const categoryID = req.body.categoryID;
+  const file = req.body.file;
+
+  const _category = await Category.findById(categoryID);
+  let _categoryVideos = _category.videos;
+  const sourcePath = file.path;
+  const destinationPath = `${_category.path}/${file.name}`;
+
+  try {
+    fs.renameSync(sourcePath, destinationPath);
+    const newVideo = new Video({
+      name: file.name,
+      path: destinationPath,
+      category: categoryID
+    });
+    await newVideo.save();
+    _categoryVideos.push(newVideo._id);
+    await Category.findByIdAndUpdate(
+      categoryID,
+      {
+        videos: _categoryVideos
+      },
+      { new: true }
+    );
+  } catch (e) {
+    console.log(e);
+  }
 
   res.json({
     success: true

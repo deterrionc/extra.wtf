@@ -20,3 +20,6 @@ export const CATEGORY_LOADED = 'CATEGORY_LOADED';
 // FILE
 export const FILES_LOADED = 'FILES_LOADED';
 export const FILE_LOADED = 'FILE_LOADED';
+
+// SPINNER
+export const SPINNING = 'SPINNING'

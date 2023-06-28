@@ -4,6 +4,7 @@ import auth from './auth'
 import channel from './channel'
 import category from './category'
 import file from './file'
+import spinner from './spinner'
 
 export default combineReducers({
   alert,
@@ -11,4 +12,5 @@ export default combineReducers({
   channel,
   category,
   file,
+  spinner,
 })
