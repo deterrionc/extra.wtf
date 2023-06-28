@@ -65,7 +65,7 @@ const ChannelRoom = ({ getChannel, channel }: any) => {
           onEnded={handleVideoEnd}
           className="min-w-full"
           autoPlay
-          controls
+          controls={false}
         >
           <source src={`/${channelVideos[currentVideoIndex]['path']}`} type="video/mp4" />
         </video>

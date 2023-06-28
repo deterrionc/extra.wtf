@@ -10,6 +10,7 @@ const fileUpload = require('../../utils/fileUpload');
 
 // FILE DELETE
 var fs = require('fs');
+const Category = require('../../models/Category');
 
 router.post(
   '/create-channel',
@@ -62,6 +63,13 @@ router.get('/get-channel/:id', async (req, res) => {
     channel
   });
 });
+
+router.get('/get-channel-videos', async (req, res) => {
+  
+  res.json({
+    success: true
+  })
+})
 
 router.post('/update-channel/:id', async (req, res) => {
   res.json({
