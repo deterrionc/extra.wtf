@@ -17,7 +17,7 @@ const VideoSchema = new mongoose.Schema({
   },
   playedAt: {
     type: Date,
-    default: Date.now
+    default: new Date('2001-01-01')
   }
 })
 
