@@ -30,7 +30,7 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
               <th className="py-3 px-6 text-left">No</th>
               <th className="py-3 px-6 text-left">Name</th>
               <th className="py-3 px-6 text-center">Image</th>
-              <th className="py-3 px-6 text-left">Videos</th>
+              {/* <th className="py-3 px-6 text-left">Videos</th> */}
               <th className="py-3 px-6 text-left">Action</th>
             </tr>
           </thead>
@@ -51,7 +51,7 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
                     className="rounded-md w-32 mx-auto"
                   />
                 </td>
-                <td className="py-3 px-6 text-left">{channel.videos.length}</td>
+                {/* <td className="py-3 px-6 text-left">{channel.videos.length}</td> */}
                 <td className="py-3 px-6 text-left">
                   <Link
                     to={`/dashboard/channels/${channel._id}`}

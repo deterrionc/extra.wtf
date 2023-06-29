@@ -10,8 +10,13 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
   const params = useParams();
   const channelID = params.id;
 
-  const [channelVideos, setChannelVideos] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [channelNewss, setChannelNewss] = useState([])
+  const [channelMusics, setChannelMusics] = useState([])
+
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+
+  const [currentVideoName, setCurrentVideoName] = useState("")
 
   const videoRef = useRef(null);
 
@@ -24,32 +29,30 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
   }, [getChannel, channelID]);
 
   useEffect(() => {
-    channel?.videos?.length && setChannelVideos(channel?.videos);
-  }, [channel]);
-
-  useEffect(() => {
-    setCurrentVideoIndex(0);
-  }, [channelVideos]);
-
-  console.log(musics)
-  console.log(newss)
+    musics.length > 0 && setChannelMusics(musics)
+    musics.length > 0 && setCurrentMusicIndex(0)
+    musics.length > 0 && setCurrentVideoName(musics[0].name)
+    newss.length > 0 && setChannelNewss(newss)
+    newss.length > 0 && setCurrentNewsIndex(0)
+  }, [musics, newss])
 
   const handleVideoEnd = () => {
-    const currentIndex = channelVideos.findIndex(
-      (video) => video['path'] === channelVideos[currentVideoIndex]['path']
+    const currentIndex = channelMusics.findIndex(
+      (video) => video['path'] === channelMusics[currentMusicIndex]['path']
     );
-    let nextVideoIndex;
+    let nextMusicIndex;
 
-    if (currentIndex < channelVideos.length - 1) {
-      nextVideoIndex = currentIndex + 1;
+    if (currentIndex < channelMusics.length - 1) {
+      nextMusicIndex = currentIndex + 1;
     } else {
-      nextVideoIndex = 0;
+      nextMusicIndex = 0;
     }
 
-    setCurrentVideoIndex(nextVideoIndex);
+    setCurrentMusicIndex(nextMusicIndex);
+    setCurrentVideoName(channelMusics[nextMusicIndex]['name'])
 
     if (videoRef.current) {
-      videoRef.current.src = `/${channelVideos[nextVideoIndex]['path']}`;
+      videoRef.current.src = `/${channelMusics[nextMusicIndex]['path']}`;
       videoRef.current.load();
       videoRef.current.play();
     }
@@ -63,7 +66,7 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
         </h5>
       </Link>
 
-      {channelVideos.length > 0 && (
+      {channelMusics.length > 0 && (
         <video
           ref={videoRef}
           onEnded={handleVideoEnd}
@@ -72,7 +75,7 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
           controls={false}
         >
           <source
-            src={`/${channelVideos[currentVideoIndex]['path']}`}
+            src={`/${channelMusics[currentMusicIndex]['path']}`}
             type="video/mp4"
           />
         </video>
@@ -82,7 +85,7 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
         <div className="flex justify-center">
           <img src={`/${channel.image}`} alt={channel.name} className="w-24 sm:w-36 lg:w-48 aspect-[3/2]" />
         </div>
-        <div className="text-center mb-0">{channel.name}</div>
+        <div className="text-center mb-0">{currentVideoName}</div>
       </div>
     </div>
   );

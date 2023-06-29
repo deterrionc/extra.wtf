@@ -4,22 +4,20 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getChannel } from '../../../../actions/channel';
+import { getChannel, getChannelVideos } from '../../../../actions/channel';
 
-const ChannelRoom = ({ getChannel, channel }) => {
+const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) => {
   const params = useParams();
   const channelID = params.id;
 
   const [channelVideos, setChannelVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  // const videoRef = useRef<HTMLVideoElement>(null);
-
   const videoRef = useRef(null);
 
-  const setVideoRef = (element) => {
-    videoRef.current = element;
-  };
+  useEffect(() => {
+    getChannelVideos()
+  }, [getChannelVideos])
 
   useEffect(() => {
     getChannel(channelID);
@@ -32,6 +30,9 @@ const ChannelRoom = ({ getChannel, channel }) => {
   useEffect(() => {
     setCurrentVideoIndex(0);
   }, [channelVideos]);
+
+  console.log(musics)
+  console.log(newss)
 
   const handleVideoEnd = () => {
     const currentIndex = channelVideos.findIndex(
@@ -51,66 +52,22 @@ const ChannelRoom = ({ getChannel, channel }) => {
       videoRef.current.src = `/${channelVideos[nextVideoIndex]['path']}`;
       videoRef.current.load();
       videoRef.current.play();
-
-      // // Request fullscreen
-      // if (videoRef.current.requestFullscreen) {
-      //   videoRef.current.requestFullscreen();
-      // } else if (videoRef.current.webkitRequestFullscreen) {
-      //   /* Safari */
-      //   videoRef.current.webkitRequestFullscreen();
-      // } else if (videoRef.current.msRequestFullscreen) {
-      //   /* IE11 */
-      //   videoRef.current.msRequestFullscreen();
-      // }
-    }
-  };
-
-  // Function to handle video click event to toggle fullscreen
-  const handleVideoClick = () => {
-    if (videoRef.current) {
-      if (document.fullscreenElement) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          /* Safari */
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          /* IE11 */
-          document.msExitFullscreen();
-        }
-      } else {
-        if (videoRef.current.requestFullscreen) {
-          videoRef.current.requestFullscreen();
-        } else if (videoRef.current.webkitRequestFullscreen) {
-          /* Safari */
-          videoRef.current.webkitRequestFullscreen();
-        } else if (videoRef.current.msRequestFullscreen) {
-          /* IE11 */
-          videoRef.current.msRequestFullscreen();
-        }
-      }
     }
   };
 
   return (
-    <div className="py-3">
-      <Link to="/video-channels">
-        <h5 className="m-1 pb-3 text-lg font-bold leading-6">
+    <div className="relative z-0 min-h-screen">
+      <Link to="/video-channels" className="absolute top-0 left-0 p-1 z-20">
+        <h5 className="m-1 text-xs sm:text-sm lg:text-lg font-bold leading-6">
           Channels <FaIcon iconName="fa-arrow-right" />
         </h5>
       </Link>
 
-      <div className="flex justify-center">
-        <img src={`/${channel.image}`} alt={channel.name} width="200px" />
-      </div>
-      <div className="text-center mb-4">{channel.name}</div>
-
       {channelVideos.length > 0 && (
         <video
-          ref={setVideoRef}
+          ref={videoRef}
           onEnded={handleVideoEnd}
-          onClick={handleVideoClick}
-          className="min-w-full"
+          className="fixed z-10 inset-0 w-screen h-screen object-cover"
           autoPlay
           controls={false}
         >
@@ -120,17 +77,27 @@ const ChannelRoom = ({ getChannel, channel }) => {
           />
         </video>
       )}
+
+      <div className="absolute right-0 bottom-5 p-3 z-20 bg-white bg-opacity-50">
+        <div className="flex justify-center">
+          <img src={`/${channel.image}`} alt={channel.name} className="w-24 sm:w-36 lg:w-48 aspect-[3/2]" />
+        </div>
+        <div className="text-center mb-0">{channel.name}</div>
+      </div>
     </div>
   );
 };
 
 ChannelRoom.propTypes = {
   getChannel: PropTypes.func.isRequired,
+  getChannelVideos: PropTypes.func.isRequired,
   channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired
 };
 
 const mapStateToProps = (state) => ({
-  channel: state.channel.channel
+  channel: state.channel.channel,
+  newss: state.video.newss,
+  musics: state.video.musics
 });
 
-export default connect(mapStateToProps, { getChannel })(ChannelRoom);
+export default connect(mapStateToProps, { getChannel, getChannelVideos })(ChannelRoom);
