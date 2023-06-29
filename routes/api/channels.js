@@ -14,28 +14,29 @@ const Category = require('../../models/Category');
 
 router.post(
   '/create-channel',
-  fileUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'videos' }]),
+  // fileUpload.fields([{ name: 'image', maxCount: 1 }, { name: 'videos' }]),
+  fileUpload.fields([{ name: 'image', maxCount: 1 }]),
   async (req, res) => {
     let imagePath = req.files['image'][0].path;
-    let videos = req.files['videos'];
-    let _videos = [];
+    // let videos = req.files['videos'];
+    // let _videos = [];
 
     let newChannel = new Channel({
       name: req.body.name,
       image: imagePath
     });
 
-    for (let i = 0; i < videos.length; i++) {
-      let newVideo = new Video({
-        name: videos[i].originalname,
-        path: videos[i].path,
-        channel: newChannel._id
-      });
-      await newVideo.save();
-      _videos.push(newVideo._id);
-    }
+    // for (let i = 0; i < videos.length; i++) {
+    //   let newVideo = new Video({
+    //     name: videos[i].originalname,
+    //     path: videos[i].path,
+    //     channel: newChannel._id
+    //   });
+    //   await newVideo.save();
+    //   _videos.push(newVideo._id);
+    // }
 
-    newChannel.videos = _videos;
+    // newChannel.videos = _videos;
 
     await newChannel.save();
 
@@ -46,7 +47,8 @@ router.post(
 );
 
 router.get('/get-channels', async (req, res) => {
-  const channels = await Channel.find().populate(['videos'])
+  // const channels = await Channel.find().populate(['videos']);
+  const channels = await Channel.find();
 
   res.json({
     success: true,
@@ -55,8 +57,9 @@ router.get('/get-channels', async (req, res) => {
 });
 
 router.get('/get-channel/:id', async (req, res) => {
-  const channelID = req.params.id
-  const channel = await Channel.findById(channelID).populate(['videos'])
+  const channelID = req.params.id;
+  // const channel = await Channel.findById(channelID).populate(['videos']);
+  const channel = await Channel.findById(channelID);
 
   res.json({
     success: true,
@@ -65,11 +68,30 @@ router.get('/get-channel/:id', async (req, res) => {
 });
 
 router.get('/get-channel-videos', async (req, res) => {
-  
-  res.json({
-    success: true
+  const _newsCategory = await Category.find({ type: 'news' }).populate(['videos']);
+  const _musicCategory = await Category.find({ type: 'music' }).populate(['videos']);
+
+  let _newsVideos = []
+  let _musicVideos = []
+
+  _newsCategory.forEach(cate => {
+    cate.videos.forEach(video => {
+      _newsVideos.push(video)
+    })
   })
-})
+
+  _musicCategory.forEach(cate => {
+    cate.videos.forEach(video => {
+      _musicVideos.push(video)
+    })
+  })
+
+  res.json({
+    success: true,
+    newss: _newsVideos,
+    musics: _musicVideos
+  });
+});
 
 router.post('/update-channel/:id', async (req, res) => {
   res.json({
@@ -78,21 +100,22 @@ router.post('/update-channel/:id', async (req, res) => {
 });
 
 router.delete('/delete-channel/:id', async (req, res) => {
-  const channelID = req.params.id
-  const channel = await Channel.findById(channelID).populate(['videos'])
+  const channelID = req.params.id;
+  // const channel = await Channel.findById(channelID).populate(['videos']);
+  const channel = await Channel.findById(channelID);
 
   try {
     // DELETE CHANNEL IMAGE
-    fs.unlinkSync(channel.image)
+    fs.unlinkSync(channel.image);
     // DELETE CHANNEL VIDEOS
-    channel.videos.forEach(video => {
-      fs.unlinkSync(video.path)
-    })
+    channel.videos.forEach((video) => {
+      fs.unlinkSync(video.path);
+    });
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 
-  await Channel.findByIdAndDelete(channelID)
+  await Channel.findByIdAndDelete(channelID);
 
   res.json({
     success: true

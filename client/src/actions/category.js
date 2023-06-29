@@ -3,6 +3,7 @@ import { CATEGORIES_LOADED, CATEGORY_LOADED } from './types';
 import { setAlert } from './alert';
 import { getFiles } from './file';
 import { setLoading } from './spinner';
+import formApi from '../utils/formApi';
 
 export const createCategory = (formData, navigate) => async (dispatch) => {
   const res = await api.post('/categories/create-category', formData);
@@ -81,3 +82,11 @@ export const addVideoToCategory = (categoryID, file) => async (dispatch) => {
     dispatch(setLoading(false));
   }
 };
+
+export const uploadVideoToCategory = (categoryID, formData) => async dispatch => {
+  const res = await formApi.post(`/categories/upload-video/${categoryID}`, formData)
+
+  if (res.data.success) {
+    return true
+  }
+}

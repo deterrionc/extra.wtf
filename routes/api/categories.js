@@ -8,6 +8,8 @@ const Video = require('../../models/Video');
 // FILE MANAGE
 var fs = require('fs');
 const path = require('path');
+const fileUpload = require('../../utils/fileUpload');
+const createMulterInstance = require('../../utils/createMulterInstance');
 
 router.post('/create-category', async (req, res) => {
   let _existed = await Category.findOne({
@@ -132,6 +134,47 @@ router.delete('/delete-category/:id', async (req, res) => {
   }
 
   await Category.findByIdAndDelete(categoryID);
+  await Video.deleteMany({ category: categoryID });
+
+  res.json({
+    success: true
+  });
+});
+
+router.post('/upload-video/:id', async (req, res) => {
+  const categoryID = req.params.id;
+  const category = await Category.findById(categoryID);
+  let categoryVideos = category.videos;
+
+  const fileUpload = createMulterInstance(category.path);
+  await new Promise((resolve, reject) => {
+    fileUpload.fields([{ name: 'video', maxCount: 1 }])(req, res, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+
+  let _video = req.files['video'][0];
+
+  let newVideo = new Video({
+    name: _video.originalname,
+    path: _video.path,
+    category: categoryID
+  });
+  await newVideo.save();
+
+  categoryVideos.push(newVideo._id);
+
+  await Category.findByIdAndUpdate(
+    categoryID,
+    {
+      videos: categoryVideos
+    },
+    { new: true }
+  );
 
   res.json({
     success: true

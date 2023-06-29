@@ -8,7 +8,7 @@ const DashboardChannelCreate = ({ createChannel }) => {
   let navigate = useNavigate();
   const [channelName, setChannelName] = useState('');
   const [channelImage, setChannelImage] = useState(null);
-  const [videos, setVideos] = useState([]);
+  // const [videos, setVideos] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,17 +17,17 @@ const DashboardChannelCreate = ({ createChannel }) => {
     formData.append('name', channelName);
     formData.append('image', channelImage);
 
-    for (let i = 0; i < videos.length; i++) {
-      formData.append('videos', videos[i]);
-    }
+    // for (let i = 0; i < videos.length; i++) {
+    //   formData.append('videos', videos[i]);
+    // }
 
     createChannel(formData, navigate);
   };
 
-  const handleVideoChange = (event) => {
-    let files = Array.from(event.target.files);
-    setVideos(files);
-  };
+  // const handleVideoChange = (event) => {
+  //   let files = Array.from(event.target.files);
+  //   setVideos(files);
+  // };
 
   return (
     <form onSubmit={handleSubmit} className="p-3 bg-gray-100 rounded-lg">
@@ -74,7 +74,7 @@ const DashboardChannelCreate = ({ createChannel }) => {
         )}
       </div>
 
-      <div className="mb-4 flex flex-wrap">
+      {/* <div className="mb-4 flex flex-wrap">
         <label
           htmlFor="videos"
           className="block text-gray-700 font-medium mb-2 w-full"
@@ -103,7 +103,7 @@ const DashboardChannelCreate = ({ createChannel }) => {
             />
           ))}
         </div>
-      </div>
+      </div> */}
 
       <button
         type="submit"

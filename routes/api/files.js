@@ -26,8 +26,7 @@ router.get('/get-files', async (req, res) => {
       files: mediaFiles
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    res.json({
       success: false,
       message: 'An error occurred while fetching the files.'
     });

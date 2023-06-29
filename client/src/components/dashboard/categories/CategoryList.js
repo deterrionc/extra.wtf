@@ -37,6 +37,9 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
               <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
                 Path
               </th>
+              <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                Videos
+              </th>
               <th className="py-3 px-6 text-left md:table-cell">Action</th>
             </tr>
           </thead>
@@ -57,6 +60,9 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
                 </td>
                 <td className="py-3 px-6 text-left md:table-cell">
                   {category.path}
+                </td>
+                <td className="py-3 px-6 text-left md:table-cell">
+                  {category.videos.length}
                 </td>
                 <td className="py-3 px-6 text-left md:table-cell">
                   <Link

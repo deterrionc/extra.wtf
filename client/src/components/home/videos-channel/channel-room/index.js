@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getChannel } from '../../../../actions/channel';
+import { getChannel, getChannelVideos } from '../../../../actions/channel';
 
-const ChannelRoom = ({ getChannel, channel }) => {
+const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) => {
   const params = useParams();
   const channelID = params.id;
 
@@ -14,6 +14,10 @@ const ChannelRoom = ({ getChannel, channel }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   const videoRef = useRef(null);
+
+  useEffect(() => {
+    getChannelVideos()
+  }, [getChannelVideos])
 
   useEffect(() => {
     getChannel(channelID);
@@ -26,6 +30,9 @@ const ChannelRoom = ({ getChannel, channel }) => {
   useEffect(() => {
     setCurrentVideoIndex(0);
   }, [channelVideos]);
+
+  console.log(musics)
+  console.log(newss)
 
   const handleVideoEnd = () => {
     const currentIndex = channelVideos.findIndex(
@@ -83,11 +90,14 @@ const ChannelRoom = ({ getChannel, channel }) => {
 
 ChannelRoom.propTypes = {
   getChannel: PropTypes.func.isRequired,
+  getChannelVideos: PropTypes.func.isRequired,
   channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired
 };
 
 const mapStateToProps = (state) => ({
-  channel: state.channel.channel
+  channel: state.channel.channel,
+  newss: state.video.newss,
+  musics: state.video.musics
 });
 
-export default connect(mapStateToProps, { getChannel })(ChannelRoom);
+export default connect(mapStateToProps, { getChannel, getChannelVideos })(ChannelRoom);

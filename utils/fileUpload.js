@@ -1,4 +1,4 @@
-const multer = require('multer')
+const multer = require('multer');
 
 const fileUpload = multer({
   storage: multer.diskStorage({
@@ -6,7 +6,12 @@ const fileUpload = multer({
       cb(null, './files')
     },
     filename(req, file, cb) {
-      cb(null, `${new Date().getTime()}_${file.originalname.replace(/\s+/g, '')}`)
+      const originalNameWithoutExtension = file.originalname.split('.').slice(0, -1).join('.');
+      const extension = file.originalname.split('.').pop();
+      const date = new Date();
+      const formattedDate = `${date.getFullYear().toString().slice(2)}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}`;
+      const newFilename = `${originalNameWithoutExtension}_${formattedDate}.${extension}`;
+      cb(null, newFilename.replace(/\s+/g, ''))
     }
   }),
   limits: {
@@ -15,6 +20,6 @@ const fileUpload = multer({
   fileFilter(req, file, cb) {
     cb(undefined, true) // continue with upload
   }
-})
+});
 
-module.exports = fileUpload
+module.exports = fileUpload;

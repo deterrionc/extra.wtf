@@ -8,12 +8,12 @@ const ChannelSchema = new mongoose.Schema({
   image: {
     type: String
   },
-  videos: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'video'
-    }
-  ],
+  // videos: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: 'video'
+  //   }
+  // ],
   date: {
     type: Date,
     default: Date.now

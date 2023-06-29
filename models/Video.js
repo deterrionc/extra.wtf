@@ -10,6 +10,14 @@ const VideoSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'category'
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  playedAt: {
+    type: Date,
+    default: Date.now
   }
 })
 
