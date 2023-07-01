@@ -11,7 +11,7 @@ const fileUpload = require('../../utils/fileUpload');
 // FILE DELETE
 var fs = require('fs');
 const Category = require('../../models/Category');
-const getVideoDuration = require('../../utils/getVideoDuration');
+// const getVideoDuration = require('../../utils/getVideoDuration');
 
 router.post(
   '/create-channel',
