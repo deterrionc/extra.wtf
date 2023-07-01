@@ -29,3 +29,5 @@ export const NEWSS_LOADED = 'NEWSS_LOADED';
 export const NEWS_LOADED = 'NEWS_LOADED';
 export const MUSICS_LOADED = 'MUSICS_LOADED';
 export const MUSIC_LOADED = 'MUSIC_LOADED';
+export const VIDEOS_LOADED = 'VIDEOS_LOADED';
+export const VIDEO_LOADED = 'VIDEO_LOADED';

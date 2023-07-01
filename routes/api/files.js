@@ -13,7 +13,7 @@ router.post('/create-file', async (req, res) => {
 
 router.get('/get-files', async (req, res) => {
   try {
-    const dirPath = './files/video1'; // specify the directory path
+    const dirPath = './files/temp'; // specify the directory path
     const allFiles = getAllFiles(dirPath); // get all files
 
     const mediaFiles = allFiles.filter(file => {

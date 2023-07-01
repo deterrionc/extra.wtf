@@ -2,14 +2,17 @@ import {
   NEWSS_LOADED,
   NEWS_LOADED,
   MUSICS_LOADED,
-  MUSIC_LOADED
+  MUSIC_LOADED, 
+  VIDEOS_LOADED
 } from '../actions/types';
 
 const initialState = {
   newss: [],
   news: {},
   musics: [],
-  music: {}
+  music: {},
+  videos: [],
+  currentMinute: new Date().getMinutes()
 };
 
 const newsReducer = (state = initialState, action) => {
@@ -38,6 +41,13 @@ const newsReducer = (state = initialState, action) => {
       return {
         ...state,
         music: payload
+      };
+    }
+    case VIDEOS_LOADED: {
+      return {
+        ...state,
+        videos: payload.videos,
+        currentMinute: payload.currentMinute
       };
     }
     default: {

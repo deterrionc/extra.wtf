@@ -8,8 +8,8 @@ const Video = require('../../models/Video');
 // FILE MANAGE
 var fs = require('fs');
 const path = require('path');
-const fileUpload = require('../../utils/fileUpload');
 const createMulterInstance = require('../../utils/createMulterInstance');
+const sanitize = require('../../utils/sanitize');
 
 router.post('/create-category', async (req, res) => {
   let _existed = await Category.findOne({
@@ -160,7 +160,7 @@ router.post('/upload-video/:id', async (req, res) => {
   let _video = req.files['video'][0];
 
   let newVideo = new Video({
-    name: _video.originalname,
+    name: sanitize(_video.originalname),
     path: _video.path,
     category: categoryID
   });

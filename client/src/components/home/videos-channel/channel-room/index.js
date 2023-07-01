@@ -4,55 +4,65 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getChannel, getChannelVideos } from '../../../../actions/channel';
+import {
+  getChannel,
+  getChannelVideos,
+  updateVideoPlayedAt
+} from '../../../../actions/channel';
 
-const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) => {
+const ChannelRoom = ({
+  getChannel,
+  channel,
+  getChannelVideos,
+  updateVideoPlayedAt,
+  musics,
+  newss,
+  videos
+}) => {
   const params = useParams();
   const channelID = params.id;
 
-  const [channelNewss, setChannelNewss] = useState([])
-  const [channelMusics, setChannelMusics] = useState([])
+  const [channelVideos, setChannelVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
-  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
-
-  const [currentVideoName, setCurrentVideoName] = useState("")
+  const [currentVideoName, setCurrentVideoName] = useState('');
 
   const videoRef = useRef(null);
 
   useEffect(() => {
-    getChannelVideos()
-  }, [getChannelVideos])
+    getChannelVideos();
+  }, [getChannelVideos]);
 
   useEffect(() => {
     getChannel(channelID);
   }, [getChannel, channelID]);
 
   useEffect(() => {
-    musics.length > 0 && setChannelMusics(musics)
-    musics.length > 0 && setCurrentMusicIndex(0)
-    musics.length > 0 && setCurrentVideoName(musics[0].name)
-    newss.length > 0 && setChannelNewss(newss)
-    newss.length > 0 && setCurrentNewsIndex(0)
-  }, [musics, newss])
+    videos.length > 0 && setChannelVideos(videos);
+    videos.length > 0 && setCurrentVideoIndex(0);
+    videos.length > 0 && setCurrentVideoName(videos[0].name);
+  }, [videos]);
 
-  const handleVideoEnd = () => {
-    const currentIndex = channelMusics.findIndex(
-      (video) => video['path'] === channelMusics[currentMusicIndex]['path']
+  const handleVideoEnd = async() => {
+    const currentIndex = channelVideos.findIndex(
+      (video) => video['path'] === channelVideos[currentVideoIndex]['path']
     );
-    let nextMusicIndex;
+    let nextVideoIndex;
 
-    if (currentIndex < channelMusics.length - 1) {
-      nextMusicIndex = currentIndex + 1;
+    await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id)
+
+    if (currentIndex < channelVideos.length - 1) {
+      nextVideoIndex = currentIndex + 1;
     } else {
-      nextMusicIndex = 0;
+      await getChannelVideos()
+      nextVideoIndex = 0;
     }
 
-    setCurrentMusicIndex(nextMusicIndex);
-    setCurrentVideoName(channelMusics[nextMusicIndex]['name'])
+    setCurrentVideoIndex(nextVideoIndex);
+    setCurrentVideoName(channelVideos[nextVideoIndex]['name']);
 
     if (videoRef.current) {
-      videoRef.current.src = `/${channelMusics[nextMusicIndex]['path']}`;
+      videoRef.current.src = `/${channelVideos[nextVideoIndex]['path']}`;
       videoRef.current.load();
       videoRef.current.play();
     }
@@ -66,7 +76,7 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
         </h5>
       </Link>
 
-      {channelMusics.length > 0 && (
+      {channelVideos.length > 0 && (
         <video
           ref={videoRef}
           onEnded={handleVideoEnd}
@@ -75,7 +85,7 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
           controls={false}
         >
           <source
-            src={`/${channelMusics[currentMusicIndex]['path']}`}
+            src={`/${channelVideos[currentVideoIndex]['path']}`}
             type="video/mp4"
           />
         </video>
@@ -83,7 +93,11 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
 
       <div className="absolute right-0 bottom-5 p-3 z-20 bg-white bg-opacity-50">
         <div className="flex justify-center">
-          <img src={`/${channel.image}`} alt={channel.name} className="w-24 sm:w-36 lg:w-48 aspect-[3/2]" />
+          <img
+            src={`/${channel.image}`}
+            alt={channel.name}
+            className="w-24 sm:w-36 lg:w-48 aspect-[3/2]"
+          />
         </div>
         <div className="text-center mb-0">{currentVideoName}</div>
       </div>
@@ -94,13 +108,19 @@ const ChannelRoom = ({ getChannel, channel, getChannelVideos, musics, newss }) =
 ChannelRoom.propTypes = {
   getChannel: PropTypes.func.isRequired,
   getChannelVideos: PropTypes.func.isRequired,
+  updateVideoPlayedAt: PropTypes.func.isRequired,
   channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired
 };
 
 const mapStateToProps = (state) => ({
   channel: state.channel.channel,
   newss: state.video.newss,
-  musics: state.video.musics
+  musics: state.video.musics,
+  videos: state.video.videos
 });
 
-export default connect(mapStateToProps, { getChannel, getChannelVideos })(ChannelRoom);
+export default connect(mapStateToProps, {
+  getChannel,
+  getChannelVideos,
+  updateVideoPlayedAt
+})(ChannelRoom);
