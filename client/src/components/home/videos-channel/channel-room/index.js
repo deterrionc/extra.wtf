@@ -7,13 +7,15 @@ import PropTypes from 'prop-types';
 import {
   getChannel,
   getChannelVideos,
-  updateVideoPlayedAt
+  updateVideoPlayedAt,
+  getNextVideo
 } from '../../../../actions/channel';
 
 const ChannelRoom = ({
   getChannel,
   channel,
   getChannelVideos,
+  getNextVideo,
   updateVideoPlayedAt,
   videos
 }) => {
@@ -21,12 +23,10 @@ const ChannelRoom = ({
   const channelID = params.id;
 
   const [channelVideos, setChannelVideos] = useState([]);
-  console.log(channelVideos)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [nextVideoIndex, setNextVideoIndex] = useState(1);
 
-  const [currentVideoName, setCurrentVideoName] = useState('');
-
-  const videoRef = useRef(null);
+  const videoRefs = useRef([null, null]);
 
   useEffect(() => {
     getChannelVideos();
@@ -37,38 +37,54 @@ const ChannelRoom = ({
   }, [getChannel, channelID]);
 
   useEffect(() => {
-    videos.length > 0 && setChannelVideos(videos);
-    videos.length > 0 && setCurrentVideoIndex(0);
-    videos.length > 0 && setCurrentVideoName(videos[0].name);
+    if (videos.length > 0) {
+      setChannelVideos(videos);
+      setCurrentVideoIndex(0);
+      setNextVideoIndex(1);
+    }
   }, [videos]);
 
-  const handleVideoEnd = async () => {
-    console.log(channelVideos[currentVideoIndex]._id)
-    console.log(channelVideos[currentVideoIndex].name)
-    await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id);
-  
-    // move to the next video, which should already be pre-fetched
-    const nextVideoIndex = (currentVideoIndex + 1) % channelVideos.length;
-  
-    // now pre-fetch the video after the next one, if it hasn't been fetched already
-    if (nextVideoIndex === channelVideos.length - 1) {
-      let newVideos = await getChannelVideos();
-      console.log(newVideos[0]._id)
-      console.log(newVideos[0].name)
-      setChannelVideos(newVideos);
-      setCurrentVideoIndex(0)
-      setCurrentVideoName(newVideos[0].name)
-      videoRef.current.src = `/${newVideos[0]['path']}`;
-    } else {
-      setCurrentVideoIndex(nextVideoIndex);
-      setCurrentVideoName(channelVideos[nextVideoIndex]['name']);
-      videoRef.current.src = `/${channelVideos[nextVideoIndex]['path']}`;
+  useEffect(() => {
+    if (channelVideos.length === 1) {
+      getNextVideo(channelVideos[0]._id).then((nextVideo) => {
+        setChannelVideos((oldVideos) => [...oldVideos, nextVideo]);
+      });
     }
-  
-    // ensure the new video plays immediately
-    if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play();
+  }, [channelVideos, getNextVideo]);
+
+  const handleVideoEnd = async () => {
+    console.log(channelVideos)
+    await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id);
+
+    setCurrentVideoIndex((prevIndex) => prevIndex + 1);
+    setNextVideoIndex((prevIndex) => prevIndex + 1);
+
+    const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
+    const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
+
+    currentVideoRef.style.display = 'none';
+    nextVideoRef.style.display = 'block';
+
+    if (nextVideoIndex === channelVideos.length - 1) {
+      getNextVideo(channelVideos[nextVideoIndex]._id).then((nextVideo) => {
+        setChannelVideos((oldVideos) => [...oldVideos, nextVideo]);
+      });
+    }
+
+    if (nextVideoRef.src !== `/${channelVideos[nextVideoIndex]?.path}`) {
+      nextVideoRef.src = `/${channelVideos[nextVideoIndex]?.path}`;
+      nextVideoRef.load();
+    }
+
+    nextVideoRef.play().catch((error) => console.log(error));
+
+    if (channelVideos.length > 5) {
+      let _channelVideos = [...channelVideos]
+      _channelVideos.shift()
+      console.log(channelVideos)
+      setChannelVideos(_channelVideos)
+      setCurrentVideoIndex((prevIndex) => prevIndex - 1);
+      setNextVideoIndex((prevIndex) => prevIndex - 1);
     }
   };
 
@@ -81,18 +97,35 @@ const ChannelRoom = ({
       </Link>
 
       {channelVideos.length > 0 && (
-        <video
-          ref={videoRef}
-          onEnded={handleVideoEnd}
-          className="fixed z-10 inset-0 w-screen h-screen object-cover"
-          autoPlay
-          controls={true}
-        >
-          <source
-            src={`/${channelVideos[currentVideoIndex]['path']}`}
-            type="video/mp4"
-          />
-        </video>
+        <>
+          <video
+            ref={(el) => (videoRefs.current[0] = el)}
+            onEnded={handleVideoEnd}
+            className="fixed z-10 inset-0 w-screen h-screen object-cover"
+            autoPlay
+            controls={true}
+            style={{ display: 'block' }}
+          >
+            <source
+              src={`/${channelVideos[currentVideoIndex]?.path}`}
+              type="video/mp4"
+            />
+          </video>
+
+          <video
+            ref={(el) => (videoRefs.current[1] = el)}
+            onEnded={handleVideoEnd}
+            className="fixed z-10 inset-0 w-screen h-screen object-cover"
+            autoPlay
+            controls={true}
+            style={{ display: 'none' }}
+          >
+            <source
+              src={`/${channelVideos[nextVideoIndex]?.path}`}
+              type="video/mp4"
+            />
+          </video>
+        </>
       )}
 
       <div className="absolute right-0 bottom-5 p-3 z-20 bg-white bg-opacity-50">
@@ -103,7 +136,9 @@ const ChannelRoom = ({
             className="w-24 sm:w-36 lg:w-48 aspect-[3/2]"
           />
         </div>
-        <div className="text-center mb-0">{currentVideoName}</div>
+        <div className="text-center mb-0">
+          {channelVideos[currentVideoIndex]?.name}
+        </div>
       </div>
     </div>
   );
@@ -112,8 +147,10 @@ const ChannelRoom = ({
 ChannelRoom.propTypes = {
   getChannel: PropTypes.func.isRequired,
   getChannelVideos: PropTypes.func.isRequired,
+  getNextVideo: PropTypes.func.isRequired,
   updateVideoPlayedAt: PropTypes.func.isRequired,
-  channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired
+  channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired,
+  videos: PropTypes.array.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -124,5 +161,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   getChannel,
   getChannelVideos,
+  getNextVideo,
   updateVideoPlayedAt
 })(ChannelRoom);

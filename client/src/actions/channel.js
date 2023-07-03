@@ -88,3 +88,11 @@ export const updateVideoPlayedAt = videoID => async dispatch => {
     return true
   }
 }
+
+export const getNextVideo = videoID => async dispatch => {
+  const res = await api.get(`/channels/get-next-video/${videoID}`)
+
+  if (res.data.success) {
+    return res.data.video
+  }
+}

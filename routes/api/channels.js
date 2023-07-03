@@ -212,8 +212,38 @@ router.get('/update-video-playedAt/:id', async (req, res) => {
     playedAt: new Date()
   }, {new: true})
 
+  let video = await Video.findById(videoID)
+  let category = await Category.findById(video.category).populate(['videos']);
+  let videos = category.videos.sort((v1, v2) => v1.playedAt - v2.playedAt)
+  videos.forEach(v => {
+    console.log(v.name)
+  })
+
   res.json({
     success: true
+  })
+})
+
+router.get('/get-next-video/:id', async (req, res) => {
+  const videoID = req.params.id
+  console.log(videoID)
+
+  const currentVideo = await Video.findById(videoID)
+  const currentCategory = await Category.findById(currentVideo.category).populate(['videos']);
+
+  // console.log(currentCategory)
+  let _video
+  if (currentCategory.videos.length === 1) {
+    _video = currentCategory.videos[0]
+  } else {
+    let sortedVideos = currentCategory.videos.filter(v => String(v._id) !== videoID).sort((v1, v2) => v1.playedAt - v2.playedAt);
+    // console.log(sortedVideos)
+    _video = sortedVideos[0];
+  }
+
+  res.json({
+    success: true,
+    video: _video
   })
 })
 
