@@ -72,8 +72,6 @@ router.get('/get-channel-videos', async (req, res) => {
   let currentTime = new Date();
   let currentMinute = currentTime.getMinutes();
   let currentHour = currentTime.getHours();
-  // let _newsVideos = [];
-  // let _musicVideos = [];
   let _videos = [];
 
   if (currentHour >= 6 && currentHour <= 18) {
@@ -205,31 +203,6 @@ router.get('/get-channel-videos', async (req, res) => {
       }
     }
   }
-
-  // console.log(currentTime.getMinutes())
-
-  // const _newsCategory = await Category.find({ type: 'news' }).populate(['videos']);
-  // const _musicCategory = await Category.find({ type: 'music' }).populate(['videos']);
-
-  // _newsCategory.forEach(cate => {
-  //   cate.videos.forEach(video => {
-  //     _newsVideos.push(video)
-  //   })
-  // })
-
-  // _musicCategory.forEach(cate => {
-  //   cate.videos.forEach(video => {
-  //     _musicVideos.push(video)
-  //   })
-  // })
-
-  // let duration = await getVideoDuration(_newsVideos[0].path)
-
-  // res.json({
-  //   success: true,
-  //   newss: _newsVideos,
-  //   musics: _musicVideos
-  // });
 });
 
 router.get('/update-video-playedAt/:id', async (req, res) => {

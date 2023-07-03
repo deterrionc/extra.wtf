@@ -15,14 +15,13 @@ const ChannelRoom = ({
   channel,
   getChannelVideos,
   updateVideoPlayedAt,
-  musics,
-  newss,
   videos
 }) => {
   const params = useParams();
   const channelID = params.id;
 
   const [channelVideos, setChannelVideos] = useState([]);
+  console.log(channelVideos)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   const [currentVideoName, setCurrentVideoName] = useState('');
@@ -82,7 +81,7 @@ const ChannelRoom = ({
           onEnded={handleVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           autoPlay
-          controls={false}
+          controls={true}
         >
           <source
             src={`/${channelVideos[currentVideoIndex]['path']}`}
@@ -114,8 +113,6 @@ ChannelRoom.propTypes = {
 
 const mapStateToProps = (state) => ({
   channel: state.channel.channel,
-  newss: state.video.newss,
-  musics: state.video.musics,
   videos: state.video.videos
 });
 
