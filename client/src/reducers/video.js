@@ -12,7 +12,9 @@ const initialState = {
   musics: [],
   music: {},
   videos: [],
-  currentMinute: new Date().getMinutes()
+  currentMinute: new Date().getMinutes(),
+  currentSecond: new Date().getSeconds(),
+  currentCategory: ""
 };
 
 const newsReducer = (state = initialState, action) => {
@@ -47,7 +49,8 @@ const newsReducer = (state = initialState, action) => {
       return {
         ...state,
         videos: payload.videos,
-        currentMinute: payload.currentMinute
+        currentMinute: payload.currentMinute,
+        currentCategory: payload.currentCategory
       };
     }
     default: {

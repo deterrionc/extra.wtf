@@ -14,6 +14,9 @@ import {
 const ChannelRoom = ({
   getChannel,
   channel,
+  currentCategory,
+  currentMinute,
+  currentSecond,
   getChannelVideos,
   getNextVideo,
   updateVideoPlayedAt,
@@ -23,14 +26,90 @@ const ChannelRoom = ({
   const channelID = params.id;
 
   const [channelVideos, setChannelVideos] = useState([]);
+  const [channelVideoLength, setChannelVideoLength] = useState(0)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [nextVideoIndex, setNextVideoIndex] = useState(1);
 
   const videoRefs = useRef([null, null]);
 
+  const intervalIdRef = useRef(null);
+  const [minuteDifference, setMinuteDifference] = useState(0);
+  const [secondDifference, setSecondDifference] = useState(0);
+
+  const [fetched, setFetched] = useState(false)
+
   useEffect(() => {
     getChannelVideos();
   }, [getChannelVideos]);
+
+  useEffect(() => {
+    const now = new Date();
+    const clientMinutes = now.getMinutes();
+    const serverMinutes = currentMinute % 60;
+    const clientSeconds = now.getSeconds()
+    const serverSeconds = currentSecond % 60;
+    setMinuteDifference((clientMinutes - serverMinutes + 60) % 60);
+    setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
+    console.log(`serverMinute ${serverMinutes}`)
+    console.log(`clientMinute ${clientMinutes}`)
+    console.log(`serverSecond ${serverSeconds}`)
+    console.log(`clientSecond ${clientSeconds}`)
+  }, [currentMinute, currentSecond]);
+
+
+  // new useEffect for setting up the timer
+  useEffect(() => {
+    // clear old timer
+    if (intervalIdRef.current) {
+      clearInterval(intervalIdRef.current);
+    }
+
+    intervalIdRef.current = setInterval(() => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = (now.getMinutes() - minuteDifference) % 60;
+      const seconds = now.getSeconds() - secondDifference;
+
+      if (hours >= 6 && hours < 18) {
+        if ((minutes === 0 || minutes === 25 || minutes === 30 || minutes === 55) && seconds > 0 && !fetched) {
+          stopAllVideos();
+          getChannelVideos();
+          setFetched(true)
+        }
+      } else {
+        if ((minutes === 0 || minutes === 30 || minutes === 55) && seconds > 0 && !fetched) {
+          stopAllVideos();
+          getChannelVideos();
+          setFetched(true)
+        }
+      }
+
+      if ((minutes === 26 || minutes === 31 || minutes === 56 || minutes === 1) && fetched) {
+        setFetched(false)
+      }
+    }, 5 * 1000); // check every minute
+
+    // cleanup function
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+    };
+  }, [getChannelVideos, minuteDifference, secondDifference, fetched]);
+
+  const stopAllVideos = () => {
+    videoRefs.current.forEach((ref) => {
+      if (ref) {
+        ref.pause();
+        ref.src = '';
+      }
+    });
+
+    setChannelVideos([]);
+    setCurrentVideoIndex(0);
+    setNextVideoIndex(1);
+    videoRefs.current = [null, null];
+  };
 
   useEffect(() => {
     getChannel(channelID);
@@ -39,6 +118,7 @@ const ChannelRoom = ({
   useEffect(() => {
     if (videos.length > 0) {
       setChannelVideos(videos);
+      setChannelVideoLength(videos.length)
       setCurrentVideoIndex(0);
       setNextVideoIndex(1);
     }
@@ -53,40 +133,48 @@ const ChannelRoom = ({
   }, [channelVideos, getNextVideo]);
 
   const handleVideoEnd = async () => {
-    console.log(channelVideos)
     await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id);
-
+  
     setCurrentVideoIndex((prevIndex) => prevIndex + 1);
     setNextVideoIndex((prevIndex) => prevIndex + 1);
-
+  
     const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
     const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
-
+  
     currentVideoRef.style.display = 'none';
     nextVideoRef.style.display = 'block';
-
+  
     if (nextVideoIndex === channelVideos.length - 1) {
       getNextVideo(channelVideos[nextVideoIndex]._id).then((nextVideo) => {
         setChannelVideos((oldVideos) => [...oldVideos, nextVideo]);
       });
     }
-
+  
     if (nextVideoRef.src !== `/${channelVideos[nextVideoIndex]?.path}`) {
       nextVideoRef.src = `/${channelVideos[nextVideoIndex]?.path}`;
       nextVideoRef.load();
     }
-
+  
     nextVideoRef.play().catch((error) => console.log(error));
-
-    if (channelVideos.length > 5) {
-      let _channelVideos = [...channelVideos]
-      _channelVideos.shift()
-      console.log(channelVideos)
-      setChannelVideos(_channelVideos)
+  
+    if (currentCategory !== 'news' && channelVideos.length > 5) {
+      let _channelVideos = [...channelVideos];
+      _channelVideos.shift();
+      setChannelVideos(_channelVideos);
       setCurrentVideoIndex((prevIndex) => prevIndex - 1);
       setNextVideoIndex((prevIndex) => prevIndex - 1);
     }
+
+    console.log(channelVideos.length)
+    console.log(`nextVideoIndex ${nextVideoIndex}`)
+  
+    // Check if all videos have been played and current category is "news"
+    if (channelVideos.length > channelVideoLength && currentCategory === 'news' && nextVideoIndex === channelVideos.length - 1) {
+      stopAllVideos();
+      getChannelVideos();
+    }
   };
+  
 
   return (
     <div className="relative z-0 min-h-screen">
@@ -155,7 +243,10 @@ ChannelRoom.propTypes = {
 
 const mapStateToProps = (state) => ({
   channel: state.channel.channel,
-  videos: state.video.videos
+  videos: state.video.videos,
+  currentCategory: state.video.currentCategory,
+  currentMinute: state.video.currentMinute,
+  currentSecond: state.video.currentSecond
 });
 
 export default connect(mapStateToProps, {
