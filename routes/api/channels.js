@@ -105,9 +105,7 @@ router.get('/get-channel-videos', async (req, res) => {
         // Return Music
         const _music_long = await Category.findOne({name: 'music_long'}).populate(['videos']); 
         let temp_videos = _music_long.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
-        console.log(temp_videos)
         _videos.push(temp_videos[0])
-        console.log(_videos)
 
         res.json({
           success: true,
@@ -207,6 +205,8 @@ router.get('/get-channel-videos', async (req, res) => {
 
 router.get('/update-video-playedAt/:id', async (req, res) => {
   const videoID = req.params.id
+
+  console.log(videoID)
 
   await Video.findByIdAndUpdate(videoID, {
     playedAt: new Date()

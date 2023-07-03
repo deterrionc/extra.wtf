@@ -76,6 +76,8 @@ export const getChannelVideos = () => async (dispatch) => {
       type: VIDEOS_LOADED,
       payload: res.data
     });
+
+    return res.data.videos
   }
 };
 

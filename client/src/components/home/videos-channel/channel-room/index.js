@@ -42,26 +42,31 @@ const ChannelRoom = ({
     videos.length > 0 && setCurrentVideoName(videos[0].name);
   }, [videos]);
 
-  const handleVideoEnd = async() => {
-    const currentIndex = channelVideos.findIndex(
-      (video) => video['path'] === channelVideos[currentVideoIndex]['path']
-    );
-    let nextVideoIndex;
-
-    await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id)
-
-    if (currentIndex < channelVideos.length - 1) {
-      nextVideoIndex = currentIndex + 1;
+  const handleVideoEnd = async () => {
+    console.log(channelVideos[currentVideoIndex]._id)
+    console.log(channelVideos[currentVideoIndex].name)
+    await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id);
+  
+    // move to the next video, which should already be pre-fetched
+    const nextVideoIndex = (currentVideoIndex + 1) % channelVideos.length;
+  
+    // now pre-fetch the video after the next one, if it hasn't been fetched already
+    if (nextVideoIndex === channelVideos.length - 1) {
+      let newVideos = await getChannelVideos();
+      console.log(newVideos[0]._id)
+      console.log(newVideos[0].name)
+      setChannelVideos(newVideos);
+      setCurrentVideoIndex(0)
+      setCurrentVideoName(newVideos[0].name)
+      videoRef.current.src = `/${newVideos[0]['path']}`;
     } else {
-      await getChannelVideos()
-      nextVideoIndex = 0;
-    }
-
-    setCurrentVideoIndex(nextVideoIndex);
-    setCurrentVideoName(channelVideos[nextVideoIndex]['name']);
-
-    if (videoRef.current) {
+      setCurrentVideoIndex(nextVideoIndex);
+      setCurrentVideoName(channelVideos[nextVideoIndex]['name']);
       videoRef.current.src = `/${channelVideos[nextVideoIndex]['path']}`;
+    }
+  
+    // ensure the new video plays immediately
+    if (videoRef.current) {
       videoRef.current.load();
       videoRef.current.play();
     }
