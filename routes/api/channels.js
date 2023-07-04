@@ -165,6 +165,14 @@ router.get('/get-channel-videos', async (req, res) => {
           .slice(0, 3);
         _news_int_videos.forEach((v) => _videos.push(v));
 
+        const _music_long = await Category.findOne({
+          name: 'music_long'
+        }).populate(['videos']);
+        let temp_videos = _music_long.videos.sort(
+          (v1, v2) => v1.playedAt - v2.playedAt
+        );
+        _videos.push(temp_videos[0]);
+
         console.log("---------------")
         _videos.forEach(v => console.log(v.name))
         console.log("---------------")
@@ -267,6 +275,14 @@ router.get('/get-channel-videos', async (req, res) => {
           .sort((v1, v2) => v1.playedAt - v2.playedAt)
           .slice(0, 3);
         _news_int_videos.forEach((v) => _videos.push(v));
+
+        const _music_long = await Category.findOne({
+          name: 'music_long'
+        }).populate(['videos']);
+        let temp_videos = _music_long.videos.sort(
+          (v1, v2) => v1.playedAt - v2.playedAt
+        );
+        _videos.push(temp_videos[0]);
 
         res.json({
           success: true,

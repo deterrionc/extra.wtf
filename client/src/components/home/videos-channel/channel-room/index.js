@@ -156,23 +156,31 @@ const ChannelRoom = ({
     }
   
     nextVideoRef.play().catch((error) => console.log(error));
-  
-    if (currentCategory !== 'news' && channelVideos.length > 5) {
+
+    if (channelVideos.length > 15) {
       let _channelVideos = [...channelVideos];
       _channelVideos.shift();
       setChannelVideos(_channelVideos);
       setCurrentVideoIndex((prevIndex) => prevIndex - 1);
       setNextVideoIndex((prevIndex) => prevIndex - 1);
     }
-
-    console.log(channelVideos.length)
-    console.log(`nextVideoIndex ${nextVideoIndex}`)
   
-    // Check if all videos have been played and current category is "news"
-    if (channelVideos.length > channelVideoLength && currentCategory === 'news' && nextVideoIndex === channelVideos.length - 1) {
-      stopAllVideos();
-      getChannelVideos();
-    }
+    // if (currentCategory !== 'news' && channelVideos.length > 5) {
+    //   let _channelVideos = [...channelVideos];
+    //   _channelVideos.shift();
+    //   setChannelVideos(_channelVideos);
+    //   setCurrentVideoIndex((prevIndex) => prevIndex - 1);
+    //   setNextVideoIndex((prevIndex) => prevIndex - 1);
+    // }
+
+    // console.log(channelVideos.length)
+    // console.log(`nextVideoIndex ${nextVideoIndex}`)
+  
+    // // Check if all videos have been played and current category is "news"
+    // if (channelVideos.length > channelVideoLength && currentCategory === 'news' && nextVideoIndex === channelVideos.length - 1) {
+    //   stopAllVideos();
+    //   getChannelVideos();
+    // }
   };
   
 
