@@ -173,9 +173,9 @@ router.get('/get-channel-videos', async (req, res) => {
         );
         _videos.push(temp_videos[0]);
 
-        console.log("---------------")
-        _videos.forEach(v => console.log(v.name))
-        console.log("---------------")
+        // console.log("---------------")
+        // _videos.forEach(v => console.log(v.name))
+        // console.log("---------------")
 
         res.json({
           success: true,
@@ -299,7 +299,7 @@ router.get('/get-channel-videos', async (req, res) => {
 router.get('/update-video-playedAt/:id', async (req, res) => {
   const videoID = req.params.id;
 
-  console.log(videoID);
+  // console.log(videoID);
 
   await Video.findByIdAndUpdate(
     videoID,
@@ -309,12 +309,12 @@ router.get('/update-video-playedAt/:id', async (req, res) => {
     { new: true }
   );
 
-  let video = await Video.findById(videoID);
-  let category = await Category.findById(video.category).populate(['videos']);
-  let videos = category.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
-  videos.forEach((v) => {
-    console.log(v.name);
-  });
+  // let video = await Video.findById(videoID);
+  // let category = await Category.findById(video.category).populate(['videos']);
+  // let videos = category.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+  // videos.forEach((v) => {
+  //   console.log(v.name);
+  // });
 
   res.json({
     success: true
@@ -323,7 +323,7 @@ router.get('/update-video-playedAt/:id', async (req, res) => {
 
 router.get('/get-next-video/:id', async (req, res) => {
   const videoID = req.params.id;
-  console.log(videoID);
+  // console.log(videoID);
 
   const currentVideo = await Video.findById(videoID);
   const currentCategory = await Category.findById(

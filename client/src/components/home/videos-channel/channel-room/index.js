@@ -50,10 +50,10 @@ const ChannelRoom = ({
     const serverSeconds = currentSecond % 60;
     setMinuteDifference((clientMinutes - serverMinutes + 60) % 60);
     setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
-    console.log(`serverMinute ${serverMinutes}`)
-    console.log(`clientMinute ${clientMinutes}`)
-    console.log(`serverSecond ${serverSeconds}`)
-    console.log(`clientSecond ${clientSeconds}`)
+    // console.log(`serverMinute ${serverMinutes}`)
+    // console.log(`clientMinute ${clientMinutes}`)
+    // console.log(`serverSecond ${serverSeconds}`)
+    // console.log(`clientSecond ${clientSeconds}`)
   }, [currentMinute, currentSecond]);
 
 
@@ -199,7 +199,7 @@ const ChannelRoom = ({
             onEnded={handleVideoEnd}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: 'block' }}
           >
             <source
@@ -213,7 +213,7 @@ const ChannelRoom = ({
             onEnded={handleVideoEnd}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: 'none' }}
           >
             <source
