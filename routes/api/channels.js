@@ -296,6 +296,55 @@ router.get('/get-channel-videos', async (req, res) => {
   }
 });
 
+router.get('/get-videos-by-category', async (req, res) => {
+  const newsCategories = await Category.find({ type: 'news' }).populate(
+    'videos',
+    'name path playedAt'
+  );
+  const musicCategories = await Category.find({ type: 'music' }).populate(
+    'videos',
+    'name path playedAt'
+  );
+  // console.log(categories);
+  const categories = { news: newsCategories, music: musicCategories };
+
+  let formattedCategories = formatCategories(categories);
+
+  res.json({
+    success: true,
+    categories: formattedCategories
+  });
+});
+
+function formatCategories(categories) {
+  let formattedCategories = { news: {}, music: {} };
+
+  // Process news
+  for (let category of categories.news) {
+    formattedCategories.news[category.name] = category.videos.map(video => {
+      return {
+        name: video.name,
+        path: video.path,
+        playedAt: video.playedAt
+      };
+    });
+  }
+
+  // Process music
+  for (let category of categories.music) {
+    formattedCategories.music[category.name] = category.videos.map(video => {
+      return {
+        name: video.name,
+        path: video.path,
+        playedAt: video.playedAt
+      };
+    });
+  }
+
+  return formattedCategories;
+}
+
+
 router.get('/update-video-playedAt/:id', async (req, res) => {
   const videoID = req.params.id;
 
@@ -376,5 +425,14 @@ router.delete('/delete-channel/:id', async (req, res) => {
     success: true
   });
 });
+
+router.get('/get-last-played-videos', async (req, res) => {
+  const videos = await Video.find().populate(['category']).sort({ playedAt: -1 }).limit(10);
+
+  res.json({
+    success: true,
+    videos
+  })
+})
 
 module.exports = router;

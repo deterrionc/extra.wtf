@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaIcon } from '../../../../container/atoms/FaIcon';
+import { FaIcon } from '../../../../../container/atoms/FaIcon';
 
 const VideoHeader = () => {
   return (

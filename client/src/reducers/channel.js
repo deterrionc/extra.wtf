@@ -1,8 +1,9 @@
-import { CHANNELS_LOADED, CHANNEL_LOADED } from "../actions/types";
+import { CHANNELS_LOADED, CHANNEL_LOADED, LAST_VIDEOS_LOADED } from "../actions/types";
 
 const initialState = {
   channels: [],
-  channel: {}
+  channel: {},
+  lastVideos: [],
 }
 
 const channelReducer = (state = initialState, action) => {
@@ -19,6 +20,12 @@ const channelReducer = (state = initialState, action) => {
       return {
         ...state,
         channel: payload
+      }
+    }
+    case LAST_VIDEOS_LOADED: {
+      return {
+        ...state,
+        lastVideos: payload
       }
     }
     default: {
