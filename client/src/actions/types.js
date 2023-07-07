@@ -34,3 +34,4 @@ export const VIDEO_LOADED = 'VIDEO_LOADED';
 
 // LOG
 export const LOGS_LOADED = 'LOGS_LOADED';
+export const ADMIN_LOGS_LOADED = 'ADMIN_LOGS_LOADED';

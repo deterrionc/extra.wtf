@@ -408,7 +408,7 @@ router.get('/update-video-playedAt/:id', async (req, res) => {
     video: video.name,
     category: video.category.name,
     ip: ipAddress,
-    browswer: deviceInfo.browser.name,
+    browser: deviceInfo.browser.name,
     os: `${deviceInfo.os.name} ${deviceInfo.os.version}`
   })
 
@@ -485,7 +485,7 @@ router.delete('/delete-channel/:id', async (req, res) => {
   });
 });
 
-router.get('/get-last-played-videos', async (req, res) => {
+router.get('/get-logs', async (req, res) => {
   const logs = await PlayLog.find().sort({ date: -1 }).limit(50)
 
   res.json({
@@ -494,11 +494,17 @@ router.get('/get-last-played-videos', async (req, res) => {
   });
 });
 
-function parseDeviceInfo(userAgent) {
-  // Implement your custom logic here to parse the user-agent string
-  // You can use existing libraries like 'express-useragent' or 'ua-parser-js'
+router.get('/get-admin-logs', async (req, res) => {
+  const ipAddress = req.headers['x-forwarded-for']
+  const logs = await PlayLog.find({ ip: ipAddress }).sort({ date: -1 }).limit(50)
 
-  // Example: extracting browser and operating system
+  res.json({
+    success: true,
+    logs
+  });
+});
+
+function parseDeviceInfo(userAgent) {
   const uaParser = require('ua-parser-js');
   const parsedInfo = uaParser(userAgent);
   const { browser, os } = parsedInfo;

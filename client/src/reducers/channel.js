@@ -1,9 +1,10 @@
-import { CHANNELS_LOADED, CHANNEL_LOADED, LOGS_LOADED } from "../actions/types";
+import { ADMIN_LOGS_LOADED, CHANNELS_LOADED, CHANNEL_LOADED, LOGS_LOADED } from "../actions/types";
 
 const initialState = {
   channels: [],
   channel: {},
   logs: [],
+  adminLogs: [],
 }
 
 const channelReducer = (state = initialState, action) => {
@@ -26,6 +27,12 @@ const channelReducer = (state = initialState, action) => {
       return {
         ...state,
         logs: payload
+      }
+    }
+    case ADMIN_LOGS_LOADED: {
+      return {
+        ...state,
+        adminLogs: payload
       }
     }
     default: {

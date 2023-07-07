@@ -1,20 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  getLastPlayedVideos,
+  getLogs,
+  getAdminLogs,
   getChannelVideos
 } from '../../../actions/channel';
 
 const Dashboard = ({
   getChannelVideos,
-  getLastPlayedVideos,
+  getLogs,
+  getAdminLogs,
   logs,
+  adminLogs,
   videos
 }) => {
+  const [showLogType, setShowLogType] = React.useState('all')
+
   React.useEffect(() => {
-    getLastPlayedVideos();
+    getLogs();
+    getAdminLogs();
     getChannelVideos();
-  }, [getLastPlayedVideos, getChannelVideos]);
+  }, [getLogs, getChannelVideos, getAdminLogs]);
 
   return (
     <React.Fragment>
@@ -51,6 +57,23 @@ const Dashboard = ({
         </div>
         <br />
         <h2 className="text-xl font-medium mb-4">Last Played 10 Videos</h2>
+        <div className="flex items-center justify-end mb-4">
+          {showLogType === 'all' ?
+            <button
+              className="py-2 px-3 rounded bg-teal-900 text-white"
+              onClick={() => setShowLogType('admin')}
+            >
+              Show Mine
+            </button>
+            :
+            <button
+              onClick={() => setShowLogType('all')}
+              className="py-2 px-3 rounded bg-lime-900 text-white"
+            >
+              Show All
+            </button>
+          }
+        </div>
         <div className="overflow-x-auto">
           <table className="table-auto w-full min-w-max md:table">
             <thead>
@@ -76,26 +99,49 @@ const Dashboard = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="text-gray-600 text-sm font-light md:table-row-group">
-              {logs.map((video, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-200 hover:bg-gray-100"
-                >
-                  <td className="py-3 px-6 text-left whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="py-3 px-6 text-left">{video.video}</td>
-                  <td className="py-3 px-6 text-left">{video.category}</td>
-                  <td className="py-3 px-6 text-left">
-                    {video.date.slice(0, 19)}
-                  </td>
-                  <td className="py-3 px-6 text-left">{video.ip}</td>
-                  <td className="py-3 px-6 text-left">{video.browser}</td>
-                  <td className="py-3 px-6 text-left">{video.os}</td>
-                </tr>
-              ))}
-            </tbody>
+            {showLogType === 'all' ?
+              <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+                {logs.map((log, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-100"
+                  >
+                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.video}</td>
+                    <td className="py-3 px-6 text-left">{log.category}</td>
+                    <td className="py-3 px-6 text-left">
+                      {log.date.slice(0, 19)}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.ip}</td>
+                    <td className="py-3 px-6 text-left">{log.browser}</td>
+                    <td className="py-3 px-6 text-left">{log.os}</td>
+                  </tr>
+                ))}
+              </tbody>
+              :
+              <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+                {adminLogs.map((log, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-100"
+                  >
+                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.video}</td>
+                    <td className="py-3 px-6 text-left">{log.category}</td>
+                    <td className="py-3 px-6 text-left">
+                      {log.date.slice(0, 19)}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.ip}</td>
+                    <td className="py-3 px-6 text-left">{log.browser}</td>
+                    <td className="py-3 px-6 text-left">{log.os}</td>
+                  </tr>
+                ))}
+              </tbody>
+            }
           </table>
         </div>
       </div>
@@ -105,10 +151,12 @@ const Dashboard = ({
 
 const mapStateToProps = (state) => ({
   logs: state.channel.logs,
+  adminLogs: state.channel.adminLogs,
   videos: state.video.videos
 });
 
 export default connect(mapStateToProps, {
-  getLastPlayedVideos,
+  getLogs,
+  getAdminLogs,
   getChannelVideos
 })(Dashboard);

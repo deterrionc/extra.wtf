@@ -1,6 +1,7 @@
 import api from '../utils/api';
 import formApi from '../utils/formApi';
 import {
+  ADMIN_LOGS_LOADED,
   CHANNELS_LOADED,
   CHANNEL_LOADED,
   LOGS_LOADED,
@@ -98,13 +99,24 @@ export const getNextVideo = videoID => async dispatch => {
   }
 }
 
-export const getLastPlayedVideos = () => async dispatch => {
-  const res = await api.get('/channels/get-last-played-videos')
+export const getLogs = () => async dispatch => {
+  const res = await api.get('/channels/get-logs')
 
   if (res.data.success) {
     dispatch({
       type: LOGS_LOADED,
       payload: res.data.logs
     });
+  }
+}
+
+export const getAdminLogs = () => async dispatch => {
+  const res = await api.get('/channels/get-admin-logs')
+
+  if (res.data.success) {
+    dispatch({
+      type: ADMIN_LOGS_LOADED,
+      payload: res.data.logs
+    })
   }
 }
