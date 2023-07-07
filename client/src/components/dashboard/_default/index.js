@@ -56,7 +56,7 @@ const Dashboard = ({
           </table>
         </div>
         <br />
-        <h2 className="text-xl font-medium mb-4">Last Played 10 Videos</h2>
+        <h2 className="text-xl font-medium mb-4">Last Played 50 Videos</h2>
         <div className="flex items-center justify-end mb-4">
           {showLogType === 'all' ?
             <button
