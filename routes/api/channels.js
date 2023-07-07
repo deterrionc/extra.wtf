@@ -69,40 +69,16 @@ router.get("/get-channel/:id", async (req, res) => {
   });
 });
 
-router.get("/get-channel-videos", async (req, res) => {
-  let currentTime = new Date();
-  let currentMinute = currentTime.getMinutes();
-  let currentHour = currentTime.getHours();
-  let currentSecond = currentTime.getSeconds();
-  let currentCategory = "music";
-  let videos = [];
-
-  if (currentHour >= 6 && currentHour <= 18) {
-    // Day time
-    if (currentMinute % 30 >= 5) {
-      videos = await getMusicVideos(videos);
-    } else {
-      videos = await getNewsVideos(videos, "day");
-      currentCategory = "news";
-    }
-  } else {
-    // Night Time
-    if (currentMinute % 60 >= 5) {
-      videos = await getMusicVideos(videos);
-    } else {
-      videos = await getNewsVideos(videos, "night");
-      currentCategory = "news";
-    }
-  }
+router.get("/get-channel-by-slug/:slug", async (req, res) => {
+  const slug = req.params.slug;
+  const channel = await Channel.findOne({slug});
 
   res.json({
     success: true,
-    videos,
-    currentMinute,
-    currentSecond,
-    currentCategory,
+    channel,
   });
 });
+
 
 router.post(
   "/update-channel/:id",
@@ -163,6 +139,41 @@ router.delete("/delete-channel/:id", async (req, res) => {
 
   res.json({
     success: true,
+  });
+});
+
+router.get("/get-channel-videos", async (req, res) => {
+  let currentTime = new Date();
+  let currentMinute = currentTime.getMinutes();
+  let currentHour = currentTime.getHours();
+  let currentSecond = currentTime.getSeconds();
+  let currentCategory = "music";
+  let videos = [];
+
+  if (currentHour >= 6 && currentHour <= 18) {
+    // Day time
+    if (currentMinute % 30 >= 5) {
+      videos = await getMusicVideos(videos);
+    } else {
+      videos = await getNewsVideos(videos, "day");
+      currentCategory = "news";
+    }
+  } else {
+    // Night Time
+    if (currentMinute % 60 >= 5) {
+      videos = await getMusicVideos(videos);
+    } else {
+      videos = await getNewsVideos(videos, "night");
+      currentCategory = "news";
+    }
+  }
+
+  res.json({
+    success: true,
+    videos,
+    currentMinute,
+    currentSecond,
+    currentCategory,
   });
 });
 

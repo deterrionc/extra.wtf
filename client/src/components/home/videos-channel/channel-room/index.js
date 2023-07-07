@@ -5,14 +5,14 @@ import { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  getChannel,
+  getChannelBySlug,
   getChannelVideos,
   updateVideoPlayedAt,
   getNextVideo
 } from '../../../../actions/channel';
 
 const ChannelRoom = ({
-  getChannel,
+  getChannelBySlug,
   channel,
   currentCategory,
   currentMinute,
@@ -23,7 +23,7 @@ const ChannelRoom = ({
   videos
 }) => {
   const params = useParams();
-  const channelID = params.id;
+  const channelSlug = params.slug;
 
   const [channelVideos, setChannelVideos] = useState([]);
   // const [channelVideoLength, setChannelVideoLength] = useState(0)
@@ -107,8 +107,8 @@ const ChannelRoom = ({
   };
 
   useEffect(() => {
-    getChannel(channelID);
-  }, [getChannel, channelID]);
+    getChannelBySlug(channelSlug);
+  }, [getChannelBySlug, channelSlug]);
 
   useEffect(() => {
     if (videos.length > 0) {
@@ -218,7 +218,7 @@ const ChannelRoom = ({
 };
 
 ChannelRoom.propTypes = {
-  getChannel: PropTypes.func.isRequired,
+  getChannelBySlug: PropTypes.func.isRequired,
   getChannelVideos: PropTypes.func.isRequired,
   getNextVideo: PropTypes.func.isRequired,
   updateVideoPlayedAt: PropTypes.func.isRequired,
@@ -235,7 +235,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  getChannel,
+  getChannelBySlug,
   getChannelVideos,
   getNextVideo,
   updateVideoPlayedAt

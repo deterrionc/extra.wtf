@@ -6,7 +6,7 @@ const VideoChannelContainer = () => {
   return (
     <Routes>
       <Route path='/' element={<VideoChannels />} />
-      <Route path='/:id' element={<ChannelRoom />} />
+      <Route path='/:slug' element={<ChannelRoom />} />
     </Routes>
   )
 }

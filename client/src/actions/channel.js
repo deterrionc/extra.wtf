@@ -39,6 +39,17 @@ export const getChannel = (channelID) => async (dispatch) => {
   }
 };
 
+export const getChannelBySlug = (slug) => async (dispatch) => {
+  const res = await api.get(`/channels/get-channel-by-slug/${slug}`);
+
+  if (res.data.success) {
+    dispatch({
+      type: CHANNEL_LOADED,
+      payload: res.data.channel
+    });
+  }
+};
+
 export const updateChannel =
   (channelID, formData, navigate) => async (dispatch) => {
     const res = await formApi.post(
