@@ -1,18 +1,19 @@
 import { forwardRef } from 'react';
 
-const VideoPlayer = forwardRef(({ onPlay, onEnded, video }, ref) => {
-  if (!video || !video.path) {
-    return null;  // or return a loading component or some default content.
-  }
-
+const VideoPlayer = forwardRef(({ onEnd, onStart, video, style, autoPlay }, ref) => {
   return (
     <video
       ref={ref}
-      onPlay={onPlay}
-      onEnded={onEnded}
-      src={video.path}
-      controls
-    />
+      onPlay={onStart}
+      onEnded={onEnd}
+      className="fixed z-10 inset-0 w-screen h-screen object-cover"
+      autoPlay={autoPlay}
+      controls={true}
+      style={style}
+      preload='auto'
+    >
+      <source src={`/${video?.path}`} type="video/mp4" />
+    </video>
   );
 });
 

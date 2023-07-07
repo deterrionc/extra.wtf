@@ -305,23 +305,73 @@ router.get('/get-videos-by-category', async (req, res) => {
     'videos',
     'name path playedAt'
   );
-  // console.log(categories);
   const categories = { news: newsCategories, music: musicCategories };
 
   let formattedCategories = formatCategories(categories);
 
   res.json({
     success: true,
-    categories: formattedCategories
+    categories: formattedCategories,
   });
 });
+
+const getPlayList = (data) => {
+  let news = [],
+    music = [];
+
+  // Check if data.music exists
+  if (data.music) {
+    // Extract music videos
+    Object.entries(data.music).forEach(([categoryName, videos]) => {
+      videos.forEach((video) => {
+        music.push({ ...video, type: 'music', category: categoryName });
+      });
+    });
+
+    // Sort music videos by playedAt
+    music.sort((a, b) => new Date(a.playedAt) - new Date(b.playedAt));
+  }
+
+  // Check if data.news exists
+  if (data.news) {
+    // Extract news videos with desired categories and quantities
+    const categoriesOrder = [
+      'jingle_nat',
+      'news_nat',
+      'jingle_int',
+      'news_int'
+    ];
+    const categoriesQuantity = [1, 3, 1, 3]; // quantity of videos to select from each category
+
+    categoriesOrder.forEach((category, index) => {
+      let videos = data.news[category];
+
+      // Check if videos array exists
+      if (videos) {
+        // Sort videos by playedAt
+        videos.sort((a, b) => new Date(a.playedAt) - new Date(b.playedAt));
+
+        // Select required quantity
+        videos = videos.slice(0, categoriesQuantity[index]);
+
+        // Add to news array with additional type and category properties
+        videos.forEach((video) => {
+          news.push({ ...video, type: 'news', category: category });
+        });
+      }
+    });
+  }
+
+  // Return combined list, with news coming after music
+  return { music, news };
+};
 
 function formatCategories(categories) {
   let formattedCategories = { news: {}, music: {} };
 
   // Process news
   for (let category of categories.news) {
-    formattedCategories.news[category.name] = category.videos.map(video => {
+    formattedCategories.news[category.name] = category.videos.map((video) => {
       return {
         name: video.name,
         path: video.path,
@@ -332,7 +382,7 @@ function formatCategories(categories) {
 
   // Process music
   for (let category of categories.music) {
-    formattedCategories.music[category.name] = category.videos.map(video => {
+    formattedCategories.music[category.name] = category.videos.map((video) => {
       return {
         name: video.name,
         path: video.path,
@@ -343,7 +393,6 @@ function formatCategories(categories) {
 
   return formattedCategories;
 }
-
 
 router.get('/update-video-playedAt/:id', async (req, res) => {
   const videoID = req.params.id;
@@ -427,12 +476,15 @@ router.delete('/delete-channel/:id', async (req, res) => {
 });
 
 router.get('/get-last-played-videos', async (req, res) => {
-  const videos = await Video.find().populate(['category']).sort({ playedAt: -1 }).limit(10);
+  const videos = await Video.find()
+    .populate(['category'])
+    .sort({ playedAt: -1 })
+    .limit(10);
 
   res.json({
     success: true,
     videos
-  })
-})
+  });
+});
 
 module.exports = router;
