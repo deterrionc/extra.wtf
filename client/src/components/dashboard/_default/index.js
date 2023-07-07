@@ -8,7 +8,7 @@ import {
 const Dashboard = ({
   getChannelVideos,
   getLastPlayedVideos,
-  lastVideos,
+  logs,
   videos
 }) => {
   React.useEffect(() => {
@@ -65,10 +65,19 @@ const Dashboard = ({
                 <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
                   Time
                 </th>
+                <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                  IP Address
+                </th>
+                <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                  Browser
+                </th>
+                <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                  OS
+                </th>
               </tr>
             </thead>
             <tbody className="text-gray-600 text-sm font-light md:table-row-group">
-              {lastVideos.map((video, index) => (
+              {logs.map((video, index) => (
                 <tr
                   key={index}
                   className="border-b border-gray-200 hover:bg-gray-100"
@@ -76,11 +85,14 @@ const Dashboard = ({
                   <td className="py-3 px-6 text-left whitespace-nowrap">
                     {index + 1}
                   </td>
-                  <td className="py-3 px-6 text-left">{video.name}</td>
-                  <td className="py-3 px-6 text-left">{video.category.name}</td>
+                  <td className="py-3 px-6 text-left">{video.video}</td>
+                  <td className="py-3 px-6 text-left">{video.category}</td>
                   <td className="py-3 px-6 text-left">
-                    {video.playedAt.slice(0, 19)}
+                    {video.date.slice(0, 19)}
                   </td>
+                  <td className="py-3 px-6 text-left">{video.ip}</td>
+                  <td className="py-3 px-6 text-left">{video.browser}</td>
+                  <td className="py-3 px-6 text-left">{video.os}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,7 +104,7 @@ const Dashboard = ({
 };
 
 const mapStateToProps = (state) => ({
-  lastVideos: state.channel.lastVideos,
+  logs: state.channel.logs,
   videos: state.video.videos
 });
 

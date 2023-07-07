@@ -3,7 +3,7 @@ import formApi from '../utils/formApi';
 import {
   CHANNELS_LOADED,
   CHANNEL_LOADED,
-  LAST_VIDEOS_LOADED,
+  LOGS_LOADED,
   // NEWSS_LOADED,
   // MUSICS_LOADED,
   VIDEOS_LOADED
@@ -103,8 +103,8 @@ export const getLastPlayedVideos = () => async dispatch => {
 
   if (res.data.success) {
     dispatch({
-      type: LAST_VIDEOS_LOADED,
-      payload: res.data.videos
+      type: LOGS_LOADED,
+      payload: res.data.logs
     });
   }
 }

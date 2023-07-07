@@ -33,4 +33,4 @@ export const VIDEOS_LOADED = 'VIDEOS_LOADED';
 export const VIDEO_LOADED = 'VIDEO_LOADED';
 
 // LOG
-export const LAST_VIDEOS_LOADED = 'LAST_VIDEOS_LOADED';
+export const LOGS_LOADED = 'LOGS_LOADED';

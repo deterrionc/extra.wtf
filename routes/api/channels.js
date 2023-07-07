@@ -4,6 +4,7 @@ const router = express.Router();
 // DB MODEL
 const Channel = require('../../models/Channel');
 const Video = require('../../models/Video');
+const PlayLog = require('../../models/PlayLog');
 
 // FILE UPLOAD
 const fileUpload = require('../../utils/fileUpload');
@@ -397,6 +398,22 @@ function formatCategories(categories) {
 router.get('/update-video-playedAt/:id', async (req, res) => {
   const videoID = req.params.id;
 
+  const ipAddress = req.headers['x-forwarded-for']
+  const userAgent = req.headers['user-agent'];
+  const deviceInfo = parseDeviceInfo(userAgent);
+
+  const video = await Video.findById(videoID).populate(['category'])
+
+  const newPlayLog = new PlayLog({
+    video: video.name,
+    category: video.category.name,
+    ip: ipAddress,
+    browswer: deviceInfo.browser.name,
+    os: `${deviceInfo.os.name} ${deviceInfo.os.version}`
+  })
+
+  await newPlayLog.save()
+
   // console.log(videoID);
 
   await Video.findByIdAndUpdate(
@@ -406,13 +423,6 @@ router.get('/update-video-playedAt/:id', async (req, res) => {
     },
     { new: true }
   );
-
-  // let video = await Video.findById(videoID);
-  // let category = await Category.findById(video.category).populate(['videos']);
-  // let videos = category.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
-  // videos.forEach((v) => {
-  //   console.log(v.name);
-  // });
 
   res.json({
     success: true
@@ -476,15 +486,24 @@ router.delete('/delete-channel/:id', async (req, res) => {
 });
 
 router.get('/get-last-played-videos', async (req, res) => {
-  const videos = await Video.find()
-    .populate(['category'])
-    .sort({ playedAt: -1 })
-    .limit(10);
+  const logs = await PlayLog.find().sort({ date: -1 }).limit(50)
 
   res.json({
     success: true,
-    videos
+    logs
   });
 });
+
+function parseDeviceInfo(userAgent) {
+  // Implement your custom logic here to parse the user-agent string
+  // You can use existing libraries like 'express-useragent' or 'ua-parser-js'
+
+  // Example: extracting browser and operating system
+  const uaParser = require('ua-parser-js');
+  const parsedInfo = uaParser(userAgent);
+  const { browser, os } = parsedInfo;
+
+  return { browser, os };
+}
 
 module.exports = router;

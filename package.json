@@ -26,7 +26,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^7.2.4",
     "multer": "^1.4.3",
-    "normalize-url": "^5.3.0"
+    "normalize-url": "^5.3.0",
+    "ua-parser-js": "^1.0.35"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",
