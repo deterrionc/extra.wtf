@@ -1,27 +1,37 @@
-import { useState } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { createChannel } from '../../../actions/channel';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { useNavigate, useParams } from "react-router-dom";
+import { updateChannel, getChannel } from "../../../actions/channel";
 
-const DashboardChannelCreate = ({ createChannel }) => {
+const DashboardChannelEdit = ({ updateChannel, getChannel, channel }) => {
+  const params = useParams();
+  const channelID = params.id;
   let navigate = useNavigate();
-  const [channelName, setChannelName] = useState('');
+  const [channelName, setChannelName] = useState("");
   const [channelImage, setChannelImage] = useState(null);
+
+  useEffect(() => {
+    getChannel(channelID)
+  }, [channelID, getChannel])
+
+  useEffect(() => {
+    setChannelName(channel?.name)
+  }, [channel])
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     let formData = new FormData();
-    formData.append('name', channelName);
-    formData.append('image', channelImage);
+    formData.append("name", channelName);
+    formData.append("image", channelImage);
 
-    createChannel(formData, navigate);
+    updateChannel(channelID, formData, navigate);
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-3 bg-gray-100 rounded-lg">
-      <h2 className="text-xl font-medium mb-4">Create a Video Channel</h2>
+      <h2 className="text-xl font-medium mb-4">Update Video Channel</h2>
 
       <div className="mb-4">
         <label
@@ -74,12 +84,15 @@ const DashboardChannelCreate = ({ createChannel }) => {
   );
 };
 
-DashboardChannelCreate.propTypes = {
-  createChannel: PropTypes.func.isRequired
+DashboardChannelEdit.propTypes = {
+  updateChannel: PropTypes.func.isRequired,
+  getChannel: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  channel: state.channel.channel
+});
 
-export default connect(mapStateToProps, { createChannel })(
-  DashboardChannelCreate
+export default connect(mapStateToProps, { updateChannel, getChannel })(
+  DashboardChannelEdit
 );

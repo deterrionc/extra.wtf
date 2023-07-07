@@ -10,7 +10,7 @@ const DashboardChannelContainer = () => {
       <Routes>
         <Route path="/" element={<DashboardChannelList />} />
         <Route path="/create" element={<DashboardChannelCreate />} />
-        <Route path="/edit" element={<DashboardChannelEdit />} />
+        <Route path="/edit/:id" element={<DashboardChannelEdit />} />
       </Routes>
     </React.Fragment>
   )

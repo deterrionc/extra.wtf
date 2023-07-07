@@ -104,6 +104,68 @@ router.get("/get-channel-videos", async (req, res) => {
   });
 });
 
+router.post(
+  "/update-channel/:id",
+  fileUpload.fields([{ name: "image", maxCount: 1 }]),
+  async (req, res) => {
+    const channelID = req.params.id;
+    let imagePath = req.files["image"][0].path;
+
+    const convertToSlug = require("../../utils/convertToSlug");
+
+    let slug = convertToSlug(req.body.name);
+
+    while (true) {
+      let _channel = await Channel.findOne({ slug });
+      if (_channel) {
+        slug += "_";
+      } else {
+        break;
+      }
+    }
+
+    // DELETE ATTACHED IMAGE
+    const channel = await Channel.findById(channelID)
+    fs.unlinkSync(channel.image);
+
+    await Channel.findByIdAndUpdate(
+      channelID,
+      {
+        name: req.body.name,
+        slug,
+        image: imagePath,
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+    });
+  }
+);
+
+router.delete("/delete-channel/:id", async (req, res) => {
+  const channelID = req.params.id;
+  const channel = await Channel.findById(channelID);
+
+  try {
+    // DELETE CHANNEL IMAGE
+    fs.unlinkSync(channel.image);
+    // DELETE CHANNEL VIDEOS
+    channel.videos.forEach((video) => {
+      fs.unlinkSync(video.path);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+
+  await Channel.findByIdAndDelete(channelID);
+
+  res.json({
+    success: true,
+  });
+});
+
 router.get("/get-videos-by-category", async (req, res) => {
   const newsCategories = await Category.find({ type: "news" }).populate(
     "videos",
@@ -206,34 +268,6 @@ router.get("/get-next-video/:id", async (req, res) => {
   res.json({
     success: true,
     video: _video,
-  });
-});
-
-router.post("/update-channel/:id", async (req, res) => {
-  res.json({
-    success: true,
-  });
-});
-
-router.delete("/delete-channel/:id", async (req, res) => {
-  const channelID = req.params.id;
-  const channel = await Channel.findById(channelID);
-
-  try {
-    // DELETE CHANNEL IMAGE
-    fs.unlinkSync(channel.image);
-    // DELETE CHANNEL VIDEOS
-    channel.videos.forEach((video) => {
-      fs.unlinkSync(video.path);
-    });
-  } catch (e) {
-    console.log(e);
-  }
-
-  await Channel.findByIdAndDelete(channelID);
-
-  res.json({
-    success: true,
   });
 });
 

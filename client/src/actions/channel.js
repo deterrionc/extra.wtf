@@ -5,8 +5,6 @@ import {
   CHANNELS_LOADED,
   CHANNEL_LOADED,
   LOGS_LOADED,
-  // NEWSS_LOADED,
-  // MUSICS_LOADED,
   VIDEOS_LOADED
 } from './types';
 
@@ -43,7 +41,7 @@ export const getChannel = (channelID) => async (dispatch) => {
 
 export const updateChannel =
   (channelID, formData, navigate) => async (dispatch) => {
-    const res = await api.post(
+    const res = await formApi.post(
       `/channels/update-channel/${channelID}`,
       formData
     );
@@ -66,14 +64,6 @@ export const getChannelVideos = () => async (dispatch) => {
   const res = await api.get('/channels/get-channel-videos');
 
   if (res.data.success) {
-    // dispatch({
-    //   type: NEWSS_LOADED,
-    //   payload: res.data.newss
-    // })
-    // dispatch({
-    //   type: MUSICS_LOADED,
-    //   payload: res.data.musics
-    // })
     dispatch({
       type: VIDEOS_LOADED,
       payload: res.data
