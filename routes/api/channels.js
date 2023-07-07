@@ -315,7 +315,7 @@ const getNewsVideos = async (videos, time) => {
     videos.push(m)
   })
 
-  videos.slice(0, 14);
+  videos = videos.slice(0, 14);
 
   return videos
 }
@@ -327,7 +327,7 @@ const getMusicVideos = async (videos) => {
       videos.push(v)
     })
   })
-  videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 14)
+  videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 14)
 
   return videos
 }
