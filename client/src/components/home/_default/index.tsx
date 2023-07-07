@@ -18,7 +18,7 @@ const Home = ({ getChannels, channels }: any) => {
   
   return (
     <React.Fragment>
-      <VideoChannelList channels={channels} link='/video-channels' linkName='Video Channels' />
+      <VideoChannelList channels={channels} link='/video-channels' linkName='Start' />
       <VideoCardList videos={topVideos} link='/videos' linkName='Videos' />
       <ArticleCardList articles={topArticles} />
     </React.Fragment>
