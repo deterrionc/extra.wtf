@@ -3,6 +3,7 @@ config/default.json
 migrate/
 files/*
 .prettierrc
+package-lock.json
 
 client/.eslintcache
 client/node_modules/
