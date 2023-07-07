@@ -6,4 +6,4 @@ const parseDeviceInfo = (userAgent) => {
   return { browser, os };
 }
 
-module.exports = trimReplace
+module.exports = parseDeviceInfo

@@ -64,221 +64,101 @@ router.get("/get-channel-videos", async (req, res) => {
 
   if (currentHour >= 6 && currentHour <= 18) {
     // Day time
-    if (currentMinute % 30 >= 25) {
-      // Before 5 min
-      if (currentMinute % 30 >= 28) {
-        // Before 2 min
-        const _music_short = await Category.findOne({
-          name: "music_short",
-        }).populate(["videos"]);
-        let temp_videos = _music_short.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+    if (currentMinute % 30 >= 5) {
+      // Return Music
+      const musicCategories = await Category.find({ type: "music" }).populate("videos");
+      musicCategories.forEach(mc => {
+        mc.videos.forEach(v => {
+          _videos.push(v)
+        })
+      })
+      _videos.sort((v1, v2) => v1.playedAt - v2.playedAt)
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_short",
-        });
-      } else {
-        const _music_short = await Category.findOne({
-          name: "music_short",
-        }).populate(["videos"]);
-        let temp_videos = _music_short.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+      res.json({
+        success: true,
+        videos: _videos,
+        currentMinute,
+        currentSecond,
+        currentCategory: "music",
+      });
+    } else {
+      // Return News
+      const _jingle_nat = await Category.findOne({ name: "jingle_nat" }).populate("videos");
+      let _jingle_nat_videos = _jingle_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(_jingle_nat_videos[0]);
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_short",
-        });
-      }
-    } else if (currentMinute % 30 >= 0) {
-      if (currentMinute % 30 >= 5) {
-        // Return Music
-        const _music_long = await Category.findOne({
-          name: "music_long",
-        }).populate(["videos"]);
-        let temp_videos = _music_long.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+      const _news_nat = await Category.findOne({ name: "news_nat" }).populate("videos");
+      let _news_nat_videos = _news_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      _news_nat_videos.forEach((v) => _videos.push(v));
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_long",
-        });
-      } else {
-        // Return News
-        const _jingle_nat = await Category.findOne({
-          name: "jingle_nat",
-        }).populate(["videos"]);
-        let _jingle_nat_videos = _jingle_nat.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(_jingle_nat_videos[0]);
+      const _jingle_int = await Category.findOne({ name: "jingle_int" }).populate("videos");
+      let _jingle_int_videos = _jingle_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(_jingle_int_videos[0]);
 
-        const _news_nat = await Category.findOne({ name: "news_nat" }).populate(
-          ["videos"]
-        );
-        let _news_nat_videos = _news_nat.videos
-          .sort((v1, v2) => v1.playedAt - v2.playedAt)
-          .slice(0, 3);
-        _news_nat_videos.forEach((v) => _videos.push(v));
+      const _news_int = await Category.findOne({ name: "news_int" }).populate("videos");
+      let _news_int_videos = _news_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      _news_int_videos.forEach((v) => _videos.push(v));
 
-        const _jingle_int = await Category.findOne({
-          name: "jingle_int",
-        }).populate(["videos"]);
-        let _jingle_int_videos = _jingle_int.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(_jingle_int_videos[0]);
+      const _music_long = await Category.findOne({ name: "music_long"}).populate("videos");
+      let temp_videos = _music_long.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(temp_videos[0]);
 
-        const _news_int = await Category.findOne({ name: "news_int" }).populate(
-          ["videos"]
-        );
-        let _news_int_videos = _news_int.videos
-          .sort((v1, v2) => v1.playedAt - v2.playedAt)
-          .slice(0, 3);
-        _news_int_videos.forEach((v) => _videos.push(v));
-
-        const _music_long = await Category.findOne({
-          name: "music_long",
-        }).populate(["videos"]);
-        let temp_videos = _music_long.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
-
-        // console.log("---------------")
-        // _videos.forEach(v => console.log(v.name))
-        // console.log("---------------")
-
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "news",
-        });
-      }
+      res.json({
+        success: true,
+        videos: _videos,
+        currentMinute,
+        currentSecond,
+        currentCategory: "news",
+      });
     }
   } else {
     // Night Time
-    if (currentMinute % 60 >= 55) {
-      // Before 5 min
-      if (currentMinute % 60 >= 58) {
-        // Before 2 min
-        const _music_short = await Category.findOne({
-          name: "music_short",
-        }).populate(["videos"]);
-        let temp_videos = _music_short.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+    if (currentMinute % 60 >= 5) {
+      // Return Music
+      const musicCategories = await Category.find({ type: "music" }).populate("videos");
+      musicCategories.forEach(mc => {
+        mc.videos.forEach(v => {
+          _videos.push(v)
+        })
+      })
+      _videos.sort((v1, v2) => v1.playedAt - v2.playedAt)
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_short",
-        });
-      } else {
-        const _music_short = await Category.findOne({
-          name: "music_short",
-        }).populate(["videos"]);
-        let temp_videos = _music_short.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+      res.json({
+        success: true,
+        videos: _videos,
+        currentMinute,
+        currentSecond,
+        currentCategory: "music",
+      });
+    } else {
+      // Return News
+      const _jingle_nat = await Category.findOne({ name: "jingle_nat" }).populate("videos");
+      let _jingle_nat_videos = _jingle_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(_jingle_nat_videos[0]);
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_short",
-        });
-      }
-    } else if (currentMinute % 60 >= 0) {
-      if (currentMinute % 60 >= 5) {
-        // Return Music
-        const _music_long = await Category.findOne({
-          name: "music_long",
-        }).populate(["videos"]);
-        let temp_videos = _music_long.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
+      const _news_nat = await Category.findOne({ name: "news_nat" }).populate("videos");
+      let _news_nat_videos = _news_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      _news_nat_videos.forEach((v) => _videos.push(v));
 
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "music_long",
-        });
-      } else {
-        // Return News
-        const _jingle_nat = await Category.findOne({
-          name: "jingle_nat",
-        }).populate(["videos"]);
-        let _jingle_nat_videos = _jingle_nat.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(_jingle_nat_videos[0]);
+      const _jingle_int = await Category.findOne({ name: "jingle_int" }).populate("videos");
+      let _jingle_int_videos = _jingle_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(_jingle_int_videos[0]);
 
-        const _news_nat = await Category.findOne({ name: "news_nat" }).populate(
-          ["videos"]
-        );
-        let _news_nat_videos = _news_nat.videos
-          .sort((v1, v2) => v1.playedAt - v2.playedAt)
-          .slice(0, 3);
-        _news_nat_videos.forEach((v) => _videos.push(v));
+      const _news_int = await Category.findOne({ name: "news_int" }).populate("videos");
+      let _news_int_videos = _news_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      _news_int_videos.forEach((v) => _videos.push(v));
 
-        const _jingle_int = await Category.findOne({
-          name: "jingle_int",
-        }).populate(["videos"]);
-        let _jingle_int_videos = _jingle_int.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(_jingle_int_videos[0]);
+      const _music_long = await Category.findOne({ name: "music_long"}).populate("videos");
+      let temp_videos = _music_long.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      _videos.push(temp_videos[0]);
 
-        const _news_int = await Category.findOne({ name: "news_int" }).populate(
-          ["videos"]
-        );
-        let _news_int_videos = _news_int.videos
-          .sort((v1, v2) => v1.playedAt - v2.playedAt)
-          .slice(0, 3);
-        _news_int_videos.forEach((v) => _videos.push(v));
-
-        const _music_long = await Category.findOne({
-          name: "music_long",
-        }).populate(["videos"]);
-        let temp_videos = _music_long.videos.sort(
-          (v1, v2) => v1.playedAt - v2.playedAt
-        );
-        _videos.push(temp_videos[0]);
-
-        res.json({
-          success: true,
-          videos: _videos,
-          currentMinute,
-          currentSecond,
-          currentCategory: "news",
-        });
-      }
+      res.json({
+        success: true,
+        videos: _videos,
+        currentMinute,
+        currentSecond,
+        currentCategory: "news",
+      });
     }
   }
 });
@@ -339,7 +219,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
   const deviceInfo = parseDeviceInfo(userAgent);
 
   const video = await Video.findById(videoID).populate(["category"]);
-  const trimReplace = require('../../utils/trimReplace')
+  const trimReplace = require("../../utils/trimReplace");
 
   const newPlayLog = new PlayLog({
     video: video.name,
@@ -463,9 +343,13 @@ const mixMusicSequence = async () => {
       const randomDate = new Date(fiveDaysAgo.getTime() + randomMilliseconds);
 
       // const video = await Video.findById(videoID);
-      const video = await Video.findByIdAndUpdate(videoID, {
-        playedAt: randomDate,
-      }, {new: true});
+      const video = await Video.findByIdAndUpdate(
+        videoID,
+        {
+          playedAt: randomDate,
+        },
+        { new: true }
+      );
     });
   });
 };

@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { getCategory, addVideoToCategory } from '../../../actions/category';
-import { Link, useParams } from 'react-router-dom';
-import { getFiles } from '../../../actions/file';
-import Spinner from '../../../container/organisms/Spinner';
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { getCategory, addVideoToCategory, removeFromCategory } from "../../../actions/category";
+import { Link, useParams } from "react-router-dom";
+import { getFiles } from "../../../actions/file";
+import Spinner from "../../../container/organisms/Spinner";
 
 const CategoryVideos = ({
   files,
@@ -12,7 +12,8 @@ const CategoryVideos = ({
   getCategory,
   category,
   addVideoToCategory,
-  isLoading
+  removeFromCategory,
+  isLoading,
 }) => {
   const params = useParams();
   const categoryID = params.id;
@@ -68,6 +69,9 @@ const CategoryVideos = ({
                 <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
                   Path
                 </th>
+                <th className="py-3 px-6 text-left max-w-xs overflow-x-auto md:table-cell">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="text-gray-600 text-sm font-light md:table-row-group">
@@ -85,6 +89,16 @@ const CategoryVideos = ({
                     </td>
                     <td className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
                       {file.path}
+                    </td>
+                    <td className="py-3 px-6 text-left md:table-cell">
+                      <button
+                        className="py-2 px-3 rounded bg-orange-700 text-white mx-1"
+                        onClick={() => {
+                          removeFromCategory(categoryID, file._id);
+                        }}
+                      >
+                        Move to No Category
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -154,17 +168,19 @@ CategoryVideos.propTypes = {
   getFiles: PropTypes.func.isRequired,
   updateCategory: PropTypes.func.isRequired,
   getCategory: PropTypes.func.isRequired,
-  addVideoToCategory: PropTypes.func.isRequired
+  addVideoToCategory: PropTypes.func.isRequired,
+  removeFromCategory: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   files: state.file.files,
   category: state.category.category,
-  isLoading: state.spinner.isLoading
+  isLoading: state.spinner.isLoading,
 });
 
 export default connect(mapStateToProps, {
   getFiles,
   getCategory,
-  addVideoToCategory
+  addVideoToCategory,
+  removeFromCategory,
 })(CategoryVideos);

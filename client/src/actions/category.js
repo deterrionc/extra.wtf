@@ -69,6 +69,21 @@ export const deleteCategory = (categoryID) => async (dispatch) => {
   }
 };
 
+export const removeFromCategory = (categoryID, videoID) => async (dispatch) => {
+  dispatch(setLoading(true))
+  const res = await api.post('/categories/remove-from-category', {
+    categoryID,
+    videoID
+  })
+
+  if (res.data.success) {
+    dispatch(getCategory(categoryID))
+    dispatch(getFiles())
+    dispatch(setLoading(false))
+  }
+}
+
+
 export const addVideoToCategory = (categoryID, file) => async (dispatch) => {
   dispatch(setLoading(true));
   const res = await api.post('/categories/add-video-to-category', {

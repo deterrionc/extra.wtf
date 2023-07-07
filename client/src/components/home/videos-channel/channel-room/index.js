@@ -50,12 +50,7 @@ const ChannelRoom = ({
     const serverSeconds = currentSecond % 60;
     setMinuteDifference((clientMinutes - serverMinutes + 60) % 60);
     setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
-    // console.log(`serverMinute ${serverMinutes}`)
-    // console.log(`clientMinute ${clientMinutes}`)
-    // console.log(`serverSecond ${serverSeconds}`)
-    // console.log(`clientSecond ${clientSeconds}`)
   }, [currentMinute, currentSecond]);
-
 
   // new useEffect for setting up the timer
   useEffect(() => {
@@ -164,25 +159,7 @@ const ChannelRoom = ({
       setCurrentVideoIndex((prevIndex) => prevIndex - 1);
       setNextVideoIndex((prevIndex) => prevIndex - 1);
     }
-  
-    // if (currentCategory !== 'news' && channelVideos.length > 5) {
-    //   let _channelVideos = [...channelVideos];
-    //   _channelVideos.shift();
-    //   setChannelVideos(_channelVideos);
-    //   setCurrentVideoIndex((prevIndex) => prevIndex - 1);
-    //   setNextVideoIndex((prevIndex) => prevIndex - 1);
-    // }
-
-    // console.log(channelVideos.length)
-    // console.log(`nextVideoIndex ${nextVideoIndex}`)
-  
-    // // Check if all videos have been played and current category is "news"
-    // if (channelVideos.length > channelVideoLength && currentCategory === 'news' && nextVideoIndex === channelVideos.length - 1) {
-    //   stopAllVideos();
-    //   getChannelVideos();
-    // }
   };
-  
 
   return (
     <div className="relative z-0 min-h-screen">

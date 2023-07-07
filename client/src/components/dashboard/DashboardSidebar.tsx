@@ -129,7 +129,7 @@ const DashboardSidebar: React.FC = ({ logout }: any) => {
             <>
               <FaIcon iconName="fa-video-camera" className="w-6" />
               <span className={`${isNarrow ? 'hidden' : 'block'} md:block`}>
-                Videos
+                Videos (No Cate)
               </span>
             </>
           )}
