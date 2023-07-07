@@ -53,12 +53,12 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
                 </td>
                 {/* <td className="py-3 px-6 text-left">{channel.videos.length}</td> */}
                 <td className="py-3 px-6 text-left">
-                  <Link
+                  {/* <Link
                     to={`/dashboard/channels/${channel._id}`}
                     className="py-2 px-3 rounded bg-lime-900 text-white mx-1"
                   >
                     <FaIcon iconName="fa fa-eye" />
-                  </Link>
+                  </Link> */}
                   <Link
                     to={`/dashboard/channels/edit/${channel._id}`}
                     className="py-2 px-3 rounded bg-teal-800 text-white mx-1"

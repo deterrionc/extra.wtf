@@ -12,7 +12,7 @@ interface ChannelProps {
 const ChannelCard = ({ channel }: ChannelProps) => {
   return (
     <Link to={"/video-channels/" + channel._id} className="m-1 width-calc bg-video-card rounded overflow-hidden">
-      <img alt={channel.name} src={channel.image} className="w-full aspect-[3/2]" />
+      <img alt="NOIMAGE" src={channel.image} className="w-full aspect-[3/2]" />
       <div className="p-2">
         <div className="text-base">{channel.name}</div>
       </div>

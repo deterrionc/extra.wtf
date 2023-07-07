@@ -26,7 +26,7 @@ const ChannelRoom = ({
   const channelID = params.id;
 
   const [channelVideos, setChannelVideos] = useState([]);
-  const [channelVideoLength, setChannelVideoLength] = useState(0)
+  // const [channelVideoLength, setChannelVideoLength] = useState(0)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [nextVideoIndex, setNextVideoIndex] = useState(1);
 
@@ -113,7 +113,7 @@ const ChannelRoom = ({
   useEffect(() => {
     if (videos.length > 0) {
       setChannelVideos(videos);
-      setChannelVideoLength(videos.length)
+      // setChannelVideoLength(videos.length)
       setCurrentVideoIndex(0);
       setNextVideoIndex(1);
     }
