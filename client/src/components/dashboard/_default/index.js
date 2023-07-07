@@ -35,6 +35,9 @@ const Dashboard = ({
                   Video Name
                 </th>
                 <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
+                  Last Played
+                </th>
+                <th className="py-3 px-6 text-left md:table-cell max-w-xs overflow-x-auto">
                   Path
                 </th>
               </tr>
@@ -49,6 +52,7 @@ const Dashboard = ({
                     {index + 1}
                   </td>
                   <td className="py-3 px-6 text-left">{video.name}</td>
+                  <td className="py-3 px-6 text-left">{formatDateTime(video.playedAt)}</td>
                   <td className="py-3 px-6 text-left">{video.path}</td>
                 </tr>
               ))}
@@ -148,6 +152,14 @@ const Dashboard = ({
     </React.Fragment>
   );
 };
+
+const formatDateTime = T => {
+  if (T.slice(0, 4) === "2001") {
+    return "- New Video -"
+  } else {
+    return T.slice(0, 19)
+  }
+}
 
 const mapStateToProps = (state) => ({
   logs: state.channel.logs,
