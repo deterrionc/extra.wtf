@@ -176,7 +176,7 @@ const ChannelRoom = ({
             onEnded={handleVideoEnd}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: 'block' }}
           >
             <source
@@ -190,7 +190,7 @@ const ChannelRoom = ({
             onEnded={handleVideoEnd}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: 'none' }}
           >
             <source
