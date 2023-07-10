@@ -166,10 +166,7 @@ const ChannelRoom = ({
     if (channelVideos.length > 0) {
       const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
       const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
-      console.log(currentVideoRef)
-      console.log(nextVideoRef)
       if (currentVideoRef.paused && nextVideoRef.paused) {
-        console.log("PAUSED")
         setIsPaused(true)
       } else {
         setIsPaused(false)
