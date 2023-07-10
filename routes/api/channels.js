@@ -259,7 +259,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
 router.get("/get-next-video/:id", async (req, res) => {
   let currentTime = new Date();
   console.log(
-    `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET CHANNEL VIDEOS`
+    `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET NEXT VIDEO`
   );
   const videoID = req.params.id;
 

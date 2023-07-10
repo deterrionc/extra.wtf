@@ -140,6 +140,7 @@ const ChannelRoom = ({
     nextVideoRef.style.display = 'block';
   
     if (nextVideoIndex === channelVideos.length - 1) {
+      console.log("OK")
       getNextVideo(channelVideos[nextVideoIndex]._id).then((nextVideo) => {
         setChannelVideos((oldVideos) => [...oldVideos, nextVideo]);
       });

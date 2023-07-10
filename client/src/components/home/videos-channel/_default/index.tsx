@@ -10,7 +10,7 @@ const Channels = ({ getChannels, channels }: any) => {
   useEffect(() => {
     getChannels();
   }, [getChannels]);
-  console.log(channels)
+
   return (
     <React.Fragment>
       <div className="py-3">
