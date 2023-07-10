@@ -127,10 +127,6 @@ router.delete("/delete-channel/:id", async (req, res) => {
   try {
     // DELETE CHANNEL IMAGE
     fs.unlinkSync(channel.image);
-    // DELETE CHANNEL VIDEOS
-    channel.videos.forEach((video) => {
-      fs.unlinkSync(video.path);
-    });
   } catch (e) {
     console.log(e);
   }
