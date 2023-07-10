@@ -67,37 +67,23 @@ const ChannelRoom = ({
       const seconds = now.getSeconds() - secondDifference;
 
       if (hours >= 6 && hours < 18) {
-        if (
-          (minutes === 0 ||
-            minutes === 25 ||
-            minutes === 30 ||
-            minutes === 55) &&
-          seconds > 0 &&
-          !fetched
-        ) {
+        if ((minutes === 0 || minutes === 30) && seconds > 0 && !fetched) {
           stopAllVideos();
           getChannelVideos();
           setFetched(true);
         }
       } else {
-        if (
-          (minutes === 0 || minutes === 30 || minutes === 55) &&
-          seconds > 0 &&
-          !fetched
-        ) {
+        if ((minutes === 0) && seconds > 0 && !fetched) {
           stopAllVideos();
           getChannelVideos();
           setFetched(true);
         }
       }
 
-      if (
-        (minutes === 26 || minutes === 31 || minutes === 56 || minutes === 1) &&
-        fetched
-      ) {
+      if ((minutes === 31 || minutes === 1) && fetched) {
         setFetched(false);
       }
-    }, 5 * 1000); // check every minute
+    }, 2 * 1000); // check every 5 seconds
 
     // cleanup function
     return () => {
@@ -179,9 +165,17 @@ const ChannelRoom = ({
   useEffect(() => {
     if (channelVideos.length > 0) {
       const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
-      setIsPaused(currentVideoRef.paused)
+      const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
+      console.log(currentVideoRef)
+      console.log(nextVideoRef)
+      if (currentVideoRef.paused && nextVideoRef.paused) {
+        console.log("PAUSED")
+        setIsPaused(true)
+      } else {
+        setIsPaused(false)
+      }
     }
-  }, [channelVideos, currentVideoIndex])
+  }, [channelVideos, currentVideoIndex, nextVideoIndex, isPaused])
 
   const playVideo = () => {
     const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
