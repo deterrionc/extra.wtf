@@ -1,15 +1,15 @@
-import { Link } from 'react-router-dom';
-import { FaIcon } from '../../../../container/atoms/FaIcon';
-import { useParams } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { Link } from "react-router-dom";
+import { FaIcon } from "../../../../container/atoms/FaIcon";
+import { useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 import {
   getChannelBySlug,
   getChannelVideos,
   updateVideoPlayedAt,
-  getNextVideo
-} from '../../../../actions/channel';
+  getNextVideo,
+} from "../../../../actions/channel";
 
 const ChannelRoom = ({
   getChannelBySlug,
@@ -20,7 +20,7 @@ const ChannelRoom = ({
   getChannelVideos,
   getNextVideo,
   updateVideoPlayedAt,
-  videos
+  videos,
 }) => {
   const params = useParams();
   const channelSlug = params.slug;
@@ -29,6 +29,7 @@ const ChannelRoom = ({
   // const [channelVideoLength, setChannelVideoLength] = useState(0)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [nextVideoIndex, setNextVideoIndex] = useState(1);
+  const [isPaused, setIsPaused] = useState(false)
 
   const videoRefs = useRef([null, null]);
 
@@ -36,7 +37,7 @@ const ChannelRoom = ({
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
 
-  const [fetched, setFetched] = useState(false)
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
     getChannelVideos();
@@ -46,7 +47,7 @@ const ChannelRoom = ({
     const now = new Date();
     const clientMinutes = now.getMinutes();
     const serverMinutes = currentMinute % 60;
-    const clientSeconds = now.getSeconds()
+    const clientSeconds = now.getSeconds();
     const serverSeconds = currentSecond % 60;
     setMinuteDifference((clientMinutes - serverMinutes + 60) % 60);
     setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
@@ -66,21 +67,35 @@ const ChannelRoom = ({
       const seconds = now.getSeconds() - secondDifference;
 
       if (hours >= 6 && hours < 18) {
-        if ((minutes === 0 || minutes === 25 || minutes === 30 || minutes === 55) && seconds > 0 && !fetched) {
+        if (
+          (minutes === 0 ||
+            minutes === 25 ||
+            minutes === 30 ||
+            minutes === 55) &&
+          seconds > 0 &&
+          !fetched
+        ) {
           stopAllVideos();
           getChannelVideos();
-          setFetched(true)
+          setFetched(true);
         }
       } else {
-        if ((minutes === 0 || minutes === 30 || minutes === 55) && seconds > 0 && !fetched) {
+        if (
+          (minutes === 0 || minutes === 30 || minutes === 55) &&
+          seconds > 0 &&
+          !fetched
+        ) {
           stopAllVideos();
           getChannelVideos();
-          setFetched(true)
+          setFetched(true);
         }
       }
 
-      if ((minutes === 26 || minutes === 31 || minutes === 56 || minutes === 1) && fetched) {
-        setFetched(false)
+      if (
+        (minutes === 26 || minutes === 31 || minutes === 56 || minutes === 1) &&
+        fetched
+      ) {
+        setFetched(false);
       }
     }, 5 * 1000); // check every minute
 
@@ -96,7 +111,7 @@ const ChannelRoom = ({
     videoRefs.current.forEach((ref) => {
       if (ref) {
         ref.pause();
-        ref.src = '';
+        ref.src = "";
       }
     });
 
@@ -129,28 +144,27 @@ const ChannelRoom = ({
 
   const handleVideoEnd = async () => {
     await updateVideoPlayedAt(channelVideos[currentVideoIndex]._id);
-  
+
     setCurrentVideoIndex((prevIndex) => prevIndex + 1);
     setNextVideoIndex((prevIndex) => prevIndex + 1);
-  
+
     const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
     const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
-  
-    currentVideoRef.style.display = 'none';
-    nextVideoRef.style.display = 'block';
-  
+
+    currentVideoRef.style.display = "none";
+    nextVideoRef.style.display = "block";
+
     if (nextVideoIndex === channelVideos.length - 1) {
-      console.log("OK")
       getNextVideo(channelVideos[nextVideoIndex]._id).then((nextVideo) => {
         setChannelVideos((oldVideos) => [...oldVideos, nextVideo]);
       });
     }
-  
+
     if (nextVideoRef.src !== `/${channelVideos[nextVideoIndex]?.path}`) {
       nextVideoRef.src = `/${channelVideos[nextVideoIndex]?.path}`;
       nextVideoRef.load();
     }
-  
+
     nextVideoRef.play().catch((error) => console.log(error));
 
     if (channelVideos.length > 15) {
@@ -161,6 +175,23 @@ const ChannelRoom = ({
       setNextVideoIndex((prevIndex) => prevIndex - 1);
     }
   };
+
+  useEffect(() => {
+    if (channelVideos.length > 0) {
+      const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
+      setIsPaused(currentVideoRef.paused)
+    }
+  }, [channelVideos, currentVideoIndex])
+
+  const playVideo = () => {
+    const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
+    currentVideoRef.play()
+    setIsPaused(false)
+  }
+
+  const handleVideoPause = () => {
+    setIsPaused(true)
+  }
 
   return (
     <div className="relative z-0 min-h-screen">
@@ -175,10 +206,11 @@ const ChannelRoom = ({
           <video
             ref={(el) => (videoRefs.current[0] = el)}
             onEnded={handleVideoEnd}
+            onPause={handleVideoPause}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
-            style={{ display: 'block' }}
+            controls={false}
+            style={{ display: "block" }}
           >
             <source
               src={`/${channelVideos[currentVideoIndex]?.path}`}
@@ -189,16 +221,28 @@ const ChannelRoom = ({
           <video
             ref={(el) => (videoRefs.current[1] = el)}
             onEnded={handleVideoEnd}
+            onPause={handleVideoPause}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
-            style={{ display: 'none' }}
+            controls={false}
+            style={{ display: "none" }}
           >
             <source
               src={`/${channelVideos[nextVideoIndex]?.path}`}
               type="video/mp4"
             />
           </video>
+
+          {isPaused ? (
+            <div className="absolute z-20 inset-0 flex justify-center items-center">
+              <button
+                onClick={() => playVideo()}
+                className="text-9xl text-black"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 20 20"><path fill="gray" d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM7 6l8 4l-8 4V6z"/></svg>
+              </button>
+            </div>
+          ) : null}
         </>
       )}
 
@@ -224,7 +268,7 @@ ChannelRoom.propTypes = {
   getNextVideo: PropTypes.func.isRequired,
   updateVideoPlayedAt: PropTypes.func.isRequired,
   channel: PropTypes.oneOfType([PropTypes.object, PropTypes.any]).isRequired,
-  videos: PropTypes.array.isRequired
+  videos: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -232,12 +276,12 @@ const mapStateToProps = (state) => ({
   videos: state.video.videos,
   currentCategory: state.video.currentCategory,
   currentMinute: state.video.currentMinute,
-  currentSecond: state.video.currentSecond
+  currentSecond: state.video.currentSecond,
 });
 
 export default connect(mapStateToProps, {
   getChannelBySlug,
   getChannelVideos,
   getNextVideo,
-  updateVideoPlayedAt
+  updateVideoPlayedAt,
 })(ChannelRoom);
