@@ -71,14 +71,13 @@ router.get("/get-channel/:id", async (req, res) => {
 
 router.get("/get-channel-by-slug/:slug", async (req, res) => {
   const slug = req.params.slug;
-  const channel = await Channel.findOne({slug});
+  const channel = await Channel.findOne({ slug });
 
   res.json({
     success: true,
     channel,
   });
 });
-
 
 router.post(
   "/update-channel/:id",
@@ -101,7 +100,7 @@ router.post(
     }
 
     // DELETE ATTACHED IMAGE
-    const channel = await Channel.findById(channelID)
+    const channel = await Channel.findById(channelID);
     fs.unlinkSync(channel.image);
 
     await Channel.findByIdAndUpdate(
@@ -139,8 +138,10 @@ router.delete("/delete-channel/:id", async (req, res) => {
 });
 
 router.get("/get-channel-videos", async (req, res) => {
-  console.log(`${new Date()} GET CHANNEL VIDEOS`)
   let currentTime = new Date();
+  console.log(
+    `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET CHANNEL VIDEOS`
+  );
   let currentMinute = currentTime.getMinutes();
   let currentHour = currentTime.getHours();
   let currentSecond = currentTime.getSeconds();
@@ -256,7 +257,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
 });
 
 router.get("/get-next-video/:id", async (req, res) => {
-  console.log(`${new Date()} GET NEXT VIDEO`)
+  console.log(`${new Date()} GET NEXT VIDEO`);
   const videoID = req.params.id;
 
   const currentVideo = await Video.findById(videoID);
