@@ -255,6 +255,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
 });
 
 router.get("/get-next-video/:id", async (req, res) => {
+  console.log(`${new Date()} GET NEXT VIDEO`)
   const videoID = req.params.id;
 
   const currentVideo = await Video.findById(videoID);
