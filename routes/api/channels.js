@@ -309,7 +309,7 @@ router.post("/get-ip-filtered-logs", async (req, res) => {
   const ip = req.body.ip
 
   let logs = await PlayLog.find().sort({ date: -1 })
-  logs = logs.filter(log => log.ip.includes(ip))
+  logs = logs.filter(log => log.ip.includes(ip)).slice(0, 50)
 
   res.json({
     success: true,
