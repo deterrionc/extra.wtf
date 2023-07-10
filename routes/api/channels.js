@@ -139,6 +139,7 @@ router.delete("/delete-channel/:id", async (req, res) => {
 });
 
 router.get("/get-channel-videos", async (req, res) => {
+  console.log(`${new Date()} GET CHANNEL VIDEOS`)
   let currentTime = new Date();
   let currentMinute = currentTime.getMinutes();
   let currentHour = currentTime.getHours();
