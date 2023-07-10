@@ -34,7 +34,7 @@ const ChannelRoom = ({
   const videoRefs = useRef([null, null]);
 
   const intervalIdRef = useRef(null);
-  const intervalIdRef1 = useRef(null)
+  const checkPauseIntervalRef = useRef(null)
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
 
@@ -186,26 +186,23 @@ const ChannelRoom = ({
 
   useEffect(() => {
     // clear old timer
-    if (intervalIdRef1.current) {
-      clearInterval(intervalIdRef1.current);
+    if (checkPauseIntervalRef.current) {
+      clearInterval(checkPauseIntervalRef.current);
     }
 
-    intervalIdRef1.current = setInterval(() => {
+    checkPauseIntervalRef.current = setInterval(() => {
       const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
       if (currentVideoRef.paused && isPaused === false) {
-        console.log('yes')
-        console.log(isPaused)
         setIsPaused(true)
-      } else {
-        console.log('no')
+      } else if (currentVideoRef.paused === false && isPaused === true) {
         setIsPaused(false)
       }
-    }, 2 * 1000); // check every 5 seconds
+    }, 2 * 100); // check every 5 seconds
 
     // cleanup function
     return () => {
-      if (intervalIdRef1.current) {
-        clearInterval(intervalIdRef1.current);
+      if (checkPauseIntervalRef.current) {
+        clearInterval(checkPauseIntervalRef.current);
       }
     };
   }, [currentVideoIndex, nextVideoIndex, isPaused]);
@@ -226,7 +223,7 @@ const ChannelRoom = ({
             onPause={handleVideoPause}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: "block" }}
           >
             <source
@@ -241,7 +238,7 @@ const ChannelRoom = ({
             onPause={handleVideoPause}
             className="fixed z-10 inset-0 w-screen h-screen object-cover"
             autoPlay
-            controls={true}
+            controls={false}
             style={{ display: "none" }}
           >
             <source
