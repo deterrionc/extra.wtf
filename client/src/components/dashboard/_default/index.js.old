@@ -1,16 +1,26 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getLogs, getChannelVideos, getIpFilteredLogs } from "../../../actions/channel";
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  getLogs,
+  getAdminLogs,
+  getChannelVideos
+} from '../../../actions/channel';
 
-const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos }) => {
-  // const [showLogType, setShowLogType] = React.useState('all')
-
-  const [ip, setIp] = React.useState('');
+const Dashboard = ({
+  getChannelVideos,
+  getLogs,
+  getAdminLogs,
+  logs,
+  adminLogs,
+  videos
+}) => {
+  const [showLogType, setShowLogType] = React.useState('all')
 
   React.useEffect(() => {
     getLogs();
+    getAdminLogs();
     getChannelVideos();
-  }, [getLogs, getChannelVideos]);
+  }, [getLogs, getChannelVideos, getAdminLogs]);
 
   return (
     <React.Fragment>
@@ -42,9 +52,7 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
                     {index + 1}
                   </td>
                   <td className="py-3 px-6 text-left">{video.name}</td>
-                  <td className="py-3 px-6 text-left">
-                    {formatDateTime(video.playedAt)}
-                  </td>
+                  <td className="py-3 px-6 text-left">{formatDateTime(video.playedAt)}</td>
                   <td className="py-3 px-6 text-left">{video.path}</td>
                 </tr>
               ))}
@@ -54,18 +62,21 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
         <br />
         <h2 className="text-xl font-medium mb-4">Last Played 50 Videos</h2>
         <div className="flex items-center mb-4">
-          <input 
-            type="text"
-            className="py-2 px-3"
-            value={ip}
-            onChange={e => setIp(e.target.value)}
-          />
-          <button
-            className="py-2 px-3 rounded bg-teal-900 text-white"
-            onClick={() => getIpFilteredLogs(ip)}
-          >
-            Filter
-          </button>
+          {showLogType === 'all' ?
+            <button
+              className="py-2 px-3 rounded bg-teal-900 text-white"
+              onClick={() => setShowLogType('admin')}
+            >
+              Show Mine
+            </button>
+            :
+            <button
+              onClick={() => setShowLogType('all')}
+              className="py-2 px-3 rounded bg-lime-900 text-white"
+            >
+              Show All
+            </button>
+          }
         </div>
         <div className="overflow-x-auto">
           <table className="table-auto w-full min-w-max md:table">
@@ -92,26 +103,49 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
                 </th>
               </tr>
             </thead>
-            <tbody className="text-gray-600 text-sm font-light md:table-row-group">
-              {logs.map((log, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-200 hover:bg-gray-100"
-                >
-                  <td className="py-3 px-6 text-left whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="py-3 px-6 text-left">{log.video}</td>
-                  <td className="py-3 px-6 text-left">{log.category}</td>
-                  <td className="py-3 px-6 text-left">
-                    {log.date.slice(0, 19)}
-                  </td>
-                  <td className="py-3 px-6 text-left">{log.ip}</td>
-                  <td className="py-3 px-6 text-left">{log.browser}</td>
-                  <td className="py-3 px-6 text-left">{log.os}</td>
-                </tr>
-              ))}
-            </tbody>
+            {showLogType === 'all' ?
+              <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+                {logs.map((log, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-100"
+                  >
+                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.video}</td>
+                    <td className="py-3 px-6 text-left">{log.category}</td>
+                    <td className="py-3 px-6 text-left">
+                      {log.date.slice(0, 19)}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.ip}</td>
+                    <td className="py-3 px-6 text-left">{log.browser}</td>
+                    <td className="py-3 px-6 text-left">{log.os}</td>
+                  </tr>
+                ))}
+              </tbody>
+              :
+              <tbody className="text-gray-600 text-sm font-light md:table-row-group">
+                {adminLogs.map((log, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-100"
+                  >
+                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.video}</td>
+                    <td className="py-3 px-6 text-left">{log.category}</td>
+                    <td className="py-3 px-6 text-left">
+                      {log.date.slice(0, 19)}
+                    </td>
+                    <td className="py-3 px-6 text-left">{log.ip}</td>
+                    <td className="py-3 px-6 text-left">{log.browser}</td>
+                    <td className="py-3 px-6 text-left">{log.os}</td>
+                  </tr>
+                ))}
+              </tbody>
+            }
           </table>
         </div>
       </div>
@@ -119,21 +153,22 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
   );
 };
 
-const formatDateTime = (T) => {
+const formatDateTime = T => {
   if (T.slice(0, 4) === "2001") {
-    return "- New Video -";
+    return "- New Video -"
   } else {
-    return T.slice(0, 19);
+    return T.slice(0, 19)
   }
-};
+}
 
 const mapStateToProps = (state) => ({
   logs: state.channel.logs,
-  videos: state.video.videos,
+  adminLogs: state.channel.adminLogs,
+  videos: state.video.videos
 });
 
 export default connect(mapStateToProps, {
   getLogs,
-  getChannelVideos, 
-  getIpFilteredLogs,
+  getAdminLogs,
+  getChannelVideos
 })(Dashboard);

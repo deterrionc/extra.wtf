@@ -305,6 +305,18 @@ router.get("/get-admin-logs", async (req, res) => {
   });
 });
 
+router.post("/get-ip-filtered-logs", async (req, res) => {
+  const ip = req.body.ip
+
+  let logs = await PlayLog.find().sort({ date: -1 })
+  logs = logs.filter(log => log.ip.includes(ip))
+
+  res.json({
+    success: true,
+    logs
+  })
+})
+
 module.exports = router;
 
 const ruleForMusicMix = new schedule.RecurrenceRule();

@@ -1,29 +1,29 @@
-import api from '../utils/api';
-import formApi from '../utils/formApi';
+import api from "../utils/api";
+import formApi from "../utils/formApi";
 import {
   ADMIN_LOGS_LOADED,
   CHANNELS_LOADED,
   CHANNEL_LOADED,
   LOGS_LOADED,
-  VIDEOS_LOADED
-} from './types';
+  VIDEOS_LOADED,
+} from "./types";
 
 export const createChannel = (formData, navigate) => async (dispatch) => {
-  const res = await formApi.post('/channels/create-channel', formData);
+  const res = await formApi.post("/channels/create-channel", formData);
 
   if (res.data.success) {
     dispatch(getChannels());
-    navigate('/dashboard/channels');
+    navigate("/dashboard/channels");
   }
 };
 
 export const getChannels = () => async (dispatch) => {
-  const res = await api.get('/channels/get-channels');
+  const res = await api.get("/channels/get-channels");
 
   if (res.data.success) {
     dispatch({
       type: CHANNELS_LOADED,
-      payload: res.data.channels
+      payload: res.data.channels,
     });
   }
 };
@@ -34,7 +34,7 @@ export const getChannel = (channelID) => async (dispatch) => {
   if (res.data.success) {
     dispatch({
       type: CHANNEL_LOADED,
-      payload: res.data.channel
+      payload: res.data.channel,
     });
   }
 };
@@ -45,7 +45,7 @@ export const getChannelBySlug = (slug) => async (dispatch) => {
   if (res.data.success) {
     dispatch({
       type: CHANNEL_LOADED,
-      payload: res.data.channel
+      payload: res.data.channel,
     });
   }
 };
@@ -59,7 +59,7 @@ export const updateChannel =
 
     if (res.data.success) {
       dispatch(getChannels());
-      navigate('/dashboard/channels');
+      navigate("/dashboard/channels");
     }
   };
 
@@ -72,52 +72,63 @@ export const deleteChannel = (channelID) => async (dispatch) => {
 };
 
 export const getChannelVideos = () => async (dispatch) => {
-  const res = await api.get('/channels/get-channel-videos');
+  const res = await api.get("/channels/get-channel-videos");
 
   if (res.data.success) {
     dispatch({
       type: VIDEOS_LOADED,
-      payload: res.data
+      payload: res.data,
     });
 
-    return res.data.videos
+    return res.data.videos;
   }
 };
 
-export const updateVideoPlayedAt = videoID => async dispatch => {
-  const res = await api.get(`/channels/update-video-playedAt/${videoID}`)
+export const updateVideoPlayedAt = (videoID) => async (dispatch) => {
+  const res = await api.get(`/channels/update-video-playedAt/${videoID}`);
 
   if (res.data.success) {
-    return true
+    return true;
   }
-}
+};
 
-export const getNextVideo = videoID => async dispatch => {
-  const res = await api.get(`/channels/get-next-video/${videoID}`)
+export const getNextVideo = (videoID) => async (dispatch) => {
+  const res = await api.get(`/channels/get-next-video/${videoID}`);
 
   if (res.data.success) {
-    return res.data.video
+    return res.data.video;
   }
-}
+};
 
-export const getLogs = () => async dispatch => {
-  const res = await api.get('/channels/get-logs')
+export const getLogs = () => async (dispatch) => {
+  const res = await api.get("/channels/get-logs");
 
   if (res.data.success) {
     dispatch({
       type: LOGS_LOADED,
-      payload: res.data.logs
+      payload: res.data.logs,
     });
   }
-}
+};
 
-export const getAdminLogs = () => async dispatch => {
-  const res = await api.get('/channels/get-admin-logs')
+export const getAdminLogs = () => async (dispatch) => {
+  const res = await api.get("/channels/get-admin-logs");
 
   if (res.data.success) {
     dispatch({
       type: ADMIN_LOGS_LOADED,
-      payload: res.data.logs
-    })
+      payload: res.data.logs,
+    });
   }
-}
+};
+
+export const getIpFilteredLogs = (ip) => async (dispatch) => {
+  const res = await api.post(`/channels/get-ip-filtered-logs`, { ip });
+
+  if (res.data.success) {
+    dispatch({
+      type: LOGS_LOADED,
+      payload: res.data.logs,
+    });
+  }
+};
