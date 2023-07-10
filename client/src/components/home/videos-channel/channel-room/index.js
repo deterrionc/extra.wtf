@@ -34,6 +34,7 @@ const ChannelRoom = ({
   const videoRefs = useRef([null, null]);
 
   const intervalIdRef = useRef(null);
+  const intervalIdRef1 = useRef(null)
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
 
@@ -165,14 +166,13 @@ const ChannelRoom = ({
   useEffect(() => {
     if (channelVideos.length > 0) {
       const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
-      const nextVideoRef = videoRefs.current[nextVideoIndex % 2];
-      if (currentVideoRef.paused && nextVideoRef.paused) {
+      if (currentVideoRef.paused) {
         setIsPaused(true)
       } else {
         setIsPaused(false)
       }
     }
-  }, [channelVideos, currentVideoIndex, nextVideoIndex, isPaused])
+  }, [channelVideos, currentVideoIndex, isPaused])
 
   const playVideo = () => {
     const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
@@ -183,6 +183,32 @@ const ChannelRoom = ({
   const handleVideoPause = () => {
     setIsPaused(true)
   }
+
+  useEffect(() => {
+    // clear old timer
+    if (intervalIdRef1.current) {
+      clearInterval(intervalIdRef1.current);
+    }
+
+    intervalIdRef1.current = setInterval(() => {
+      const currentVideoRef = videoRefs.current[currentVideoIndex % 2];
+      if (currentVideoRef.paused && isPaused === false) {
+        console.log('yes')
+        console.log(isPaused)
+        setIsPaused(true)
+      } else {
+        console.log('no')
+        setIsPaused(false)
+      }
+    }, 2 * 1000); // check every 5 seconds
+
+    // cleanup function
+    return () => {
+      if (intervalIdRef1.current) {
+        clearInterval(intervalIdRef1.current);
+      }
+    };
+  }, [currentVideoIndex, nextVideoIndex, isPaused]);
 
   return (
     <div className="relative z-0 min-h-screen">
