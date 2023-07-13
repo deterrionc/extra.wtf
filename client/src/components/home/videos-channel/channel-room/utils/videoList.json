@@ -1,53 +1,64 @@
 {
   "music": [
     {
-      "name": "jingle_nat_230630_0858.mp4",
-      "path": "files\\music\\music_long\\jingle_nat_230630_0858_230706_0219.mp4",
-      "playedAt": "2001-01-01T00:00:00.000Z",
+      "_id": "64a830ab41df809c6104bb4b",
+      "name": "musiclong2_230703_0848.mp4",
+      "path": "files/music/musics/musiclong2_230703_0848.mp4",
       "type": "music",
-      "category": "music_long"
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T12:44:08.820Z",
+      "date": "2023-07-07T15:35:07.333Z",
+      "__v": 0
     },
     {
-      "name": "musiclong1.mp4",
-      "path": "files\\music\\music_long\\musiclong1_230703_0848.mp4",
-      "playedAt": "2023-07-04T04:30:57.144Z",
-      "type": "music",
-      "category": "music_long"
-    },
-    {
-      "name": "musiclong2.mp4",
-      "path": "files\\music\\music_long\\musiclong2_230703_0848.mp4",
-      "playedAt": "2023-07-04T04:30:57.613Z",
-      "type": "music",
-      "category": "music_long"
-    },
-    {
-      "name": "musiclong3.mp4",
-      "path": "files\\music\\music_long\\musiclong3_230703_0848.mp4",
-      "playedAt": "2023-07-04T04:30:58.201Z",
-      "type": "music",
-      "category": "music_long"
-    },
-    {
-      "name": "musicshort2.mp4",
-      "path": "files\\music\\music_short\\musicshort2_230703_0839.mp4",
-      "playedAt": "2023-07-04T04:58:36.028Z",
-      "type": "music",
-      "category": "music_short"
-    },
-    {
+      "_id": "64a830af41df809c6104bb5d",
       "name": "musicshort1.mp4",
-      "path": "files\\music\\music_short\\musicshort1_230703_0839.mp4",
-      "playedAt": "2023-07-04T04:58:37.325Z",
+      "path": "files/music/musics/musicshort1.mp4",
       "type": "music",
-      "category": "music_short"
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T12:46:15.146Z",
+      "date": "2023-07-07T15:35:11.857Z",
+      "__v": 0
     },
     {
-      "name": "musiclong4.mp4",
-      "path": "files\\music\\music_long\\musiclong4_230703_0848.mp4",
-      "playedAt": "2023-07-04T05:01:24.505Z",
+      "_id": "64a830ac41df809c6104bb51",
+      "name": "musiclong3_230703_0848.mp4",
+      "path": "files/music/musics/musiclong3_230703_0848.mp4",
       "type": "music",
-      "category": "music_long"
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T12:48:04.263Z",
+      "date": "2023-07-07T15:35:08.434Z",
+      "__v": 0
+    },
+    {
+      "_id": "64a830ad41df809c6104bb57",
+      "name": "musiclong4_230703_0848.mp4",
+      "path": "files/music/musics/musiclong4_230703_0848.mp4",
+      "type": "music",
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T12:48:08.226Z",
+      "date": "2023-07-07T15:35:09.553Z",
+      "__v": 0
+    },
+    {
+      "_id": "64a830b141df809c6104bb63",
+      "name": "musicshort2.mp4",
+      "path": "files/music/musics/musicshort2.mp4",
+      "type": "music",
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T12:48:11.754Z",
+      "date": "2023-07-07T15:35:13.289Z",
+      "__v": 0
+    },
+    {
+      "_id": "64a830a841df809c6104bb45",
+      "name": "musiclong1_230703_0848.mp4",
+      "path": "files/music/musics/musiclong1_230703_0848.mp4",
+      "type": "music",
+      "category": "64a2c38a95d1c81e4fcf3f60",
+      "playedAt": "2023-07-10T14:05:32.873Z",
+      "date": "2023-07-07T15:35:04.988Z",
+      "__v": 0
     }
   ],
   "news": [

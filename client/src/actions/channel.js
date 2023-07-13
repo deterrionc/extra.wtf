@@ -92,8 +92,16 @@ export const updateVideoPlayedAt = (videoID) => async (dispatch) => {
   }
 };
 
-export const getNextVideo = (videoID) => async (dispatch) => {
-  const res = await api.get(`/channels/get-next-video/${videoID}`);
+export const getFirstVideo = async () => {
+  const res = await api.get('/channels/get-first-video')
+
+  if (res.data.success) {
+    return res.data
+  }
+}
+
+export const getNextVideo = async (videoID, videoType) => {
+  const res = await api.get(`/channels/get-next-video/?videoID=${videoID}&type=${videoType}`);
 
   if (res.data.success) {
     return res.data.video;

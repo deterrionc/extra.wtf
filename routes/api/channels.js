@@ -17,6 +17,9 @@ const Category = require("../../models/Category");
 // For Scheduling
 const schedule = require("node-schedule");
 
+let serverNews = []
+let serverMusics = []
+
 router.post(
   "/create-channel",
   fileUpload.fields([{ name: "image", maxCount: 1 }]),
@@ -151,17 +154,17 @@ router.get("/get-channel-videos", async (req, res) => {
   if (currentHour >= 6 && currentHour <= 18) {
     // Day time
     if (currentMinute % 30 >= 5) {
-      videos = await getMusicVideos(videos);
+      videos = await getMusicVideos();
     } else {
-      videos = await getNewsVideos(videos, "day");
+      videos = await getNewsVideos("day");
       currentCategory = "news";
     }
   } else {
     // Night Time
     if (currentMinute % 60 >= 5) {
-      videos = await getMusicVideos(videos);
+      videos = await getMusicVideos();
     } else {
-      videos = await getNewsVideos(videos, "night");
+      videos = await getNewsVideos("night");
       currentCategory = "news";
     }
   }
@@ -256,7 +259,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
   });
 });
 
-router.get("/get-next-video/:id", async (req, res) => {
+router.get("/get-next-video-old/:id", async (req, res) => {
   let currentTime = new Date();
   console.log(
     `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET NEXT VIDEO`
@@ -317,6 +320,77 @@ router.post("/get-ip-filtered-logs", async (req, res) => {
   })
 })
 
+router.get("/get-first-video", async (req, res) => {
+  let currentTime = new Date();
+  let currentMinute = currentTime.getMinutes();
+  let currentHour = currentTime.getHours();
+  let currentSecond = currentTime.getSeconds();
+  let videos = [];
+  let videoType = 'music'
+
+  if (currentHour >= 6 && currentHour <= 18) {
+    // Day time
+    if (currentMinute % 30 >= 5) {
+      videos = await getMusicVideos();
+    } else {
+      videos = await getNewsVideos("day");
+      videoType = 'news'
+    }
+  } else {
+    // Night Time
+    if (currentMinute % 60 >= 5) {
+      videos = await getMusicVideos();
+    } else {
+      videos = await getNewsVideos("night");
+      videoType = 'news'
+    }
+  }
+
+  let video = {
+    ...videos[0],
+    type: videoType
+  }
+
+  res.json({
+    success: true,
+    video,
+    currentMinute,
+    currentSecond,
+  });
+})
+
+router.get('/get-next-video', async (req, res) => {
+  const videoID = req.query.videoID
+  const videoType = req.query.type
+  let video = null
+
+  if (videoType === "music") {
+    const videoIndex = serverMusics.findIndex((v) => String(v._id) === videoID);
+    if (videoIndex < serverMusics.length - 1) {
+      video = serverMusics[videoIndex + 1];
+    } else {
+      video = serverMusics[0];
+    }
+  }
+
+  if (videoType === "news") {
+    if (videoID === 0) {
+      video = serverNews[0];
+    }
+    const videoIndex = serverNews.findIndex((v) => String(v._id) === videoID);
+    if (videoIndex < serverNews.length - 1) {
+      video = serverNews[videoIndex + 1];
+    } else {
+      video = serverMusics[0];
+    }
+  }
+
+  res.json({
+    success: true,
+    video
+  })
+})
+
 module.exports = router;
 
 const ruleForMusicMix = new schedule.RecurrenceRule();
@@ -324,8 +398,7 @@ ruleForMusicMix.hour = 0;
 ruleForMusicMix.minute = 0;
 ruleForMusicMix.second = 0;
 
-const scheduleForScrape = schedule.scheduleJob(ruleForMusicMix, () => {
-  const date = new Date();
+const scheduleForMusicMix = schedule.scheduleJob(ruleForMusicMix, () => {
   mixMusicSequence();
 });
 
@@ -354,7 +427,9 @@ const mixMusicSequence = async () => {
   });
 };
 
-const getNewsVideos = async (videos, time) => {
+const getNewsVideos = async (time) => {
+  let videos = []
+
   const jingle_nat = await Category.findOne({ name: "jingle_nat" }).populate(
     "videos"
   );
@@ -405,8 +480,14 @@ const getNewsVideos = async (videos, time) => {
     next_news_60_videos.forEach((v) => videos.push(v));
   }
 
+  let _videos = []
+  videos.forEach(v => {
+    _videos.push({...v._doc, type: "news"})
+  })
+  videos = _videos
+
   let musics = [];
-  musics = await getMusicVideos(musics);
+  musics = await getMusicVideos();
 
   musics.forEach((m) => {
     videos.push(m);
@@ -417,16 +498,41 @@ const getNewsVideos = async (videos, time) => {
   return videos;
 };
 
-const getMusicVideos = async (videos) => {
+const getMusicVideos = async () => {
+  let videos = []
+
   const musicCategories = await Category.find({ type: "music" }).populate(
     "videos"
   );
   musicCategories.forEach((mc) => {
     mc.videos.forEach((v) => {
-      videos.push(v);
+      videos.push({...v._doc, type: 'music'});
     });
   });
   videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 14);
 
   return videos;
 };
+
+const prepare_News_Musics = async () => {
+  serverNews = await getNewsVideos()
+  serverMusics = await getMusicVideos()
+}
+
+prepare_News_Musics()
+
+const ruleForPrepareServerList1 = new schedule.RecurrenceRule();
+ruleForPrepareServerList1.minute = 29;
+ruleForPrepareServerList1.second = 0;
+
+const scheduleForPrepareServerList1 = schedule.scheduleJob(ruleForPrepareServerList1, () => {
+  prepare_News_Musics();
+});
+
+const ruleForPrepareServerList2 = new schedule.RecurrenceRule();
+ruleForPrepareServerList2.minute = 59;
+ruleForPrepareServerList2.second = 0;
+
+const scheduleForPrepareServerList2 = schedule.scheduleJob(ruleForPrepareServerList2, () => {
+  prepare_News_Musics();
+});
