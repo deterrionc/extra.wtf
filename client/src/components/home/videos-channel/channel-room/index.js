@@ -146,7 +146,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     return () => {
       clearInterval(showPause);
     };
-  }, [firstVideo, loaded]);
+  }, [firstVideo, loaded, isPaused]);
 
   return (
     <ChannelRoomContainer>
@@ -158,11 +158,11 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
           onEnded={onVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           id="videoplayer"
-          controls={true}
+          controls={false}
         />
       )}
       {isPaused ? (
-        <div className="absolute z-20 inset-0 flex justify-center items-center">
+        <div className="absolute z-20 inset-0 flex justify-center items-center m-20">
           <button
             onClick={() => playVideo(firstVideo)}
             className="text-9xl text-black"
