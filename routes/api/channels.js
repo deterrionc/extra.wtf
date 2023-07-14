@@ -154,9 +154,9 @@ router.delete("/delete-channel/:id", async (req, res) => {
 router.get("/get-channel-videos/:channelID", async (req, res) => {
   let channelID = req.params.channelID
   let currentTime = new Date();
-  console.log(
-    `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET CHANNEL VIDEOS`
-  );
+  // console.log(
+  //   `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET CHANNEL VIDEOS`
+  // );
   let currentMinute = currentTime.getMinutes();
   let currentHour = currentTime.getHours();
   let currentSecond = currentTime.getSeconds();
@@ -283,9 +283,9 @@ router.get("/update-video-playedAt", async (req, res) => {
 
 router.get("/get-next-video-old/:id", async (req, res) => {
   let currentTime = new Date();
-  console.log(
-    `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET NEXT VIDEO`
-  );
+  // console.log(
+  //   `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET NEXT VIDEO`
+  // );
   const videoID = req.params.id;
 
   const currentVideo = await Video.findById(videoID);
@@ -311,7 +311,6 @@ router.get("/get-next-video-old/:id", async (req, res) => {
 
 router.get("/get-logs/:channelID", async (req, res) => {
   const channelID = req.params.channelID
-  console.log(channelID)
   const logs = await PlayLog.find({channelID}).sort({ date: -1 }).limit(50);
 
   res.json({
