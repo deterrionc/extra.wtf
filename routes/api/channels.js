@@ -169,6 +169,8 @@ router.get("/get-channel-videos", async (req, res) => {
     }
   }
 
+  videos = videos.slice(0, 15)
+
   res.json({
     success: true,
     videos,
