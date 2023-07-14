@@ -16,7 +16,7 @@ const createMulterInstance = (uploadPath) => {
       }
     }),
     limits: {
-      fileSize: 100000000 // max file size 1MB = 1000000 bytes
+      fileSize: 1000000000 // max file size 1MB = 1000000 bytes
     },
     fileFilter(req, file, cb) {
       cb(undefined, true) // continue with upload
