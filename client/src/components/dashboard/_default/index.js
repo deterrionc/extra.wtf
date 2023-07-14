@@ -54,6 +54,7 @@ const Dashboard = ({
           onChange={(e) => setChannelID(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
         >
+          <option value="">--SELECT--</option>
           {channels.map((ch, index) => (
             <option key={index} value={ch._id}>
               {ch.name}
