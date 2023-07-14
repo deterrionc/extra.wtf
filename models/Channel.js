@@ -10,6 +10,11 @@ const ChannelSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  folder: {
+    type: String,
+    required: true,
+    unique: true
+  },
   image: {
     type: String
   },

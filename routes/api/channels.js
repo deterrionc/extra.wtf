@@ -8,40 +8,43 @@ const PlayLog = require("../../models/PlayLog");
 
 // FILE UPLOAD
 const fileUpload = require("../../utils/fileUpload");
+const createMulterInstance = require("../../utils/createMulterInstance");
 
 // FILE DELETE
 var fs = require("fs");
+const path = require("path");
 const Category = require("../../models/Category");
 // const getVideoDuration = require('../../utils/getVideoDuration');
 
 // For Scheduling
 const schedule = require("node-schedule");
 
-let serverNews = []
-let serverMusics = []
+let serverNews;
+let serverMusics;
 
-router.post(
-  "/create-channel",
-  fileUpload.fields([{ name: "image", maxCount: 1 }]),
-  async (req, res) => {
+router.post("/create-channel/:folder", async (req, res) => {
+  let dirPath = path.join("files", `/${req.params.folder}`);
+
+  try {
+    fs.mkdirSync(dirPath);
+    const imageUpload = createMulterInstance(dirPath);
+
+    await new Promise((resolve, reject) => {
+      imageUpload.fields([{ name: "image", maxCount: 1 }])(req, res, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+
     let imagePath = req.files["image"][0].path;
-
-    const convertToSlug = require("../../utils/convertToSlug");
-
-    let slug = convertToSlug(req.body.name);
-
-    while (true) {
-      let _channel = await Channel.findOne({ slug });
-      if (_channel) {
-        slug += "_";
-      } else {
-        break;
-      }
-    }
 
     let newChannel = new Channel({
       name: req.body.name,
-      slug,
+      slug: req.body.slug,
+      folder: dirPath,
       image: imagePath,
     });
 
@@ -50,8 +53,13 @@ router.post(
     res.json({
       success: true,
     });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
 
 router.get("/get-channels", async (req, res) => {
   const channels = await Channel.find();
@@ -82,45 +90,48 @@ router.get("/get-channel-by-slug/:slug", async (req, res) => {
   });
 });
 
-router.post(
-  "/update-channel/:id",
-  fileUpload.fields([{ name: "image", maxCount: 1 }]),
-  async (req, res) => {
-    const channelID = req.params.id;
-    let imagePath = req.files["image"][0].path;
+router.post("/update-channel/:id", async (req, res) => {
+  const channelID = req.params.id;
 
-    const convertToSlug = require("../../utils/convertToSlug");
-
-    let slug = convertToSlug(req.body.name);
-
-    while (true) {
-      let _channel = await Channel.findOne({ slug });
-      if (_channel) {
-        slug += "_";
-      } else {
-        break;
-      }
-    }
-
+  try {
     // DELETE ATTACHED IMAGE
     const channel = await Channel.findById(channelID);
     fs.unlinkSync(channel.image);
 
+    const imageUpload = createMulterInstance(channel.folder);
+
+    await new Promise((resolve, reject) => {
+      imageUpload.fields([{ name: "image", maxCount: 1 }])(req, res, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+
+    let imagePath = req.files["image"][0].path;
+  
     await Channel.findByIdAndUpdate(
       channelID,
       {
         name: req.body.name,
-        slug,
+        slug: req.body.slug,
         image: imagePath,
       },
       { new: true }
     );
-
+  
     res.json({
       success: true,
     });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
 
 router.delete("/delete-channel/:id", async (req, res) => {
   const channelID = req.params.id;
@@ -140,7 +151,8 @@ router.delete("/delete-channel/:id", async (req, res) => {
   });
 });
 
-router.get("/get-channel-videos", async (req, res) => {
+router.get("/get-channel-videos/:channelID", async (req, res) => {
+  let channelID = req.params.channelID
   let currentTime = new Date();
   console.log(
     `${currentTime.getMonth()}/${currentTime.getDate()} ${currentTime.getHours()}-${currentTime.getMinutes()}-${currentTime.getSeconds()} GET CHANNEL VIDEOS`
@@ -154,22 +166,26 @@ router.get("/get-channel-videos", async (req, res) => {
   if (currentHour >= 6 && currentHour <= 18) {
     // Day time
     if (currentMinute % 30 >= 5) {
-      videos = await getMusicVideos();
+      let _videos = await getMusicVideos();
+      videos = _videos[channelID]
     } else {
-      videos = await getNewsVideos("day");
-      currentCategory = "news";
+      let _videos = await getNewsVideos("day");
+      videos = _videos[channelID]
+      videoType = "news";
     }
   } else {
     // Night Time
     if (currentMinute % 60 >= 5) {
-      videos = await getMusicVideos();
+      let _videos = videos = await getMusicVideos();
+      videos = _videos[channelID]
     } else {
-      videos = await getNewsVideos("night");
-      currentCategory = "news";
+      let _videos = await getNewsVideos("night");
+      videos = _videos[channelID]
+      videoType = "news";
     }
   }
 
-  videos = videos.slice(0, 15)
+  videos = videos.slice(0, 15);
 
   res.json({
     success: true,
@@ -227,8 +243,11 @@ function formatCategories(categories) {
   return formattedCategories;
 }
 
-router.get("/update-video-playedAt/:id", async (req, res) => {
-  const videoID = req.params.id;
+router.get("/update-video-playedAt", async (req, res) => {
+  const videoID = req.query.videoID
+  const slug = req.query.slug
+  const channel = await Channel.findOne({slug})
+  const channelID = channel._id
 
   const ipAddress = req.headers["x-forwarded-for"];
   const userAgent = req.headers["user-agent"];
@@ -241,6 +260,7 @@ router.get("/update-video-playedAt/:id", async (req, res) => {
   const newPlayLog = new PlayLog({
     video: video.name,
     category: video.category.name,
+    channelID,
     ip: trimReplace(ipAddress),
     browser: deviceInfo.browser.name,
     os: `${deviceInfo.os.name} ${deviceInfo.os.version}`,
@@ -289,8 +309,10 @@ router.get("/get-next-video-old/:id", async (req, res) => {
   });
 });
 
-router.get("/get-logs", async (req, res) => {
-  const logs = await PlayLog.find().sort({ date: -1 }).limit(50);
+router.get("/get-logs/:channelID", async (req, res) => {
+  const channelID = req.params.channelID
+  console.log(channelID)
+  const logs = await PlayLog.find({channelID}).sort({ date: -1 }).limit(50);
 
   res.json({
     success: true,
@@ -311,47 +333,55 @@ router.get("/get-admin-logs", async (req, res) => {
 });
 
 router.post("/get-ip-filtered-logs", async (req, res) => {
-  const ip = req.body.ip
+  const ip = req.body.ip;
+  const channelID = req.body.channelID;
 
-  let logs = await PlayLog.find().sort({ date: -1 })
-  logs = logs.filter(log => log.ip.includes(ip)).slice(0, 50)
+  let logs = await PlayLog.find({channelID}).sort({ date: -1 });
+  logs = logs.filter((log) => log.ip.includes(ip)).slice(0, 50);
 
   res.json({
     success: true,
-    logs
-  })
-})
+    logs,
+  });
+});
 
-router.get("/get-first-video", async (req, res) => {
+router.get("/get-first-video/:slug", async (req, res) => {
+  let slug = req.params.slug
+  let channel = await Channel.findOne({slug})
+  let channelID = channel._id
   let currentTime = new Date();
   let currentMinute = currentTime.getMinutes();
   let currentHour = currentTime.getHours();
   let currentSecond = currentTime.getSeconds();
   let videos = [];
-  let videoType = 'music'
+  let videoType = "music";
 
   if (currentHour >= 6 && currentHour <= 18) {
     // Day time
     if (currentMinute % 30 >= 5) {
-      videos = await getMusicVideos();
+      let _videos = await getMusicVideos();
+      videos = _videos[channelID]
     } else {
-      videos = await getNewsVideos("day");
-      videoType = 'news'
+      let _videos = await getNewsVideos("day");
+      videos = _videos[channelID]
+      videoType = "news";
     }
   } else {
     // Night Time
     if (currentMinute % 60 >= 5) {
-      videos = await getMusicVideos();
+      let _videos = videos = await getMusicVideos();
+      videos = _videos[channelID]
     } else {
-      videos = await getNewsVideos("night");
-      videoType = 'news'
+      let _videos = await getNewsVideos("night");
+      videos = _videos[channelID]
+      videoType = "news";
     }
   }
 
   let video = {
     ...videos[0],
-    type: videoType
-  }
+    type: videoType,
+  };
 
   res.json({
     success: true,
@@ -359,39 +389,42 @@ router.get("/get-first-video", async (req, res) => {
     currentMinute,
     currentSecond,
   });
-})
+});
 
-router.get('/get-next-video', async (req, res) => {
-  const videoID = req.query.videoID
-  const videoType = req.query.type
-  let video = null
+router.get("/get-next-video", async (req, res) => {
+  const slug = req.query.slug;
+  const channel = await Channel.findOne({slug})
+  const channelID = channel._id
+  const videoID = req.query.videoID;
+  const videoType = req.query.type;
+  let video = null;
 
   if (videoType === "music") {
-    const videoIndex = serverMusics.findIndex((v) => String(v._id) === videoID);
-    if (videoIndex < serverMusics.length - 1) {
-      video = serverMusics[videoIndex + 1];
+    const videoIndex = serverMusics[channelID].findIndex((v) => String(v._id) === videoID);
+    if (videoIndex < serverMusics[channelID].length - 1) {
+      video = serverMusics[channelID][videoIndex + 1];
     } else {
-      video = serverMusics[0];
+      video = serverMusics[channelID][0];
     }
   }
 
   if (videoType === "news") {
     if (videoID === 0) {
-      video = serverNews[0];
+      video = serverNews[channelID][0];
     }
-    const videoIndex = serverNews.findIndex((v) => String(v._id) === videoID);
-    if (videoIndex < serverNews.length - 1) {
-      video = serverNews[videoIndex + 1];
+    const videoIndex = serverNews[channelID].findIndex((v) => String(v._id) === videoID);
+    if (videoIndex < serverNews[channelID].length - 1) {
+      video = serverNews[channelID][videoIndex + 1];
     } else {
-      video = serverMusics[0];
+      video = serverMusics[channelID][0];
     }
   }
 
   res.json({
     success: true,
-    video
-  })
-})
+    video,
+  });
+});
 
 module.exports = router;
 
@@ -431,109 +464,110 @@ const mixMusicSequence = async () => {
 };
 
 const getNewsVideos = async (time) => {
-  let videos = []
+  let videosObj = {}
 
-  const jingle_nat = await Category.findOne({ name: "jingle_nat" }).populate(
-    "videos"
-  );
-  let jingle_nat_videos = jingle_nat.videos.sort(
-    (v1, v2) => v1.playedAt - v2.playedAt
-  );
-  videos.push(jingle_nat_videos[0]);
+  const channels = await Channel.find()
+  for (let i = 0; i < channels.length; i++) {
+    let ch = channels[i]
+    const category = await Category.findOne({channelID: ch._id})
+    if (category) {
+      let videos = [];
+      const jingle_nat = await Category.findOne({ name: "jingle_nat", channelID: ch._id }).populate("videos");
+      let jingle_nat_videos = jingle_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      videos.push(jingle_nat_videos[0]);
+    
+      const news_nat = await Category.findOne({ name: "news_nat", channelID: ch._id }).populate("videos");
+      let news_nat_videos = news_nat.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      news_nat_videos.forEach((v) => videos.push(v));
+    
+      const jingle_int = await Category.findOne({ name: "jingle_int", channelID: ch._id }).populate("videos");
+      let jingle_int_videos = jingle_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+      videos.push(jingle_int_videos[0]);
+    
+      const news_int = await Category.findOne({ name: "news_int", channelID: ch._id }).populate("videos");
+      let news_int_videos = news_int.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+      news_int_videos.forEach((v) => videos.push(v));
+    
+      if (time === "day") {
+        const next_news_30 = await Category.findOne({name: "next_news_30", channelID: ch._id}).populate("videos");
+        let next_news_30_videos = next_news_30.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+        next_news_30_videos.forEach((v) => videos.push(v));
+      } else {
+        const next_news_60 = await Category.findOne({name: "next_news_60", channelID: ch._id}).populate("videos");
+        let next_news_60_videos = next_news_60.videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 3);
+        next_news_60_videos.forEach((v) => videos.push(v));
+      }
+    
+      let _videos = [];
+      videos.forEach((v) => {
+        _videos.push({ ...v._doc, type: "news" });
+      });
+      videos = _videos;
 
-  const news_nat = await Category.findOne({ name: "news_nat" }).populate(
-    "videos"
-  );
-  let news_nat_videos = news_nat.videos
-    .sort((v1, v2) => v1.playedAt - v2.playedAt)
-    .slice(0, 3);
-  news_nat_videos.forEach((v) => videos.push(v));
+      let musics = [];
+      musics = await getMusicVideos();
 
-  const jingle_int = await Category.findOne({ name: "jingle_int" }).populate(
-    "videos"
-  );
-  let jingle_int_videos = jingle_int.videos.sort(
-    (v1, v2) => v1.playedAt - v2.playedAt
-  );
-  videos.push(jingle_int_videos[0]);
+      musics[ch._id].forEach((m) => {
+        videos.push(m);
+      });
 
-  const news_int = await Category.findOne({ name: "news_int" }).populate(
-    "videos"
-  );
-  let news_int_videos = news_int.videos
-    .sort((v1, v2) => v1.playedAt - v2.playedAt)
-    .slice(0, 3);
-  news_int_videos.forEach((v) => videos.push(v));
-
-  if (time === "day") {
-    const next_news_30 = await Category.findOne({
-      name: "next_news_30",
-    }).populate("videos");
-    let next_news_30_videos = next_news_30.videos
-      .sort((v1, v2) => v1.playedAt - v2.playedAt)
-      .slice(0, 3);
-    next_news_30_videos.forEach((v) => videos.push(v));
-  } else {
-    const next_news_60 = await Category.findOne({
-      name: "next_news_60",
-    }).populate("videos");
-    let next_news_60_videos = next_news_60.videos
-      .sort((v1, v2) => v1.playedAt - v2.playedAt)
-      .slice(0, 3);
-    next_news_60_videos.forEach((v) => videos.push(v));
+      videosObj[ch._id] = videos
+    }
   }
 
-  let _videos = []
-  videos.forEach(v => {
-    _videos.push({...v._doc, type: "news"})
-  })
-  videos = _videos
-
-  let musics = [];
-  musics = await getMusicVideos();
-
-  musics.forEach((m) => {
-    videos.push(m);
-  });
-
-  return videos;
+  return videosObj;
 };
 
 const getMusicVideos = async () => {
-  let videos = []
 
-  const musicCategories = await Category.find({ type: "music" }).populate(
-    "videos"
-  );
-  musicCategories.forEach((mc) => {
-    mc.videos.forEach((v) => {
-      videos.push({...v._doc, type: 'music'});
-    });
-  });
-  videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+  let videosObj = {}
 
-  return videos;
+  const channels = await Channel.find()
+  for (let i = 0; i < channels.length; i++) {
+    let ch = channels[i]
+    const category = await Category.findOne({channelID: ch._id})
+    if (category) {
+      let videos = [];
+      const musicCategories = await Category.find({ type: "music", channelID: ch._id }).populate("videos");
+      musicCategories.forEach((mc) => {
+        mc.videos.forEach((v) => {
+          videos.push({ ...v._doc, type: "music" });
+        });
+      });
+      videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
+
+      videosObj[ch._id] = videos
+    }
+  }
+
+  return videosObj;
 };
 
 const prepare_News_Musics = async () => {
-  serverNews = await getNewsVideos()
-  serverMusics = await getMusicVideos()
-}
+  serverNews = await getNewsVideos();
+  serverMusics = await getMusicVideos();
+};
 
-prepare_News_Musics()
+prepare_News_Musics();
 
 const ruleForPrepareServerList1 = new schedule.RecurrenceRule();
 ruleForPrepareServerList1.minute = 29;
 ruleForPrepareServerList1.second = 0;
 
-const scheduleForPrepareServerList1 = schedule.scheduleJob(ruleForPrepareServerList1, () => {
-  prepare_News_Musics();
-});
+const scheduleForPrepareServerList1 = schedule.scheduleJob(
+  ruleForPrepareServerList1,
+  () => {
+    prepare_News_Musics();
+  }
+);
 
 const ruleForPrepareServerList2 = new schedule.RecurrenceRule();
 ruleForPrepareServerList2.minute = 59;
 ruleForPrepareServerList2.second = 0;
 
-const scheduleForPrepareServerList2 = schedule.scheduleJob(ruleForPrepareServerList2, () => {
-  prepare_News_Musics();
-});
+const scheduleForPrepareServerList2 = schedule.scheduleJob(
+  ruleForPrepareServerList2,
+  () => {
+    prepare_News_Musics();
+  }
+);

@@ -5,6 +5,9 @@ const PlayLogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  channelID: {
+    type: String
+  },
   category: {
     type: String
   },

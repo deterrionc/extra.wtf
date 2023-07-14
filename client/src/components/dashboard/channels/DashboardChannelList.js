@@ -29,8 +29,9 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">No</th>
               <th className="py-3 px-6 text-left">Name</th>
+              <th className="py-3 px-6 text-left">Slug</th>
+              <th className="py-3 px-6 text-left">Folder Path</th>
               <th className="py-3 px-6 text-center">Image</th>
-              {/* <th className="py-3 px-6 text-left">Videos</th> */}
               <th className="py-3 px-6 text-left">Action</th>
             </tr>
           </thead>
@@ -44,6 +45,8 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
                   {index + 1}
                 </td>
                 <td className="py-3 px-6 text-left">{channel.name}</td>
+                <td className="py-3 px-6 text-left">{channel.slug}</td>
+                <td className="py-3 px-6 text-left">{channel.folder}</td>
                 <td className="py-3 px-6 text-center">
                   <img
                     src={`/${channel.image}`}
@@ -51,14 +54,7 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
                     className="rounded-md w-32 mx-auto"
                   />
                 </td>
-                {/* <td className="py-3 px-6 text-left">{channel.videos.length}</td> */}
                 <td className="py-3 px-6 text-left">
-                  {/* <Link
-                    to={`/dashboard/channels/${channel._id}`}
-                    className="py-2 px-3 rounded bg-lime-900 text-white mx-1"
-                  >
-                    <FaIcon iconName="fa fa-eye" />
-                  </Link> */}
                   <Link
                     to={`/dashboard/channels/edit/${channel._id}`}
                     className="py-2 px-3 rounded bg-teal-800 text-white mx-1"

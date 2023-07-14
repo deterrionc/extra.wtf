@@ -135,39 +135,6 @@ const DashboardSidebar: React.FC = ({ logout }: any) => {
           )}
         </Link>
 
-        {/* <Link
-          to="/dashboard/articles"
-          className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
-        >
-          {isNarrow ? (
-            <FaIcon iconName="fa-file-text" className="w-narrow-sidebar-icon" />
-          ) : (
-            <>
-              <FaIcon iconName="fa-file-text" className="w-6" />
-              <span className={`${isNarrow ? 'hidden' : 'block'} md:block`}>
-                Articles
-              </span>
-            </>
-          )}
-        </Link> */}
-        {/* <Link
-          to="/dashboard/settings"
-          className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
-        >
-          {isNarrow ? (
-            <FaIcon iconName="fa-cog" className="w-6 w-narrow-sidebar-icon" />
-          ) : (
-            <>
-              <FaIcon iconName="fa-cogs" className="w-6" />
-              <span className={`${isNarrow ? 'hidden' : 'block'} md:block`}>
-                Settings
-              </span>
-            </>
-          )}
-        </Link>
-
-        <hr className="border-lime-900 my-2" /> */}
-
         <Link
           to="/"
           className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"

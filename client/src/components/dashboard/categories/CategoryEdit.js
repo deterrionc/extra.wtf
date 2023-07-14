@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { updateCategory, getCategory } from '../../../actions/category';
+import { updateCategory, getCategory, updateChannelCategory } from '../../../actions/category';
 import { useParams } from 'react-router-dom';
 
-const CategoryEdit = ({ updateCategory, getCategory, category }) => {
+const CategoryEdit = ({ updateCategory, updateChannelCategory, getCategory, category }) => {
   const params = useParams();
   const categoryID = params.id;
   let navigate = useNavigate();
@@ -28,7 +27,8 @@ const CategoryEdit = ({ updateCategory, getCategory, category }) => {
       return;
     }
     let formData = { name, type };
-    updateCategory(categoryID, formData, navigate);
+    // updateCategory(categoryID, formData, navigate);
+    updateChannelCategory(categoryID, formData, navigate, category.channelID);
   };
 
   return (
@@ -82,15 +82,10 @@ const CategoryEdit = ({ updateCategory, getCategory, category }) => {
   );
 };
 
-CategoryEdit.propTypes = {
-  updateCategory: PropTypes.func.isRequired,
-  getCategory: PropTypes.func.isRequired
-};
-
 const mapStateToProps = (state) => ({
   category: state.category.category
 });
 
-export default connect(mapStateToProps, { updateCategory, getCategory })(
+export default connect(mapStateToProps, { updateCategory, getCategory, updateChannelCategory })(
   CategoryEdit
 );

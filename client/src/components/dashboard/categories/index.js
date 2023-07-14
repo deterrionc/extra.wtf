@@ -11,7 +11,7 @@ const CategoryContainer = () => {
     <React.Fragment>
       <Routes>
         <Route path="/" element={<CategoryList />} />
-        <Route path="/create" element={<CategoryCreate />} />
+        <Route path="/create/:channelID" element={<CategoryCreate />} />
         <Route path="/edit/:id" element={<CategoryEdit />} />
         <Route path="/videos/:id" element={<CategoryVideos />} />
         <Route path="/upload/:id" element={<CategoryVideoUpload />} />

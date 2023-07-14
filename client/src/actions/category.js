@@ -12,9 +12,20 @@ export const createCategory = (formData, navigate) => async (dispatch) => {
     dispatch(getCategories());
     navigate('/dashboard/categories');
   } else {
-    dispatch(setAlert(res.data.message, 'danger'));
+    dispatch(setAlert(res.data.message, 'error'));
   }
 };
+
+export const createChannelCategory = (formData, navigate, channelID) => async (dispatch) => {
+  const res = await api.post(`/categories/create-channel-category/${channelID}`, formData);
+
+  if (res.data.success) {
+    dispatch(getChannelCategories(channelID));
+    navigate('/dashboard/categories');
+  } else {
+    dispatch(setAlert(res.data.message, 'error'));
+  }
+}
 
 export const getCategories = () => async (dispatch) => {
   const res = await api.get('/categories/get-categories');
@@ -26,6 +37,17 @@ export const getCategories = () => async (dispatch) => {
     });
   }
 };
+
+export const getChannelCategories = (channelID) => async (dispatch) => {
+  const res = await api.get(`/categories/get-channel-categories/${channelID}`)
+
+  if (res.data.success) {
+    dispatch({
+      type: CATEGORIES_LOADED,
+      payload: res.data.categories
+    })
+  }
+}
 
 export const getCategory = (categoryID) => async (dispatch) => {
   dispatch(setLoading(true));
@@ -61,6 +83,17 @@ export const updateCategory =
     }
   };
 
+export const updateChannelCategory = (categoryID, formData, navigate, channelID) => async (dispatch) => {
+  const res = await api.post(`/categories/update-channel-category/${categoryID}`, formData)
+
+  if (res.data.success) {
+    dispatch(getChannelCategories(channelID));
+    navigate('/dashboard/categories');
+  } else {
+    dispatch(setAlert(res.data.message, 'error'));
+  }
+}
+
 export const deleteCategory = (categoryID) => async (dispatch) => {
   const res = await api.delete(`/categories/delete-category/${categoryID}`);
 
@@ -68,6 +101,16 @@ export const deleteCategory = (categoryID) => async (dispatch) => {
     dispatch(getCategories());
   }
 };
+
+export const deleteChannelCategory = (categoryID, channelID) => async (dispatch) => {
+  const res = await api.delete(`/categories/delete-channel-category/${categoryID}`)
+
+  if (res.data.success) {
+    dispatch(getChannelCategories(channelID));
+  } else {
+    dispatch(setAlert(res.data.message, 'error'));
+  }
+}
 
 export const removeFromCategory = (categoryID, videoID) => async (dispatch) => {
   dispatch(setLoading(true))
@@ -103,5 +146,7 @@ export const uploadVideoToCategory = (categoryID, formData) => async dispatch =>
 
   if (res.data.success) {
     return true
+  } else {
+    dispatch(setAlert(res.data.message, 'error'));
   }
 }

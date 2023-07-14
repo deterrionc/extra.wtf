@@ -1,20 +1,66 @@
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
-import { getLogs, getChannelVideos, getIpFilteredLogs } from "../../../actions/channel";
+import {
+  getLogs,
+  getChannelVideos,
+  getIpFilteredLogs,
+  getChannels,
+  getChannel,
+} from "../../../actions/channel";
 
-const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos }) => {
-  // const [showLogType, setShowLogType] = React.useState('all')
+const Dashboard = ({
+  getChannelVideos,
+  getLogs,
+  getIpFilteredLogs,
+  logs,
+  videos,
+  getChannels,
+  channels,
+  channel,
+}) => {
+  // const [showLogType, setShowLogType] = useState('all')
 
-  const [ip, setIp] = React.useState('');
+  const [ip, setIp] = useState("");
+  const [channelID, setChannelID] = useState("");
 
-  React.useEffect(() => {
-    getLogs();
-    getChannelVideos();
-  }, [getLogs, getChannelVideos]);
+  useEffect(() => {
+    getChannels();
+  }, [getChannels]);
+
+  useEffect(() => {
+    if (channel._id) {
+      setChannelID(channel._id);
+    }
+  }, [channel]);
+
+  useEffect(() => {
+    if (channelID.length) {
+      getChannel(channelID);
+    }
+  }, [channelID]);
+
+  useEffect(() => {
+    if (channelID !== "") {
+      getLogs(channelID);
+      getChannelVideos(channelID);
+    }
+  }, [getLogs, getChannelVideos, channelID]);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <div className="flex-grow bg-gray-100 p-3">
+        <select
+          value={channelID}
+          onChange={(e) => setChannelID(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
+        >
+          {channels.map((ch, index) => (
+            <option key={index} value={ch._id}>
+              {ch.name}
+            </option>
+          ))}
+        </select>
+
         <h2 className="text-xl font-medium mb-4">Playlist</h2>
         <div className="overflow-x-auto">
           <table className="table-auto w-full min-w-max md:table">
@@ -54,15 +100,15 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
         <br />
         <h2 className="text-xl font-medium mb-4">Last Played 50 Videos</h2>
         <div className="flex items-center mb-4">
-          <input 
+          <input
             type="text"
             className="py-2 px-3"
             value={ip}
-            onChange={e => setIp(e.target.value)}
+            onChange={(e) => setIp(e.target.value)}
           />
           <button
             className="py-2 px-3 rounded bg-teal-900 text-white"
-            onClick={() => getIpFilteredLogs(ip)}
+            onClick={() => getIpFilteredLogs(ip, channelID)}
           >
             Filter
           </button>
@@ -115,7 +161,7 @@ const Dashboard = ({ getChannelVideos, getLogs, getIpFilteredLogs, logs, videos 
           </table>
         </div>
       </div>
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -130,10 +176,14 @@ const formatDateTime = (T) => {
 const mapStateToProps = (state) => ({
   logs: state.channel.logs,
   videos: state.video.videos,
+  channels: state.channel.channels,
+  channel: state.channel.channel,
 });
 
 export default connect(mapStateToProps, {
   getLogs,
-  getChannelVideos, 
+  getChannelVideos,
   getIpFilteredLogs,
+  getChannels,
+  getChannel,
 })(Dashboard);

@@ -12,6 +12,9 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     default: 'news'
   },
+  channelID: {
+    type: String,
+  }, 
   videos: [
     {
       type: mongoose.Schema.Types.ObjectId,

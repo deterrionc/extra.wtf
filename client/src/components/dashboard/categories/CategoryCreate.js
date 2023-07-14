@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { createCategory } from '../../../actions/category';
+import { createCategory, createChannelCategory } from '../../../actions/category';
+import { useParams } from 'react-router-dom';
 
-const CreateCategory = ({ createCategory }) => {
+const CreateCategory = ({ createCategory, createChannelCategory }) => {
+  const params = useParams();
+  const channelID = params.channelID
   let navigate = useNavigate();
+
   const [name, setName] = useState('');
-  const [type, setType] = useState('music');
+  const [type, setType] = useState('news');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     let formData = { name, type };
-    createCategory(formData, navigate);
+    // createCategory(formData, navigate);
+    createChannelCategory(formData, navigate, channelID);
   };
 
   return (
@@ -66,10 +70,6 @@ const CreateCategory = ({ createCategory }) => {
   );
 };
 
-CreateCategory.propTypes = {
-  createCategory: PropTypes.func.isRequired
-};
-
 const mapStateToProps = (state) => ({});
 
-export default connect(mapStateToProps, { createCategory })(CreateCategory);
+export default connect(mapStateToProps, { createCategory, createChannelCategory })(CreateCategory);

@@ -1,27 +1,75 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { getCategories, deleteCategory } from '../../../actions/category';
-import { FaIcon } from '../../../container/atoms/FaIcon';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import {
+  getCategories,
+  deleteCategory,
+  deleteChannelCategory,
+  getChannelCategories,
+} from "../../../actions/category";
+import { getChannels, getChannel } from "../../../actions/channel";
+import { FaIcon } from "../../../container/atoms/FaIcon";
 
-const CategoryList = ({ getCategories, deleteCategory, categories }) => {
+const CategoryList = ({
+  getChannels,
+  getChannel,
+  channels,
+  channel,
+  getCategories,
+  getChannelCategories,
+  deleteCategory,
+  deleteChannelCategory,
+  categories,
+}) => {
+  const [channelID, setChannelID] = useState("");
+
   useEffect(() => {
-    getCategories();
-  }, [getCategories]);
+    getChannels();
+  }, [getChannels]);
+
+  useEffect(() => {
+    if (channelID.length) {
+      getChannel(channelID);
+    }
+  }, [channelID, getChannel]);
+
+  useEffect(() => {
+    if (channel._id) {
+      setChannelID(channel._id);
+      getChannelCategories(channel._id);
+    }
+  }, [channel, getChannelCategories]);
+
+  // useEffect(() => {
+  //   getCategories();
+  // }, [getCategories]);
 
   return (
     <div className="p-3 bg-gray-100 rounded-lg flex flex-col">
       <h2 className="text-xl font-medium mb-4">Category List</h2>
 
-      <div className="flex items-center justify-end mb-4">
-        <Link
-          to="/dashboard/categories/create"
-          className="py-2 px-3 rounded bg-lime-900 text-white"
-        >
-          Create A Category
-        </Link>
-      </div>
+      <select
+        value={channelID}
+        onChange={(e) => setChannelID(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
+      >
+        {channels.map((ch, index) => (
+          <option key={index} value={ch._id}>
+            {ch.name}
+          </option>
+        ))}
+      </select>
+
+      {channelID.length ? (
+        <div className="flex items-center justify-end mb-4">
+          <Link
+            to={`/dashboard/categories/create/${channelID}`}
+            className="py-2 px-3 rounded bg-lime-900 text-white"
+          >
+            Create A Category
+          </Link>
+        </div>
+      ) : null}
 
       <div className="overflow-x-auto">
         <table className="table-auto w-full min-w-max md:table">
@@ -82,10 +130,10 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          'Are you sure you want to delete this category? If you delete this category, the files in the directory are permanently deleted.'
+                          "Are you sure you want to delete this category? If you delete this category, the files in the directory are permanently deleted."
                         )
                       )
-                        deleteCategory(category._id);
+                        deleteChannelCategory(category._id, channelID);
                     }}
                   >
                     <FaIcon iconName="fa fa-trash" />
@@ -100,15 +148,17 @@ const CategoryList = ({ getCategories, deleteCategory, categories }) => {
   );
 };
 
-CategoryList.propTypes = {
-  getCategories: PropTypes.func.isRequired,
-  deleteCategory: PropTypes.func.isRequired
-};
-
 const mapStateToProps = (state) => ({
-  categories: state.category.categories
+  channels: state.channel.channels,
+  channel: state.channel.channel,
+  categories: state.category.categories,
 });
 
-export default connect(mapStateToProps, { getCategories, deleteCategory })(
-  CategoryList
-);
+export default connect(mapStateToProps, {
+  getCategories,
+  getChannelCategories,
+  deleteCategory,
+  deleteChannelCategory,
+  getChannels,
+  getChannel,
+})(CategoryList);

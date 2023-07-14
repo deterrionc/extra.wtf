@@ -27,14 +27,14 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
   const [loaded, setLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    getChannelBySlug(channelSlug);
-  }, [getChannelBySlug, channelSlug]);
+  // useEffect(() => {
+  //   getChannelBySlug(channelSlug);
+  // }, [getChannelBySlug, channelSlug]);
 
   useEffect(() => {
     // LOAD FIRST VIDEO, SYNC TIME
     async function fetchData() {
-      const { video, currentMinute, currentSecond } = await getFirstVideo();
+      const { video, currentMinute, currentSecond } = await getFirstVideo(channelSlug);
       setFirstVideo(video);
       setNextVideo(video);
 
@@ -47,7 +47,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
       setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
     }
     fetchData();
-  }, []);
+  }, [channelSlug]);
 
   const playVideo = async (video) => {
     const player = playerRef.current;
@@ -78,7 +78,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
 
   useEffect(() => {
     const startPlayNews = async () => {
-      const response = await getNextVideo(0, "news");
+      const response = await getNextVideo(0, "news", channelSlug);
       setNextVideo(response);
       playVideo(response);
     };
@@ -109,17 +109,17 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     }, 2 * 1000);
 
     return () => clearInterval(timerId);
-  }, [fetched, minuteDifference, secondDifference]);
+  }, [fetched, minuteDifference, secondDifference, channelSlug]);
 
   const onVideoStart = async () => {
     console.log("-> START");
-    updateVideoPlayedAt(nextVideo._id);
+    updateVideoPlayedAt(nextVideo._id, channelSlug);
     // setCurrentVideoID(nextVideo._id)
     let _nextVideo = null;
     if (nextVideo.type === "music") {
-      _nextVideo = await getNextVideo(nextVideo._id, "music");
+      _nextVideo = await getNextVideo(nextVideo._id, "music", channelSlug);
     } else if (nextVideo.type === "news") {
-      _nextVideo = await getNextVideo(nextVideo._id, "news");
+      _nextVideo = await getNextVideo(nextVideo._id, "news", channelSlug);
     } else {
       _nextVideo = nextVideo;
     }
@@ -158,7 +158,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
           onEnded={onVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           id="videoplayer"
-          controls={false}
+          controls={true}
         />
       )}
       {isPaused ? (

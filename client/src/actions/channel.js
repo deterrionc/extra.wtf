@@ -1,4 +1,5 @@
 import api from "../utils/api";
+import { setAlert } from './alert';
 import formApi from "../utils/formApi";
 import {
   ADMIN_LOGS_LOADED,
@@ -8,14 +9,21 @@ import {
   VIDEOS_LOADED,
 } from "./types";
 
-export const createChannel = (formData, navigate) => async (dispatch) => {
-  const res = await formApi.post("/channels/create-channel", formData);
+export const createChannel =
+  (formData, navigate, folder) => async (dispatch) => {
+    const res = await formApi.post(
+      `/channels/create-channel/${folder}`,
+      formData
+    );
 
-  if (res.data.success) {
-    dispatch(getChannels());
-    navigate("/dashboard/channels");
-  }
-};
+    if (res.data.success) {
+      dispatch(getChannels());
+      navigate("/dashboard/channels");
+    } else {
+      // alert(res.data.message);
+      dispatch(setAlert(res.data.message, 'error'));
+    }
+  };
 
 export const getChannels = () => async (dispatch) => {
   const res = await api.get("/channels/get-channels");
@@ -60,6 +68,9 @@ export const updateChannel =
     if (res.data.success) {
       dispatch(getChannels());
       navigate("/dashboard/channels");
+    } else {
+      // alert(res.data.message);
+      dispatch(setAlert(res.data.message, 'error'));
     }
   };
 
@@ -71,8 +82,8 @@ export const deleteChannel = (channelID) => async (dispatch) => {
   }
 };
 
-export const getChannelVideos = () => async (dispatch) => {
-  const res = await api.get("/channels/get-channel-videos");
+export const getChannelVideos = (channelID) => async (dispatch) => {
+  const res = await api.get(`/channels/get-channel-videos/${channelID}`);
 
   if (res.data.success) {
     dispatch({
@@ -84,32 +95,34 @@ export const getChannelVideos = () => async (dispatch) => {
   }
 };
 
-export const updateVideoPlayedAt = (videoID) => async (dispatch) => {
-  const res = await api.get(`/channels/update-video-playedAt/${videoID}`);
+export const updateVideoPlayedAt = (videoID, slug) => async (dispatch) => {
+  const res = await api.get(`/channels/update-video-playedAt/?videoID=${videoID}&slug=${slug}`);
 
   if (res.data.success) {
     return true;
   }
 };
 
-export const getFirstVideo = async () => {
-  const res = await api.get('/channels/get-first-video')
+export const getFirstVideo = async (slug) => {
+  const res = await api.get(`/channels/get-first-video/${slug}`);
 
   if (res.data.success) {
-    return res.data
+    return res.data;
   }
-}
+};
 
-export const getNextVideo = async (videoID, videoType) => {
-  const res = await api.get(`/channels/get-next-video/?videoID=${videoID}&type=${videoType}`);
+export const getNextVideo = async (videoID, videoType, slug) => {
+  const res = await api.get(
+    `/channels/get-next-video/?videoID=${videoID}&type=${videoType}&slug=${slug}`
+  );
 
   if (res.data.success) {
     return res.data.video;
   }
 };
 
-export const getLogs = () => async (dispatch) => {
-  const res = await api.get("/channels/get-logs");
+export const getLogs = (channelID) => async (dispatch) => {
+  const res = await api.get(`/channels/get-logs/${channelID}`);
 
   if (res.data.success) {
     dispatch({
@@ -130,8 +143,8 @@ export const getAdminLogs = () => async (dispatch) => {
   }
 };
 
-export const getIpFilteredLogs = (ip) => async (dispatch) => {
-  const res = await api.post(`/channels/get-ip-filtered-logs`, { ip });
+export const getIpFilteredLogs = (ip, channelID) => async (dispatch) => {
+  const res = await api.post(`/channels/get-ip-filtered-logs`, { ip, channelID });
 
   if (res.data.success) {
     dispatch({
