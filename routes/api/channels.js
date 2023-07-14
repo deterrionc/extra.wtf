@@ -394,12 +394,13 @@ router.get('/get-next-video', async (req, res) => {
 module.exports = router;
 
 const ruleForMusicMix = new schedule.RecurrenceRule();
-ruleForMusicMix.hour = 0;
-ruleForMusicMix.minute = 0;
+ruleForMusicMix.hour = 23;
+ruleForMusicMix.minute = 58;
 ruleForMusicMix.second = 0;
 
 const scheduleForMusicMix = schedule.scheduleJob(ruleForMusicMix, () => {
   mixMusicSequence();
+  prepare_News_Musics();
 });
 
 const mixMusicSequence = async () => {
@@ -493,8 +494,6 @@ const getNewsVideos = async (time) => {
     videos.push(m);
   });
 
-  videos = videos.slice(0, 14);
-
   return videos;
 };
 
@@ -509,7 +508,7 @@ const getMusicVideos = async () => {
       videos.push({...v._doc, type: 'music'});
     });
   });
-  videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt).slice(0, 14);
+  videos = videos.sort((v1, v2) => v1.playedAt - v2.playedAt);
 
   return videos;
 };

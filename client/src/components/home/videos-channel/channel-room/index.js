@@ -20,10 +20,11 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
   const video = videoList.music[0];
   const [firstVideo, setFirstVideo] = useState(null);
   const [nextVideo, setNextVideo] = useState(null);
-  const [currentVideoID, setCurrentVideoID] = useState(null);
+  // const [currentVideoID, setCurrentVideoID] = useState(null);
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
   const [fetched, setFetched] = useState(false);
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     getChannelBySlug(channelSlug);
@@ -66,11 +67,12 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
 
   useEffect(() => {
     // ON FIRST VIDEO LOAD -> AUTOPLAY
-    if (firstVideo && noPlayFlag.current) {
+    if (firstVideo && noPlayFlag.current && !loaded) {
       console.log("LOAD");
+      setLoaded(true)
       playVideo(firstVideo);
     }
-  }, [playerRef, firstVideo]);
+  }, [firstVideo, loaded]);
 
   useEffect(() => {
     const startPlayNews = async () => {
@@ -109,7 +111,8 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
 
   const onVideoStart = async () => {
     console.log("-> START");
-    setCurrentVideoID(nextVideo._id)
+    updateVideoPlayedAt(nextVideo._id);
+    // setCurrentVideoID(nextVideo._id)
     let _nextVideo = null;
     if (nextVideo.type === "music") {
       _nextVideo = await getNextVideo(nextVideo._id, "music");
@@ -123,7 +126,6 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
 
   const onVideoEnd = async () => {
     console.log("-> END");
-    updateVideoPlayedAt(currentVideoID);
     playVideo(nextVideo);
   };
 
