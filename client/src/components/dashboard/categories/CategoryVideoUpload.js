@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { uploadVideoToCategory } from '../../../actions/category';
-import { useParams } from 'react-router-dom';
+import { useState } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import { uploadVideoToCategory } from "../../../actions/category";
+import { useParams } from "react-router-dom";
 
 const CategoryVideoUpload = ({ uploadVideoToCategory }) => {
+  const [uploadFlag, setUploadFlag] = useState(false);
   const params = useParams();
   const categoryID = params.id;
   let navigate = useNavigate();
@@ -13,20 +14,23 @@ const CategoryVideoUpload = ({ uploadVideoToCategory }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleSubmit = async (event) => {
+    setUploadFlag(true);
     event.preventDefault();
 
     for (let i = 0; i < videos.length; i++) {
       let formData = new FormData();
-      formData.append('video', videos[i]);
-      let process = await uploadVideoToCategory(categoryID, formData)
+      formData.append("video", videos[i]);
+      let process = await uploadVideoToCategory(categoryID, formData);
       if (process === true) {
-        setUploadProgress(prevProgress => prevProgress + (100 / videos.length)); // updating the progress here
+        setUploadProgress((prevProgress) => prevProgress + 100 / videos.length); // updating the progress here
       } else {
-        return
+        return;
       }
     }
 
-    navigate(`/dashboard/categories/videos/${categoryID}`)
+    setUploadFlag(false);
+
+    navigate(`/dashboard/categories/videos/${categoryID}`);
   };
 
   const handleVideoChange = (event) => {
@@ -77,20 +81,24 @@ const CategoryVideoUpload = ({ uploadVideoToCategory }) => {
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-      >
-        Upload
-      </button>
+      {!uploadFlag ? (
+        <button
+          type="submit"
+          className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+        >
+          Upload
+        </button>
+      ) : null}
     </form>
   );
 };
 
 CategoryVideoUpload.propTypes = {
-  uploadVideoToCategory: PropTypes.func.isRequired
+  uploadVideoToCategory: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({});
 
-export default connect(mapStateToProps, { uploadVideoToCategory })(CategoryVideoUpload);
+export default connect(mapStateToProps, { uploadVideoToCategory })(
+  CategoryVideoUpload
+);
