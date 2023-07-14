@@ -24,7 +24,8 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
   const [fetched, setFetched] = useState(false);
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     getChannelBySlug(channelSlug);
@@ -58,6 +59,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
       .play()
       .then((_) => {
         console.log("STARTED");
+        setIsPaused(false);
         noPlayFlag.current = false;
       })
       .catch((err) => {
@@ -69,7 +71,7 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     // ON FIRST VIDEO LOAD -> AUTOPLAY
     if (firstVideo && noPlayFlag.current && !loaded) {
       console.log("LOAD");
-      setLoaded(true)
+      setLoaded(true);
       playVideo(firstVideo);
     }
   }, [firstVideo, loaded]);
@@ -129,6 +131,23 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     playVideo(nextVideo);
   };
 
+  useEffect(() => {
+    let showPause = setInterval(() => {
+      if (firstVideo && noPlayFlag.current && isPaused === false) {
+        const player = playerRef.current;
+        if (player.paused) {
+          console.log("SHOW PAUSE");
+          setIsPaused(true);
+        }
+      }
+    }, 2 * 100);
+
+    // cleanup function
+    return () => {
+      clearInterval(showPause);
+    };
+  }, [firstVideo, loaded]);
+
   return (
     <ChannelRoomContainer>
       <VideoHeader />
@@ -139,9 +158,29 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
           onEnded={onVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           id="videoplayer"
-          controls={false}
+          controls={true}
         />
       )}
+      {isPaused ? (
+        <div className="absolute z-20 inset-0 flex justify-center items-center">
+          <button
+            onClick={() => playVideo(firstVideo)}
+            className="text-9xl text-black"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100"
+              height="100"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill="gray"
+                d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM7 6l8 4l-8 4V6z"
+              />
+            </svg>
+          </button>
+        </div>
+      ) : null}
     </ChannelRoomContainer>
   );
 };
