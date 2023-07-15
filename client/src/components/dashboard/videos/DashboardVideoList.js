@@ -14,14 +14,14 @@ const DashboardVideoList = ({ getFiles, deleteFile, files }) => {
     <div className="p-3 bg-gray-100 rounded-lg flex flex-col">
       <h2 className="text-xl font-medium mb-4">File List</h2>
 
-      <div className="flex items-center justify-end mb-4">
+      {/* <div className="flex items-center justify-end mb-4">
         <Link
           to="/dashboard/files/create"
           className="py-2 px-3 rounded bg-lime-900 text-white"
         >
           Create A File
         </Link>
-      </div>
+      </div> */}
 
       <div className="overflow-x-auto md:overflow-visible">
         <table className="table-auto w-full md:table">
