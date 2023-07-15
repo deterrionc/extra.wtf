@@ -543,6 +543,10 @@ const getMusicVideos = async () => {
 };
 
 const prepare_News_Musics = async () => {
+  // const channel = await Channel.findOne()
+  // console.log(channel)
+  const category = await Category.findOne({path: "files\\1\\news\\jingle_nat"})
+  console.log(category)
   serverNews = await getNewsVideos();
   serverMusics = await getMusicVideos();
 };

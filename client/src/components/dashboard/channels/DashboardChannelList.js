@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { getChannels, deleteChannel } from '../../../actions/channel';
-import { FaIcon } from '../../../container/atoms/FaIcon';
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { getChannels, deleteChannel } from "../../../actions/channel";
+import { FaIcon } from "../../../container/atoms/FaIcon";
 
 const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
   useEffect(() => {
@@ -66,10 +66,11 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          'Are you sure you want to delete this channel?'
+                          "Are you sure you want to delete this channel?"
                         )
-                      )
+                      ) {
                         deleteChannel(channel._id);
+                      }
                     }}
                   >
                     <FaIcon iconName="fa fa-trash" />
@@ -86,11 +87,11 @@ const DashboardChannelList = ({ getChannels, deleteChannel, channels }) => {
 
 DashboardChannelList.propTypes = {
   getChannels: PropTypes.func.isRequired,
-  deleteChannel: PropTypes.func.isRequired
+  deleteChannel: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  channels: state.channel.channels
+  channels: state.channel.channels,
 });
 
 export default connect(mapStateToProps, { getChannels, deleteChannel })(
