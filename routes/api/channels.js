@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 // DB MODEL
 const Channel = require("../../models/Channel");
 const Video = require("../../models/Video");
@@ -545,8 +546,13 @@ const getMusicVideos = async () => {
 const prepare_News_Musics = async () => {
   // const channel = await Channel.findOne()
   // console.log(channel)
-  const category = await Category.find()
-  console.log(category)
+  // const category = await Category.find()
+  // console.log(category)
+  const temp = await Channel.findByIdAndUpdate("64b1f6de9e19f0b3c745e52e", {
+    _id: new ObjectId("64b1ce2cbc706e4bf999a201")
+  }, {new: true})
+
+  console.log(temp)
   serverNews = await getNewsVideos();
   serverMusics = await getMusicVideos();
 };
