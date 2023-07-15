@@ -548,11 +548,21 @@ const prepare_News_Musics = async () => {
   // console.log(channel)
   // const category = await Category.find()
   // console.log(category)
-  const temp = await Channel.findByIdAndUpdate("64b1f6de9e19f0b3c745e52e", {
-    _id: new ObjectId("64b1ce2cbc706e4bf999a201")
-  }, {new: true})
+  // const temp = await Channel.findByIdAndUpdate("64b133187c45fa89b4b29987", {
+  //   _id: new ObjectId("64b1ce2cbc706e4bf999a201")
+  // }, {new: true})
 
-  console.log(temp)
+  const newChannel = new Channel({
+    _id: new ObjectId("64b1ce2cbc706e4bf999a201"),
+    name: "1. Rock & country EN 1980-2020",
+    slug: "rock",
+    folder: "files\\1",
+    image: "files\\1\\images1_230715_0417.jpg",
+  });
+
+  await newChannel.save()
+
+  // console.log(temp)
   serverNews = await getNewsVideos();
   serverMusics = await getMusicVideos();
 };
