@@ -34,7 +34,9 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
   useEffect(() => {
     // LOAD FIRST VIDEO, SYNC TIME
     async function fetchData() {
-      const { video, currentMinute, currentSecond } = await getFirstVideo(channelSlug);
+      const { video, currentMinute, currentSecond } = await getFirstVideo(
+        channelSlug
+      );
       setFirstVideo(video);
       setNextVideo(video);
 
@@ -54,17 +56,32 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     player.src = `/${video.path}`;
     player.muted = false;
     player.autoplay = true;
+    // player.load();
+    // player
+    //   .play()
+    //   .then((_) => {
+    //     console.log("STARTED");
+    //     setIsPaused(false);
+    //     noPlayFlag.current = false;
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    player.onloadedmetadata = function () {
+      player
+        .play()
+        .then((_) => {
+          console.log("STARTED");
+          setIsPaused(false);
+          noPlayFlag.current = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     player.load();
-    player
-      .play()
-      .then((_) => {
-        console.log("STARTED");
-        setIsPaused(false);
-        noPlayFlag.current = false;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   useEffect(() => {

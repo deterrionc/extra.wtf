@@ -138,9 +138,35 @@ router.delete("/delete-channel/:id", async (req, res) => {
   const channelID = req.params.id;
   const channel = await Channel.findById(channelID);
 
+  function deleteFolderRecursive(path) {
+    if (fs.existsSync(path)) {
+      fs.readdirSync(path).forEach((file, index) => {
+        const curPath = path + "/" + file;
+        if (fs.lstatSync(curPath).isDirectory()) {
+          deleteFolderRecursive(curPath);
+        } else {
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
+    }
+  }
+
   try {
     // DELETE CHANNEL IMAGE
     fs.unlinkSync(channel.image);
+
+    deleteFolderRecursive()
+
+    fs.readdirSync(channel.folder).forEach((file, index) => {
+      const curPath = channel.folder + "\/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        deleteFolderRecursive(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(channel.folder);
   } catch (e) {
     console.log(e);
   }
@@ -544,25 +570,6 @@ const getMusicVideos = async () => {
 };
 
 const prepare_News_Musics = async () => {
-  // const channel = await Channel.findOne()
-  // console.log(channel)
-  // const category = await Category.find()
-  // console.log(category)
-  // const temp = await Channel.findByIdAndUpdate("64b133187c45fa89b4b29987", {
-  //   _id: new ObjectId("64b1ce2cbc706e4bf999a201")
-  // }, {new: true})
-
-  // const newChannel = new Channel({
-  //   _id: new ObjectId("64b1ce2cbc706e4bf999a201"),
-  //   name: "1. Rock & country EN 1980-2020",
-  //   slug: "rock",
-  //   folder: "files\\1",
-  //   image: "files\\1\\images1_230715_0417.jpg",
-  // });
-
-  // await newChannel.save()
-
-  // console.log(temp)
   serverNews = await getNewsVideos();
   serverMusics = await getMusicVideos();
 };

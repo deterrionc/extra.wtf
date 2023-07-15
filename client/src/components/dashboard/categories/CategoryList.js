@@ -40,10 +40,6 @@ const CategoryList = ({
     }
   }, [channel, getChannelCategories]);
 
-  // useEffect(() => {
-  //   getCategories();
-  // }, [getCategories]);
-
   return (
     <div className="p-3 bg-gray-100 rounded-lg flex flex-col">
       <h2 className="text-xl font-medium mb-4">Category List</h2>

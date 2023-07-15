@@ -15,6 +15,7 @@ const Dashboard = ({
   logs,
   videos,
   getChannels,
+  getChannel,
   channels,
   channel,
 }) => {
@@ -37,14 +38,14 @@ const Dashboard = ({
     if (channelID.length) {
       getChannel(channelID);
     }
-  }, [channelID]);
+  }, [channelID, getChannel]);
 
   useEffect(() => {
-    if (channelID !== "") {
-      getLogs(channelID);
-      getChannelVideos(channelID);
+    if (channel._id) {
+      getLogs(channel._id);
+      getChannelVideos(channel._id);
     }
-  }, [getLogs, getChannelVideos, channelID]);
+  }, [channel, getLogs, getChannelVideos]);
 
   return (
     <Fragment>
