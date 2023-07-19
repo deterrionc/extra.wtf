@@ -570,7 +570,16 @@ const getMusicVideos = async () => {
 };
 
 const prepare_News_Musics = async () => {
-  serverNews = await getNewsVideos();
+  let currentTime = new Date();
+  let currentHour = currentTime.getHours();
+
+  if (currentHour >= 6 && currentHour <= 18) {
+    // Day time
+    serverNews = await getNewsVideos("day");
+  } else {
+    // NIGHT TIME
+    serverNews = await getNewsVideos("night");
+  }
   serverMusics = await getMusicVideos();
 };
 
