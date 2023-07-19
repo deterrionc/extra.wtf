@@ -5,13 +5,12 @@ import videoList from "./utils/videoList.json";
 import {
   getFirstVideo,
   getNextVideo,
-  getChannelBySlug,
   updateVideoPlayedAt,
 } from "../../../../actions/channel";
 import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
 
-const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
+const ChannelRoom = ({ updateVideoPlayedAt }) => {
   const params = useParams();
   const channelSlug = params.slug;
   let noPlayFlag = useRef(createRef());
@@ -20,16 +19,11 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
   const video = videoList.music[0];
   const [firstVideo, setFirstVideo] = useState(null);
   const [nextVideo, setNextVideo] = useState(null);
-  // const [currentVideoID, setCurrentVideoID] = useState(null);
   const [minuteDifference, setMinuteDifference] = useState(0);
   const [secondDifference, setSecondDifference] = useState(0);
   const [fetched, setFetched] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-
-  // useEffect(() => {
-  //   getChannelBySlug(channelSlug);
-  // }, [getChannelBySlug, channelSlug]);
 
   useEffect(() => {
     // LOAD FIRST VIDEO, SYNC TIME
@@ -56,17 +50,6 @@ const ChannelRoom = ({ getChannelBySlug, updateVideoPlayedAt }) => {
     player.src = `/${video.path}`;
     player.muted = false;
     player.autoplay = true;
-    // player.load();
-    // player
-    //   .play()
-    //   .then((_) => {
-    //     console.log("STARTED");
-    //     setIsPaused(false);
-    //     noPlayFlag.current = false;
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
 
     player.onloadedmetadata = function () {
       player
@@ -207,6 +190,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  getChannelBySlug,
   updateVideoPlayedAt,
 })(ChannelRoom);
