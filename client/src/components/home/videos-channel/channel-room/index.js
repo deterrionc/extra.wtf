@@ -1,186 +1,173 @@
-import VideoHeader from "./components/VideoHeader";
-import ChannelRoomContainer from "./components/ChannelRoomContainer";
-import { useRef, createRef, useEffect, useState } from "react";
-import videoList from "./utils/videoList.json";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
 import {
   getFirstVideo,
   getNextVideo,
   updateVideoPlayedAt,
 } from "../../../../actions/channel";
-import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
+
+import VideoHeader from "./components/VideoHeader";
+import ChannelRoomContainer from "./components/ChannelRoomContainer";
+import videoList from "./utils/videoList.json";
+import { PauseButton } from "./components/PauseButton";
 
 const ChannelRoom = ({ updateVideoPlayedAt }) => {
   const params = useParams();
   const channelSlug = params.slug;
-  let noPlayFlag = useRef(createRef());
-  noPlayFlag.current = true;
-  const playerRef = useRef(createRef());
+  let noPlayFlag = useRef(true);
+  const playerRef = useRef();
   const video = videoList.music[0];
-  const [firstVideo, setFirstVideo] = useState(null);
-  const [nextVideo, setNextVideo] = useState(null);
-  const [minuteDifference, setMinuteDifference] = useState(0);
-  const [secondDifference, setSecondDifference] = useState(0);
-  const [fetched, setFetched] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const [state, setState] = useState({
+    firstVideo: null,
+    nextVideo: null,
+    minuteDifference: 0,
+    secondDifference: 0,
+    fetched: false,
+    loaded: false,
+    isPaused: false,
+  });
 
-  useEffect(() => {
-    // LOAD FIRST VIDEO, SYNC TIME
-    async function fetchData() {
-      const { video, currentMinute, currentSecond } = await getFirstVideo(
-        channelSlug
-      );
-      setFirstVideo(video);
-      setNextVideo(video);
+  const updateState = (changes) => {
+    setState(prevState => ({ ...prevState, ...changes }));
+  };
 
-      const now = new Date();
-      const clientMinutes = now.getMinutes();
-      const serverMinutes = currentMinute % 60;
-      const clientSeconds = now.getSeconds();
-      const serverSeconds = currentSecond % 60;
-      setMinuteDifference((clientMinutes - serverMinutes + 60) % 60);
-      setSecondDifference((clientSeconds - serverSeconds + 60) % 60);
-    }
-    fetchData();
+  const fetchAndSetVideoData = useCallback(async () => {
+    const { video, currentMinute, currentSecond } = await getFirstVideo(
+      channelSlug
+    );
+    const now = new Date();
+    const clientMinutes = now.getMinutes();
+    const serverMinutes = currentMinute % 60;
+    const clientSeconds = now.getSeconds();
+    const serverSeconds = currentSecond % 60;
+    const minuteDifference = (clientMinutes - serverMinutes + 60) % 60;
+    const secondDifference = (clientSeconds - serverSeconds + 60) % 60;
+
+    updateState({
+      firstVideo: video,
+      nextVideo: video,
+      minuteDifference,
+      secondDifference,
+    });
   }, [channelSlug]);
 
-  const playVideo = async (video) => {
+  useEffect(() => {
+    fetchAndSetVideoData();
+  }, [fetchAndSetVideoData]);
+
+  const playVideo = useCallback((video) => {
     const player = playerRef.current;
     player.src = `/${video.path}`;
     player.muted = false;
-    player.autoplay = true;
-
-    player.onloadedmetadata = function () {
+    player.oncanplay = () => {
       player
         .play()
-        .then((_) => {
-          console.log("STARTED");
-          setIsPaused(false);
+        .then(() => {
+          updateState({ isPaused: false });
           noPlayFlag.current = false;
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     };
-
     player.load();
-  };
+  }, []);
+
+  const startPlayNews = useCallback(async () => {
+    const nextVideo = await getNextVideo(0, "news", channelSlug);
+    updateState({ nextVideo });
+    playVideo(nextVideo);
+  }, [channelSlug, playVideo]);
 
   useEffect(() => {
-    // ON FIRST VIDEO LOAD -> AUTOPLAY
-    if (firstVideo && noPlayFlag.current && !loaded) {
-      console.log("LOAD");
-      setLoaded(true);
-      playVideo(firstVideo);
+    if (state.firstVideo && noPlayFlag.current && !state.loaded) {
+      updateState({ loaded: true });
+      playVideo(state.firstVideo);
     }
-  }, [firstVideo, loaded]);
+  }, [state.firstVideo, state.loaded, playVideo]);
+
+  const onVideoStart = useCallback(async () => {
+    updateVideoPlayedAt(state.nextVideo._id, channelSlug);
+    let _nextVideo = null;
+    if (state.nextVideo.type === "music") {
+      _nextVideo = await getNextVideo(state.nextVideo._id, "music", channelSlug);
+    } else if (state.nextVideo.type === "news") {
+      _nextVideo = await getNextVideo(state.nextVideo._id, "news", channelSlug);
+    } else {
+      _nextVideo = state.nextVideo;
+    }
+
+    updateState({ nextVideo: _nextVideo });
+  }, [updateVideoPlayedAt, state.nextVideo, channelSlug]);
+
+  const onVideoEnd = useCallback(() => {
+    playVideo(state.nextVideo);
+  }, [state.nextVideo, playVideo]);
 
   useEffect(() => {
-    const startPlayNews = async () => {
-      const response = await getNextVideo(0, "news", channelSlug);
-      setNextVideo(response);
-      playVideo(response);
-    };
-
-    const timerId = setInterval(() => {
+    let timerId = setInterval(() => {
       const now = new Date();
       const hours = now.getHours();
-      const minutes = (now.getMinutes() - minuteDifference) % 60;
-      const seconds = now.getSeconds() - secondDifference;
+      const minutes = now.getMinutes() - state.minuteDifference;
+      const seconds = now.getSeconds() - state.secondDifference;
 
       if (hours >= 6 && hours < 18) {
-        if ((minutes === 0 || minutes === 30) && seconds > 0 && !fetched) {
-          console.log("TIMER");
+        if (minutes % 30 === 0 && seconds > 0 && !state.fetched) {
           startPlayNews();
-          setFetched(true);
+          updateState({ fetched: true });
         }
       } else {
-        if (minutes === 0 && seconds > 0 && !fetched) {
-          console.log("TIMER");
+        if (minutes % 60 === 0 && seconds > 0 && !state.fetched) {
           startPlayNews();
-          setFetched(true);
+          updateState({ fetched: true });
         }
       }
 
-      if ((minutes === 31 || minutes === 1) && fetched) {
-        setFetched(false);
+      if ((minutes % 60 === 1 || minutes % 30 === 1) && state.fetched) {
+        updateState({ fetched: false });
       }
-    }, 2 * 1000);
+    }, 2000);
 
     return () => clearInterval(timerId);
-  }, [fetched, minuteDifference, secondDifference, channelSlug]);
-
-  const onVideoStart = async () => {
-    console.log("-> START");
-    updateVideoPlayedAt(nextVideo._id, channelSlug);
-    // setCurrentVideoID(nextVideo._id)
-    let _nextVideo = null;
-    if (nextVideo.type === "music") {
-      _nextVideo = await getNextVideo(nextVideo._id, "music", channelSlug);
-    } else if (nextVideo.type === "news") {
-      _nextVideo = await getNextVideo(nextVideo._id, "news", channelSlug);
-    } else {
-      _nextVideo = nextVideo;
-    }
-    setNextVideo(_nextVideo);
-  };
-
-  const onVideoEnd = async () => {
-    console.log("-> END");
-    playVideo(nextVideo);
-  };
+  }, [state.fetched, state.minuteDifference, state.secondDifference, startPlayNews]);
 
   useEffect(() => {
-    let showPause = setInterval(() => {
-      if (firstVideo && noPlayFlag.current && isPaused === false) {
-        const player = playerRef.current;
-        if (player.paused) {
-          console.log("SHOW PAUSE");
-          setIsPaused(true);
-        }
+    let showPauseIntervalId = setInterval(() => {
+      if (
+        state.firstVideo &&
+        noPlayFlag.current &&
+        playerRef.current.paused &&
+        !state.isPaused
+      ) {
+        updateState({ isPaused: true });
       }
-    }, 2 * 100);
+    }, 2000);
 
-    // cleanup function
-    return () => {
-      clearInterval(showPause);
-    };
-  }, [firstVideo, loaded, isPaused]);
+    return () => clearInterval(showPauseIntervalId);
+  }, [state.firstVideo, state.isPaused]);
 
   return (
     <ChannelRoomContainer>
       <VideoHeader />
       {video && (
         <video
-          ref={(el) => (playerRef.current = el)}
+          ref={playerRef}
           onPlay={onVideoStart}
           onEnded={onVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           id="videoplayer"
-          controls={false}
+          controls={true}
         />
       )}
-      {isPaused ? (
+      {state.isPaused && (
         <div className="absolute z-20 inset-0 flex justify-center items-center m-20">
           <button
-            onClick={() => playVideo(firstVideo)}
+            onClick={() => playVideo(state.firstVideo)}
             className="text-9xl text-black"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="100"
-              height="100"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill="gray"
-                d="M2.93 17.07A10 10 0 1 1 17.07 2.93A10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM7 6l8 4l-8 4V6z"
-              />
-            </svg>
+            <PauseButton />
           </button>
         </div>
-      ) : null}
+      )}
     </ChannelRoomContainer>
   );
 };

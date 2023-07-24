@@ -17,6 +17,7 @@
     "@ffprobe-installer/ffprobe": "^2.0.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
+    "child_process": "^1.0.2",
     "client": "file:client",
     "config": "^3.3.3",
     "express": "^4.17.1",
