@@ -7,7 +7,7 @@ var fs = require("fs");
 var path = require("path");
 
 router.get("/", async (req, res) => {
-  exec("node -v", (error, stdout, stderr) => {
+  exec("cd /home/OMG/video1 && ./playout_program_mp4", (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
     }
