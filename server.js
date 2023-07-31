@@ -11,6 +11,7 @@ app.use(express.json());
 
 // ACCESS FILES
 app.use('/files/', express.static('files'))
+app.use('/av', express.static('/home/OMG'));
 
 // Define Routes
 app.use('/api/users', require('./routes/api/users'));
