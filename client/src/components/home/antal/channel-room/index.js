@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import ChannelRoomContainer from "../../videos-channel/channel-room/components/ChannelRoomContainer";
 import VideoHeader from "../../videos-channel/channel-room/components/VideoHeader";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import api from "../../../../utils/api";
 import { setAlert } from "../../../../actions/alert";
 import { useDispatch } from "react-redux";
@@ -12,20 +12,19 @@ const ChannelRoom = () => {
   const playerRef = useRef();
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await api.get("/antal/get-video");
-      if (res.data.success) {
-        console.log(res.data.videoPath)
-        playVideo(res.data.videoPath)
-      } else {
-        console.log('error')
-        dispatch(setAlert("Server Error!", "error"))
-      }
-    };
+  const getVideo = useCallback(async () => {
+    const res = await api.get("/antal/get-video");
+    if (res.data.success) {
+      console.log(res.data.videoPath)
+      playVideo(res.data.videoPath)
+    } else {
+      dispatch(setAlert("Server Error!", "error"))
+    }
+  }, [dispatch]);
 
-    fetchData();
-  }, [channelID, dispatch]);
+  useEffect(() => {
+    getVideo()
+  }, [channelID, getVideo]);
 
   const playVideo = (path) => {
     const player = playerRef.current;
@@ -45,7 +44,9 @@ const ChannelRoom = () => {
 
   const onVideoStart = () => {};
 
-  const onVideoEnd = () => {};
+  const onVideoEnd = () => {
+    getVideo()
+  };
 
   return (
     <ChannelRoomContainer>
