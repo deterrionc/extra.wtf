@@ -24,26 +24,16 @@ router.get("/", async (req, res) => {
 
 router.get("/get-video", async (req, res) => {
   exec("cd /home/OMG/video1 && ./playout_program_mp4", (error, stdout, stderr) => {
-    if (error) {
-      console.log("here1")
+    if (stderr) {
       console.log(`error: ${error.message}`);
       res.json({
         success: false,
-        message: error.message
+        message: stderr
       })
     } else {
-      if (stderr) {
-        console.log("here2")
-        console.log(`error: ${error.message}`);
-        res.json({
-          success: false,
-          message: stderr
-        })
-      } else {
-        res.json({
-          success: true
-        })
-      }
+      res.json({
+        success: true
+      })
     }
   });
 })
