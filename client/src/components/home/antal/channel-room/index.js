@@ -29,7 +29,7 @@ const ChannelRoom = () => {
 
   const playVideo = (path) => {
     const player = playerRef.current;
-    player.src = `/${path}`;
+    player.src = path;
     player.muted = false;
     player.oncanplay = () => {
       player
