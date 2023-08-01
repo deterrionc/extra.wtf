@@ -32,8 +32,6 @@ router.get("/get-video", async (req, res) => {
       })
     } else {
       let videoPath = stdout.replace("/home/OMG/", "/")
-      console.log("HERE")
-      console.log(videoPath)
       res.json({
         success: true,
         videoPath

@@ -16,7 +16,7 @@ const ChannelRoom = () => {
     const fetchData = async () => {
       const res = await api.get("/antal/get-video");
       if (res.data.success) {
-
+        playVideo(res.data.videoPath)
       } else {
         console.log('error')
         dispatch(setAlert("Server Error!", "error"))
@@ -25,6 +25,22 @@ const ChannelRoom = () => {
 
     fetchData();
   }, [channelID, dispatch]);
+
+  const playVideo = (path) => {
+    const player = playerRef.current;
+    player.src = `/${path}`;
+    player.muted = false;
+    player.oncanplay = () => {
+      player
+        .play()
+        .then(() => {
+          // updateState({ isPaused: false });
+          // noPlayFlag.current = false;
+        })
+        .catch((err) => console.log(err));
+    };
+    player.load();
+  }
 
   const onVideoStart = () => {};
 
