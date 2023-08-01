@@ -12,8 +12,8 @@ const ChannelRoom = () => {
   const playerRef = useRef();
   const dispatch = useDispatch()
 
-  const getVideo = useCallback(async () => {
-    const res = await api.get("/antal/get-video");
+  const getVideo = useCallback(async (channelID) => {
+    const res = await api.get(`/antal/get-video/${channelID}`);
     if (res.data.success) {
       console.log(res.data.videoPath)
       playVideo(res.data.videoPath)
@@ -23,7 +23,7 @@ const ChannelRoom = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    getVideo()
+    getVideo(channelID)
   }, [channelID, getVideo]);
 
   const playVideo = (path) => {
@@ -45,7 +45,7 @@ const ChannelRoom = () => {
   const onVideoStart = () => {};
 
   const onVideoEnd = () => {
-    getVideo()
+    getVideo(channelID)
   };
 
   return (

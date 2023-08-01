@@ -22,8 +22,9 @@ var path = require("path");
 //   });
 // });
 
-router.get("/get-video", async (req, res) => {
-  exec("cd /home/OMG/video1 && ./playout_program_mp4", (error, stdout, stderr) => {
+router.get("/get-video/:channelID", async (req, res) => {
+  const channelID = req.params.channelID
+  exec(`cd /home/OMG/video${channelID} && ./playout_program_mp4`, (error, stdout, stderr) => {
     if (stderr) {
       console.log(`error: ${stderr}`);
       res.json({
