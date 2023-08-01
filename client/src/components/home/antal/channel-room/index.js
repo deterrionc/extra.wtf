@@ -16,6 +16,7 @@ const ChannelRoom = () => {
     const fetchData = async () => {
       const res = await api.get("/antal/get-video");
       if (res.data.success) {
+        console.log(res.data.success)
         playVideo(res.data.videoPath)
       } else {
         console.log('error')
