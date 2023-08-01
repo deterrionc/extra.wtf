@@ -16,6 +16,9 @@ const Header = ({ isAuthenticated }: any) => {
         <Link to="/articles">
           <div className="pl-6">Articles</div>
         </Link>
+        <Link to="/antal">
+          <div className="pl-6">Antal</div>
+        </Link>
       </div>
       <div className="flex">
         {isAuthenticated ? (
