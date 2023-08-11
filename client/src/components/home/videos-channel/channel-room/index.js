@@ -155,7 +155,7 @@ const ChannelRoom = ({ updateVideoPlayedAt }) => {
           onEnded={onVideoEnd}
           className="fixed z-10 inset-0 w-screen h-screen object-cover"
           id="videoplayer"
-          controls={true}
+          controls={false}
         />
       )}
       {state.isPaused && (
