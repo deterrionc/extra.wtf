@@ -115,7 +115,7 @@ const DashboardArticleCreate = ({ createArticle }) => {
         {articleImage && (
           <img
             src={URL.createObjectURL(articleImage)}
-            alt="Uploaded image"
+            alt="SETIMAGE"
             className="mt-2 w-32"
           />
         )}
