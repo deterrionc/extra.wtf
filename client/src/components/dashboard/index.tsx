@@ -8,6 +8,7 @@ import Dashboard from './_default';
 import DashboardVideoContainer from './videos';
 import DashboardChannelContainer from './channels';
 import CategoryContainer from './categories';
+import DashboardArticleContainer from './articles';
 
 const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
   let navigate = useNavigate();
@@ -25,7 +26,7 @@ const AdminDashboard: React.FC = ({ isAuthenticated }: any) => {
           <Route path="/channels/*" element={<DashboardChannelContainer />} />
           <Route path="/categories/*" element={<CategoryContainer />} />
           <Route path="/videos/*" element={<DashboardVideoContainer />} />
-          <Route path="/articles/*" element={<Dashboard />} />
+          <Route path="/articles/*" element={<DashboardArticleContainer />} />
         </Routes>
       </div>
     </DashboardTheme>

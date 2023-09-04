@@ -6,6 +6,7 @@ import category from './category'
 import file from './file'
 import spinner from './spinner'
 import video from './video'
+import article from './article'
 
 export default combineReducers({
   alert,
@@ -15,4 +16,5 @@ export default combineReducers({
   file,
   spinner,
   video,
+  article,
 })
