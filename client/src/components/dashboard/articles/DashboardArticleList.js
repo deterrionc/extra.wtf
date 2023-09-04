@@ -49,9 +49,9 @@ const DashboardArticleList = ({ getArticles, deleteArticle, articles }) => {
                 <td className="py-3 px-6 text-left">{article.path}</td>
                 <td className="py-3 px-6 text-center">
                   <img
-                    src={`/${article.image}`}
+                    src={`${article.path}/${article.image}`}
                     alt="ArticleImage"
-                    className="rounded-md w-32 mx-auto"
+                    className="rounded-md w-32 mx-auto aspect-[3/2]"
                   />
                 </td>
                 <td className="py-3 px-6 text-left">

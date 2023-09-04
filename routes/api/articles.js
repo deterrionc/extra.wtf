@@ -51,9 +51,33 @@ router.post("/create-article", async (req, res) => {
 });
 
 router.get("/get-articles", async (req, res) => {
-  res.json({
-    success: false,
-  });
+  try {
+    let dirPath = "../carl/upload/articles"
+    let articleDirs = fs.readdirSync(dirPath);
+
+    let articles = [];
+
+    articleDirs.forEach((dir) => {
+      let articlePath = path.join(dirPath, dir, 'article.json');
+      if (fs.existsSync(articlePath)) {
+        let articleData = fs.readFileSync(articlePath, 'utf8');
+        let article = JSON.parse(articleData);
+        article.path = "/upload/articles/" + dir;
+        articles.push(article);
+      }
+    });
+
+    res.json({
+      success: true,
+      articles: articles
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      message: err.message
+    });
+  }
 });
 
 router.get("/get-article/:id", async (req, res) => {
