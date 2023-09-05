@@ -22,8 +22,3 @@
   margin-left: inherit !important;
   margin-right: inherit !important;
 }
-
-.slick-slide {
-  display: grid;
-  align-items: stretch;
-}

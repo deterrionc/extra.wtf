@@ -76,7 +76,7 @@ const ArticleCardList = ({ articles }) => {
           Articles <FaIcon iconName="fa-arrow-right" />
         </h5>
       </Link>
-      <Slider {...settings} className='items-stretch'>
+      <Slider {...settings}>
         {_articles.length &&
           _articles.map((article, index) => (
             <div key={index}>
