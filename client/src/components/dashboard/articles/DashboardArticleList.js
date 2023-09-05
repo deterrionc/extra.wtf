@@ -64,7 +64,7 @@ const DashboardArticleList = ({ getArticles, deleteArticle, articles }) => {
                     className="rounded-md w-32 mx-auto aspect-[3/2]"
                   />
                 </td>
-                <td className="py-3 px-6 text-left">
+                <td className="py-3 px-6 text-left" style={{ minWidth: '140px' }}>
                   <Link
                     to={`/dashboard/articles/edit/${article.id}`}
                     className="py-2 px-3 rounded bg-teal-800 text-white mx-1"
