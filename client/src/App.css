@@ -13,3 +13,17 @@
 .w-narrow-sidebar-icon {
   font-size: 1.8rem;
 }
+
+.slick-dots li button:before {
+  color: white !important;
+}
+
+.slick-track {
+  margin-left: inherit !important;
+  margin-right: inherit !important;
+}
+
+.slick-slide {
+  display: grid;
+  align-items: stretch;
+}

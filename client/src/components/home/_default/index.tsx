@@ -1,4 +1,3 @@
-import React from 'react'
 import tempData from '../../../utils/temp.json'
 import VideoCardList from '../../../container/organisms/VideoCardList'
 import ArticleCardList from '../../../container/organisms/ArticleCardList'
@@ -18,11 +17,11 @@ const Home = ({ getChannels, channels, getArticles, articles }: any) => {
   }, [getChannels, getArticles]);
   
   return (
-    <React.Fragment>
+    <div className='pb-5'>
       <VideoChannelList channels={channels} link='/video-channels' linkName='Start' />
       <VideoCardList videos={topVideos} link='/videos' linkName='Videos' />
       <ArticleCardList articles={articles} />
-    </React.Fragment>
+    </div>
   )
 }
 
