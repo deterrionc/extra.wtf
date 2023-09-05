@@ -30,6 +30,7 @@ const DashboardArticleList = ({ getArticles, deleteArticle, articles }) => {
               <th className="py-3 px-6 text-left">No</th>
               <th className="py-3 px-6 text-left">Topic</th>
               <th className="py-3 px-6 text-left">Title</th>
+              <th className="py-3 px-6 text-left">Link</th>
               <th className="py-3 px-6 text-left">Path</th>
               <th className="py-3 px-6 text-center">Image</th>
               <th className="py-3 px-6 text-left">Action</th>
@@ -44,19 +45,28 @@ const DashboardArticleList = ({ getArticles, deleteArticle, articles }) => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">
                   {index + 1}
                 </td>
-                <td className="py-3 px-6 text-left">{article.topic}</td>
-                <td className="py-3 px-6 text-left">{article.title}</td>
-                <td className="py-3 px-6 text-left">{article.path}</td>
+                <td className="py-3 px-6 text-left" style={{ minWidth: '120px' }}>
+                  {article.topic}
+                </td>
+                <td className="py-3 px-6 text-left" style={{ minWidth: '120px' }}>
+                  {article.title}
+                </td>
+                <td className="py-3 px-6 text-left" style={{ wordBreak: 'break-word', minWidth: '100px' }}>
+                  {article.link}
+                </td>
+                <td className="py-3 px-6 text-left" style={{ wordBreak: 'break-word', minWidth: '100px' }}>
+                  {article.path}
+                </td>
                 <td className="py-3 px-6 text-center">
                   <img
-                    src={`${article.path}/${article.image}`}
+                    src={`/${article.path}/${article.image}`}
                     alt="ArticleImage"
                     className="rounded-md w-32 mx-auto aspect-[3/2]"
                   />
                 </td>
                 <td className="py-3 px-6 text-left">
                   <Link
-                    to={`/dashboard/articles/edit/${article._id}`}
+                    to={`/dashboard/articles/edit/${article.id}`}
                     className="py-2 px-3 rounded bg-teal-800 text-white mx-1"
                   >
                     <FaIcon iconName="fa fa-edit" />
@@ -69,7 +79,7 @@ const DashboardArticleList = ({ getArticles, deleteArticle, articles }) => {
                           "Are you sure you want to delete this article?"
                         )
                       ) {
-                        deleteArticle(article._id);
+                        deleteArticle(article.id);
                       }
                     }}
                   >

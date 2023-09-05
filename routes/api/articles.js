@@ -1,20 +1,22 @@
 const express = require("express");
 const router = express.Router();
+const config = require('config');
 
 // FILE DELETE
 var fs = require("fs");
 var path = require("path");
+var dirPath = path.join(config.get('uploadDirectory'), "articles");
 
 // FILE UPLOAD
 const createMulterInstance = require("../../utils/createMulterInstance");
 const getCurrentTimeFilePath = require("../../utils/getCurrentTimeFilePath");
 
 router.post("/create-article", async (req, res) => {
-  let dirPath = path.join("../carl/upload/articles", getCurrentTimeFilePath());
+  let uploadPath = path.join(dirPath, getCurrentTimeFilePath());
 
   try {
-    fs.mkdirSync(dirPath);
-    const imageUpload = createMulterInstance(dirPath);
+    fs.mkdirSync(uploadPath);
+    const imageUpload = createMulterInstance(uploadPath);
 
     await new Promise((resolve, reject) => {
       imageUpload.fields([{ name: "image", maxCount: 1 }])(req, res, (err) => {
@@ -36,7 +38,7 @@ router.post("/create-article", async (req, res) => {
       image: imageName || ""
     };
 
-    const articleJsonPath = path.join(dirPath, 'article.json');
+    const articleJsonPath = path.join(uploadPath, 'article.json');
     fs.writeFileSync(articleJsonPath, JSON.stringify(articleData, null, 2));
 
     res.json({
@@ -52,7 +54,6 @@ router.post("/create-article", async (req, res) => {
 
 router.get("/get-articles", async (req, res) => {
   try {
-    let dirPath = "../carl/upload/articles"
     let articleDirs = fs.readdirSync(dirPath);
 
     let articles = [];
@@ -62,7 +63,8 @@ router.get("/get-articles", async (req, res) => {
       if (fs.existsSync(articlePath)) {
         let articleData = fs.readFileSync(articlePath, 'utf8');
         let article = JSON.parse(articleData);
-        article.path = "/upload/articles/" + dir;
+        article.path = "upload/articles/" + dir;
+        article.id = dir;
         articles.push(article);
       }
     });
@@ -81,15 +83,68 @@ router.get("/get-articles", async (req, res) => {
 });
 
 router.get("/get-article/:id", async (req, res) => {
+  const articleId = req.params.id; // Get folder name from URL parameter
+  const updatePath = path.join(dirPath, articleId);
+
+  // Check if folder exists
+  if (fs.existsSync(updatePath)) {
+    const jsonFilePath = path.join(updatePath, 'article.json');
+    
+    // Check if article.json exists
+    if (fs.existsSync(jsonFilePath)) {
+      try {
+        const jsonData = fs.readFileSync(jsonFilePath, 'utf8');
+        let article = JSON.parse(jsonData)
+        article.path = "upload/articles/" + articleId;
+        article.id = articleId;
+        res.json({
+          success: true,
+          article
+        });
+      } catch (err) {
+        res.json({
+          success: false,
+          message: `Error reading article.json: ${err.message}`,
+        });
+      }
+    } else {
+      res.json({
+        success: false,
+        message: 'article.json not found',
+      });
+    }
+  } else {
+    res.json({
+      success: false,
+      message: 'Folder not found',
+    });
+  }
+});
+
+router.post("/update-article/:id", async (req, res) => {
+  console.log(req.body)
+
   res.json({
-    success: true,
+    success: true
+  })
+})
+
+router.delete("/delete-article/:id", (req, res) => {
+  const deletePath = path.join(dirPath, req.params.id);
+
+  fs.rm(deletePath, { recursive: true }, (err) => {
+    if (err) {
+      return res.json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    res.json({
+      success: true,
+    });
   });
 });
 
-router.delete("/delete-article/:id", async (req, res) => {
-  res.json({
-    success: true,
-  });
-});
 
 module.exports = router;

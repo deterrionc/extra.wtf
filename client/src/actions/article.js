@@ -33,6 +33,15 @@ export const getArticle = articleID => async dispatch => {
   }
 }
 
+export const updateArticle = (formData, navigate, articleID) => async dispatch => {
+  const res = await formApi.post(`/articles/update-article/${articleID}`, formData)
+
+  if (res.data.success) {
+    dispatch(getArticles())
+    navigate('/dashboard/articles')
+  }
+}
+
 export const deleteArticle = articleID => async dispatch => {
   const res = await api.delete(`/articles/delete-article/${articleID}`)
 
