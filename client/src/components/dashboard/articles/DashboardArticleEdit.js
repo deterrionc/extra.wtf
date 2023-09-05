@@ -1,49 +1,58 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { getArticle, updateArticle } from "../../../actions/article";
+import React, { useState, useEffect } from "react"
+import PropTypes from "prop-types"
+import { connect } from "react-redux"
+import { useNavigate, useParams } from "react-router-dom"
+import { getArticle, updateArticle, updateArticleWithImage } from "../../../actions/article"
 
-const DashboardArticleEdit = ({ article, getArticle, updateArticle }) => {
-  const params = useParams();
-  const articleId = params.id;
-  let navigate = useNavigate();
-  const [articleImage, setArticleImage] = useState(null);
-  const [articleTopic, setArticleTopic] = useState("");
-  const [articleTitle, setArticleTitle] = useState("");
-  const [articleDescription, setArticleDescription] = useState("");
-  const [articleLink, setArticleLink] = useState("");
-  const [showImagePath, setShowImagePath] = useState(null);
-
-  useEffect(() => {
-    getArticle(articleId);
-  }, [getArticle, articleId]);
+const DashboardArticleEdit = ({ article, getArticle, updateArticle, updateArticleWithImage }) => {
+  const params = useParams()
+  const articleId = params.id
+  let navigate = useNavigate()
+  const [articleImage, setArticleImage] = useState(null)
+  const [articleTopic, setArticleTopic] = useState("")
+  const [articleTitle, setArticleTitle] = useState("")
+  const [articleDescription, setArticleDescription] = useState("")
+  const [articleLink, setArticleLink] = useState("")
+  const [showImagePath, setShowImagePath] = useState(null)
 
   useEffect(() => {
-    setArticleTopic(article.topic);
-    setArticleTitle(article.title);
-    setArticleDescription(article.description);
-    setArticleLink(article.link);
-    setShowImagePath(article.image);
-  }, [article]);
+    getArticle(articleId)
+  }, [getArticle, articleId])
+
+  useEffect(() => {
+    setArticleTopic(article.topic)
+    setArticleTitle(article.title)
+    setArticleDescription(article.description)
+    setArticleLink(article.link)
+    setShowImagePath(article.image)
+  }, [article])
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    let formData = new FormData();
-    formData.append("image", articleImage);
-    formData.append("topic", articleTopic);
-    formData.append("title", articleTitle);
-    formData.append("description", articleDescription);
-    formData.append("link", articleLink);
-
-    updateArticle(formData, navigate, articleId);
-  };
+    if (articleImage) {
+      let formData = new FormData()
+      formData.append("image", articleImage)
+      formData.append("topic", articleTopic)
+      formData.append("title", articleTitle)
+      formData.append("description", articleDescription)
+      formData.append("link", articleLink)
+      updateArticleWithImage(formData, navigate, articleId)
+    } else {
+      let formData = {
+        topic: articleTopic,
+        title: articleTitle,
+        description: articleDescription,
+        link: articleLink
+      }
+      updateArticle(formData, navigate, articleId)
+    }
+  }
 
   const handleImageChange = (image) => {
-    setArticleImage(image);
-    setShowImagePath(null);
-  };
+    setArticleImage(image)
+    setShowImagePath(null)
+  }
 
   return (
     <form onSubmit={handleSubmit} className="p-3 bg-gray-100 rounded-lg">
@@ -153,19 +162,20 @@ const DashboardArticleEdit = ({ article, getArticle, updateArticle }) => {
         Publish
       </button>
     </form>
-  );
-};
+  )
+}
 
 DashboardArticleEdit.propTypes = {
   article: PropTypes.object.isRequired,
   getArticle: PropTypes.func.isRequired,
   updateArticle: PropTypes.func.isRequired,
-};
+  updateArticleWithImage: PropTypes.func.isRequired,
+}
 
 const mapStateToProps = (state) => ({
   article: state.article.article,
-});
+})
 
-export default connect(mapStateToProps, { getArticle, updateArticle })(
+export default connect(mapStateToProps, { getArticle, updateArticle, updateArticleWithImage })(
   DashboardArticleEdit
-);
+)
