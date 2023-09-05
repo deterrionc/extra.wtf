@@ -1,23 +1,33 @@
+import { Link } from "react-router-dom";
+
 interface ArticleProps {
   article: {
-    tag: string,
-    image: string,
-    title: string,
-    description: string
-  }
+    topic: string;
+    title: string;
+    description: string;
+    image: string;
+    path: string;
+    link: string;
+  };
 }
 
 const ArticleCard = ({ article }: ArticleProps) => {
   return (
-    <div className="m-1 width-calc bg-article-card rounded overflow-hidden">
-      <img alt={article.tag} src={article.image} className="w-full aspect-[3/2]" />
-      <div className="p-2">
-        <div className="text-base">{article.tag}</div>
-        <h4 className="text-xl font-bold leading-6">{article.title}</h4>
-        <div className="text-xs pt-2">{article.description}</div>
+    <Link to={article.link} target="_blank">
+      <div className="m-1 width-calc bg-article-card rounded overflow-hidden cursor-pointer">
+        <img
+          alt={article.topic}
+          src={`/${article.path}/${article.image}`}
+          className="w-full aspect-[3/2]"
+        />
+        <div className="p-2">
+          <div className="text-base">{article.topic}</div>
+          <h4 className="text-xl font-bold leading-6">{article.title}</h4>
+          <div className="text-xs pt-2">{article.description}</div>
+        </div>
       </div>
-    </div>
-  )
-}
+    </Link>
+  );
+};
 
-export default ArticleCard
+export default ArticleCard;

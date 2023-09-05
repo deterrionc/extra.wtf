@@ -12,6 +12,7 @@ app.use(express.json());
 // ACCESS FILES
 app.use('/files/', express.static('files'))
 app.use('/av', express.static('/home/OMG'));
+app.use('/upload', express.static('../carl/upload'));
 
 // Define Routes
 app.use('/api/users', require('./routes/api/users'));
@@ -20,6 +21,7 @@ app.use('/api/channels', require('./routes/api/channels'));
 app.use('/api/categories', require('./routes/api/categories'));
 app.use('/api/files', require('./routes/api/files'));
 app.use('/api/antal', require('./routes/api/antal'));
+app.use('/api/articles', require('./routes/api/articles'));
 
 // Serve frontend built
 app.use(express.static(__dirname + '/client/build'))
