@@ -22,6 +22,7 @@ app.use('/api/categories', require('./routes/api/categories'));
 app.use('/api/files', require('./routes/api/files'));
 app.use('/api/antal', require('./routes/api/antal'));
 app.use('/api/articles', require('./routes/api/articles'));
+app.use('/api/svideos', require('./routes/api/svideos'));
 
 // Serve frontend built
 app.use(express.static(__dirname + '/client/build'))
