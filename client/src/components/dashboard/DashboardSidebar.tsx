@@ -152,6 +152,22 @@ const DashboardSidebar: React.FC = ({ logout }: any) => {
         </Link>
 
         <Link
+          to="/dashboard/articles"
+          className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
+        >
+          {isNarrow ? (
+            <FaIcon iconName="fa-file-video-o" className="w-narrow-sidebar-icon" />
+          ) : (
+            <>
+              <FaIcon iconName="fa-file-video-o" className="w-6" />
+              <span className={`${isNarrow ? 'hidden' : 'block'} md:block`}>
+                Videos (Single)
+              </span>
+            </>
+          )}
+        </Link>
+
+        <Link
           to="/"
           className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
         >
