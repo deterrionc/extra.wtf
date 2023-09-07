@@ -62,11 +62,11 @@ router.get("/get-svideos", async (req, res) => {
     let svideos = []
 
     svideoDirs.forEach((dir) => {
-      let svideoPath = path.join(dirPath, dir, 'svideo.json')
+      let svideoPath = path.join(dirPath, dir, 'video.json')
       if (fs.existsSync(svideoPath)) {
         let svideoData = fs.readFileSync(svideoPath, 'utf8')
         let svideo = JSON.parse(svideoData)
-        svideo.path = "upload/svideos/" + dir
+        svideo.path = "upload/videos/" + dir
         svideo.id = dir
         svideos.push(svideo)
       }
