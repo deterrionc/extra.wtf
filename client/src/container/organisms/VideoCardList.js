@@ -3,13 +3,7 @@ import VideoCard from "../molecules/VideoCard"
 import { FaIcon } from "../atoms/FaIcon"
 import { Link } from "react-router-dom"
 
-interface VideoCardListProps {
-  videos: any
-  link: string
-  linkName: string
-}
-
-const VideoCardList = ({ videos, link, linkName }: VideoCardListProps) => {
+const VideoCardList = ({ videos, link, linkName }) => {
   const [_videos, setVideos] = useState([])
 
   useEffect(() => {

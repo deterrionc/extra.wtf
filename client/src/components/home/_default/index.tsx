@@ -1,4 +1,3 @@
-import tempData from '../../../utils/temp.json'
 import VideoCardList from '../../../container/organisms/VideoCardList'
 import ArticleCardList from '../../../container/organisms/ArticleCardList'
 import { useEffect } from 'react';
@@ -7,19 +6,19 @@ import PropTypes from 'prop-types';
 import { getChannels } from '../../../actions/channel';
 import VideoChannelList from '../../../container/organisms/VideoChannelList';
 import { getArticles } from "../../../actions/article";
+import { getSvideos } from '../../../actions/svideo';
 
-const topVideos = tempData.videos
-
-const Home = ({ getChannels, channels, getArticles, articles }: any) => {
+const Home = ({ getChannels, channels, getArticles, getSvideos, articles, svideos }: any) => {
   useEffect(() => {
     getChannels();
     getArticles();
-  }, [getChannels, getArticles]);
+    getSvideos();
+  }, [getChannels, getArticles, getSvideos]);
   
   return (
     <div className='pb-5'>
       <VideoChannelList channels={channels} link='/video-channels' linkName='Start' />
-      <VideoCardList videos={topVideos} link='/videos' linkName='Videos' />
+      <VideoCardList videos={svideos} link='/videos' linkName='Videos' />
       <ArticleCardList articles={articles} />
     </div>
   )
@@ -28,11 +27,13 @@ const Home = ({ getChannels, channels, getArticles, articles }: any) => {
 Home.propTypes = {
   getChannels: PropTypes.func.isRequired,
   getArticles: PropTypes.func.isRequired,
+  getSvideos: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state: any) => ({
   channels: state.channel.channels,
+  svideos: state.svideo.svideos,
   articles: state.article.articles
 });
 
-export default connect(mapStateToProps, { getChannels, getArticles })(Home);
+export default connect(mapStateToProps, { getChannels, getArticles, getSvideos })(Home);

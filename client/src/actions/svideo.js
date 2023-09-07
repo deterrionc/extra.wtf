@@ -30,6 +30,8 @@ export const getSvideo = svideoID => async dispatch => {
       type: SVIDEO_LOADED,
       payload: res.data.svideo
     })
+
+    return res.data.svideo
   }
 }
 

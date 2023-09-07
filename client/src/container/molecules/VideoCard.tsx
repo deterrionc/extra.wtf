@@ -5,6 +5,7 @@ interface VideoProps {
     id: string;
     title: string;
     image: string;
+    path: string;
   };
 }
 
@@ -17,7 +18,7 @@ const VideoCard = ({ video }: VideoProps) => {
       <div className="relative w-full aspect-[3/2] overflow-hidden">
         <img
           alt={video.title}
-          src={video.image}
+          src={`/${video.path}/${video.image}`}
           className="absolute top-0 left-0 w-full h-full object-cover"
         />
       </div>
