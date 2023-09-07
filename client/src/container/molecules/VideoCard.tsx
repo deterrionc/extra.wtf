@@ -14,17 +14,15 @@ const VideoCard = ({ video }: VideoProps) => {
       to={"/videos/" + video.id}
       className="m-1 width-calc bg-video-card rounded overflow-hidden"
     >
-      <div className="m-1 width-calc bg-article-card rounded overflow-hidden cursor-pointer">
-        <div className="relative w-full aspect-[3/2] overflow-hidden">
-          <img
-            alt={video.title}
-            src={video.image}
-            className="absolute top-0 left-0 w-full h-full object-cover"
-          />
-        </div>
-        <div className="p-2">
-          <div className="text-base">{video.title}</div>
-        </div>
+      <div className="relative w-full aspect-[3/2] overflow-hidden">
+        <img
+          alt={video.title}
+          src={video.image}
+          className="absolute top-0 left-0 w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-2">
+        <div className="text-base">{video.title}</div>
       </div>
     </Link>
   );
