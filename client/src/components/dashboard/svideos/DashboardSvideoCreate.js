@@ -7,12 +7,15 @@ import { createSvideo } from "../../../actions/svideo";
 
 const DashboardSvideoCreate = ({ createSvideo }) => {
   let navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+
   const [svideoImage, setSvideoImage] = useState(null);
   const [svideoFile, setSvideoFile] = useState(null);
   const [svideoTitle, setSvideoTitle] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setUploading(true);
 
     let formData = new FormData();
     formData.append("image", svideoImage);
@@ -92,12 +95,15 @@ const DashboardSvideoCreate = ({ createSvideo }) => {
         )}
       </div>
 
-      <button
-        type="submit"
-        className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-      >
-        Publish
-      </button>
+      {uploading && <div>Uploading...</div>}
+      {!uploading && (
+        <button
+          type="submit"
+          className="bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+        >
+          Publish
+        </button>
+      )}
     </form>
   );
 };
