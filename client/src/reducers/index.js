@@ -7,6 +7,7 @@ import file from './file'
 import spinner from './spinner'
 import video from './video'
 import article from './article'
+import svideo from './svideo'
 
 export default combineReducers({
   alert,
@@ -17,4 +18,5 @@ export default combineReducers({
   spinner,
   video,
   article,
+  svideo,
 })
