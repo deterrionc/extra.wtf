@@ -51,6 +51,24 @@ export const updateSvideoWithImage = (formData, navigate, svideoID) => async dis
   }
 }
 
+export const updateSvideoWithVideo = (formData, navigate, svideoID) => async dispatch => {
+  const res = await formApi.post(`/svideos/update-svideo-with-video/${svideoID}`, formData)
+
+  if (res.data.success) {
+    dispatch(getSvideos())
+    navigate('/dashboard/svideos')
+  }
+}
+
+export const updateSvideoWithImageVideo = (formData, navigate, svideoID) => async dispatch => {
+  const res = await formApi.post(`/svideos/update-svideo-with-image-video/${svideoID}`, formData)
+
+  if (res.data.success) {
+    dispatch(getSvideos())
+    navigate('/dashboard/svideos')
+  }
+}
+
 export const deleteSvideo = svideoID => async dispatch => {
   const res = await api.delete(`/svideos/delete-svideo/${svideoID}`)
 

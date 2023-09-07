@@ -91,14 +91,14 @@ router.get("/get-svideo/:id", async (req, res) => {
 
   // Check if folder exists
   if (fs.existsSync(svideoPath)) {
-    const jsonFilePath = path.join(svideoPath, 'svideo.json')
+    const jsonFilePath = path.join(svideoPath, 'video.json')
     
     // Check if svideo.json exists
     if (fs.existsSync(jsonFilePath)) {
       try {
         const jsonData = fs.readFileSync(jsonFilePath, 'utf8')
         let svideo = JSON.parse(jsonData)
-        svideo.path = "upload/svideos/" + svideoId
+        svideo.path = "upload/videos/" + svideoId
         svideo.id = svideoId
         res.json({
           success: true,
@@ -127,13 +127,10 @@ router.get("/get-svideo/:id", async (req, res) => {
 router.post("/update-svideo/:id", async (req, res) => {
   const svideoId = req.params.id
   const svideoPath = path.join(dirPath, svideoId)
-  const jsonFilePath = path.join(svideoPath, 'svideo.json')
+  const jsonFilePath = path.join(svideoPath, 'video.json')
   const jsonData = fs.readFileSync(jsonFilePath, 'utf8')
   let svideo = JSON.parse(jsonData)
-  svideo.topic = req.body.topic
   svideo.title = req.body.title
-  svideo.description = req.body.description
-  svideo.link = req.body.link
   fs.writeFileSync(jsonFilePath, JSON.stringify(svideo, null, 2))
 
   res.json({
@@ -144,7 +141,7 @@ router.post("/update-svideo/:id", async (req, res) => {
 router.post("/update-svideo-with-image/:id", async (req, res) => {
   const svideoId = req.params.id
   let svideoPath = path.join(dirPath, svideoId)
-  const jsonFilePath = path.join(svideoPath, 'svideo.json')
+  const jsonFilePath = path.join(svideoPath, 'video.json')
   const jsonData = fs.readFileSync(jsonFilePath, 'utf8')
   let svideo = JSON.parse(jsonData)
 
@@ -164,15 +161,95 @@ router.post("/update-svideo-with-image/:id", async (req, res) => {
   fs.unlink(oldImagePath, (err) => {
     if (err) {
       console.error(`Failed to delete old image: ${err}`);
-    } else {
-      console.log('Successfully deleted the old image.');
+    } 
+  });
+
+  svideo.title = req.body.title
+  svideo.image = imageName
+
+  fs.writeFileSync(jsonFilePath, JSON.stringify(svideo, null, 2))
+
+  res.json({
+    success: true
+  })
+})
+
+router.post("/update-svideo-with-video/:id", async (req, res) => {
+  const svideoId = req.params.id
+  let svideoPath = path.join(dirPath, svideoId)
+  const jsonFilePath = path.join(svideoPath, 'video.json')
+  const jsonData = fs.readFileSync(jsonFilePath, 'utf8')
+  let svideo = JSON.parse(jsonData)
+
+  const videoUpload = createMulterInstance(svideoPath)
+  await new Promise((resolve, reject) => {
+    videoUpload.fields([{ name: "video", maxCount: 1 }])(req, res, (err) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve()
+    })
+  })
+  let videoName = req.files["video"][0].filename
+
+  const oldVideoPath = path.join(svideoPath, svideo.video);
+  fs.unlink(oldVideoPath, (err) => {
+    if (err) {
+      console.error(`Failed to delete old video: ${err}`);
     }
   });
 
-  svideo.topic = req.body.topic
   svideo.title = req.body.title
-  svideo.description = req.body.description
-  svideo.link = req.body.link
+  svideo.video = videoName
+
+  fs.writeFileSync(jsonFilePath, JSON.stringify(svideo, null, 2))
+
+  res.json({
+    success: true
+  })
+})
+
+router.post("/update-svideo-with-image-video/:id", async (req, res) => {
+  const svideoId = req.params.id
+  let svideoPath = path.join(dirPath, svideoId)
+  const jsonFilePath = path.join(svideoPath, 'video.json')
+  const jsonData = fs.readFileSync(jsonFilePath, 'utf8')
+  let svideo = JSON.parse(jsonData)
+
+  const fileUpload = createMulterInstance(svideoPath)
+  await new Promise((resolve, reject) => {
+    fileUpload.fields([
+      { name: "image", maxCount: 1 }, 
+      { name: "video", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+  let videoName = req.files["video"][0].filename
+  let imageName = req.files["image"][0].filename
+
+  const oldVideoPath = path.join(svideoPath, svideo.video);
+  fs.unlink(oldVideoPath, (err) => {
+    if (err) {
+      console.error(`Failed to delete old video: ${err}`);
+    } 
+  });
+
+  const oldImagePath = path.join(svideoPath, svideo.image);
+  fs.unlink(oldImagePath, (err) => {
+    if (err) {
+      console.error(`Failed to delete old video: ${err}`);
+    } 
+  });
+
+  svideo.title = req.body.title
+  svideo.video = videoName
   svideo.image = imageName
 
   fs.writeFileSync(jsonFilePath, JSON.stringify(svideo, null, 2))
