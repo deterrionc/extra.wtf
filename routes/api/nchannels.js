@@ -20,7 +20,7 @@ router.post("/create-channel/", async (req, res) => {
     fs.mkdirSync(`${uploadPath}/music`)
     fs.mkdirSync(`${uploadPath}/jingle_int`)
     fs.mkdirSync(`${uploadPath}/jingle_nat`)
-    fs.mkdirSync(`${uploadPath}/nes_nat`)
+    fs.mkdirSync(`${uploadPath}/news_nat`)
     fs.mkdirSync(`${uploadPath}/news_int`)
     fs.mkdirSync(`${uploadPath}/next_news_30`)
     fs.mkdirSync(`${uploadPath}/next_news_60`)
