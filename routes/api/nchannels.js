@@ -12,7 +12,6 @@ const createMulterInstance = require("../../utils/createMulterInstance");
 const getCurrentTimeFilePath = require("../../utils/getCurrentTimeFilePath")
 
 router.post("/create-channel/", async (req, res) => {
-  console.log("CREATE CHANNEL");
   let uploadPath = path.join(dirPath, getCurrentTimeFilePath())
 
   try {
@@ -46,6 +45,18 @@ router.post("/create-channel/", async (req, res) => {
 
     const channelJsonPath = path.join(uploadPath, 'channel.json')
     fs.writeFileSync(channelJsonPath, JSON.stringify(channelData, null, 2))
+
+    const playListData = {
+      jingle_int: "",
+      jingle_nat: "",
+      news_int: "",
+      news_nat: "",
+      next_news_30: "",
+      next_news_60: "",
+    }
+
+    const playListJsonPath = path.join(uploadPath, 'playList.json')
+    fs.writeFileSync(playListJsonPath, JSON.stringify(playListData, null, 2))
 
     res.json({
       success: true,
