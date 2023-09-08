@@ -3,9 +3,9 @@ const router = express.Router();
 const config = require('config')
 
 // FILE MANAGE
-var fs = require("fs");
+const fs = require("fs");
 const path = require("path");
-var dirPath = path.join(config.get('uploadDirectory'), "channels")
+const dirPath = path.join(config.get('uploadDirectory'), "channels")
 
 // FILE UPLOAD
 const createMulterInstance = require("../../utils/createMulterInstance");
