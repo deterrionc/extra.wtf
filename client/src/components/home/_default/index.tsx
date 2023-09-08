@@ -3,10 +3,11 @@ import ArticleCardList from '../../../container/organisms/ArticleCardList'
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getChannels } from '../../../actions/channel';
-import VideoChannelList from '../../../container/organisms/VideoChannelList';
+import { getChannels } from '../../../actions/nchannel';
+// import VideoChannelList from '../../../container/organisms/VideoChannelList';
 import { getArticles } from "../../../actions/article";
 import { getSvideos } from '../../../actions/svideo';
+import ChannelList from '../../../container/organisms/ChannelList';
 
 const Home = ({ getChannels, channels, getArticles, getSvideos, articles, svideos }: any) => {
   useEffect(() => {
@@ -17,7 +18,8 @@ const Home = ({ getChannels, channels, getArticles, getSvideos, articles, svideo
   
   return (
     <div className='pb-5'>
-      <VideoChannelList channels={channels} link='/video-channels' linkName='Start' />
+      <ChannelList channels={channels} link='/channels' linkName='Start' />
+      {/* <VideoChannelList channels={channels} link='/video-channels' linkName='Start' /> */}
       <VideoCardList videos={svideos} link='/videos' linkName='Videos' />
       <ArticleCardList articles={articles} />
     </div>

@@ -6,6 +6,7 @@ import VideoContainer from './videos';
 import ArticleContainer from './articles';
 import VideoChannelContainer from './videos-channel';
 import AntalVideosChannelContainer from './antal';
+import ChannelContainer from './channels';
 
 const HomeContainer = () => {
   return (
@@ -17,6 +18,7 @@ const HomeContainer = () => {
         <Route path="/video-channels/*" element={<VideoChannelContainer />} />
         <Route path="/articles/*" element={<ArticleContainer />} />
         <Route path="/antal/*" element={<AntalVideosChannelContainer />} />
+        <Route path="/channels/*" element={<ChannelContainer />} />
       </Routes>
     </HomeTheme>
   );
