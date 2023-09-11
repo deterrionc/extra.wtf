@@ -78,7 +78,7 @@ const DashboardSidebar: React.FC = ({ logout }: any) => {
           )}
         </Link>
 
-        <Link
+        {/* <Link
           to="/dashboard/channels"
           className="flex items-center space-x-2 hover:bg-gray-100 hover:text-gray-800 hover:rounded p-2"
         >
@@ -133,7 +133,7 @@ const DashboardSidebar: React.FC = ({ logout }: any) => {
               </span>
             </>
           )}
-        </Link>
+        </Link> */}
 
         <Link
           to="/dashboard/articles"
