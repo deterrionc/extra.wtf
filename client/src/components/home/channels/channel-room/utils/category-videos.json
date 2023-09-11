@@ -1,0 +1,98 @@
+{
+  "news": {
+    "jingle_int": [
+      {
+        "name": "jingleint1.mp4",
+        "path": "files\\news\\jingle_int\\jingleint1_230703_0808.mp4",
+        "playedAt": "2023-07-04T05:00:58.088Z"
+      },
+      {
+        "name": "jingleint2.mp4",
+        "path": "files\\news\\jingle_int\\jingleint2_230703_0808.mp4",
+        "playedAt": "2023-07-03T21:38:55.103Z"
+      }
+    ],
+    "jingle_nat": [
+      {
+        "name": "jinglenat1.mp4",
+        "path": "files\\news\\jingle_nat\\jinglenat1_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:00:26.179Z"
+      },
+      {
+        "name": "jinglenat2.mp4",
+        "path": "files\\news\\jingle_nat\\jinglenat2_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:01:09.297Z"
+      }
+    ],
+    "news_int": [
+      {
+        "name": "newsint1.mp4",
+        "path": "files\\news\\news_int\\newsint1_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:01:05.444Z"
+      },
+      {
+        "name": "newsint2.mp4",
+        "path": "files\\news\\news_int\\newsint2_230703_0809.mp4",
+        "playedAt": "2023-07-03T21:35:03.820Z"
+      },
+      {
+        "name": "newsint3.mp4",
+        "path": "files\\news\\news_int\\newsint3_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:01:11.538Z"
+      },
+      {
+        "name": "newsint4.mp4",
+        "path": "files\\news\\news_int\\newsint4_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:01:15.204Z"
+      }
+    ],
+    "news_nat": [
+      {
+        "name": "newsnat1.mp4",
+        "path": "files\\news\\news_nat\\newsnat1_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:00:47.636Z"
+      },
+      {
+        "name": "newsnat2.mp4",
+        "path": "files\\news\\news_nat\\newsnat2_230703_0809.mp4",
+        "playedAt": "2023-07-04T05:00:36.937Z"
+      }
+    ]
+  },
+  "music": {
+    "music_short": [
+      {
+        "name": "musicshort1.mp4",
+        "path": "files\\music\\music_short\\musicshort1_230703_0839.mp4",
+        "playedAt": "2023-07-04T04:58:37.325Z"
+      },
+      {
+        "name": "musicshort2.mp4",
+        "path": "files\\music\\music_short\\musicshort2_230703_0839.mp4",
+        "playedAt": "2023-07-04T04:58:36.028Z"
+      }
+    ],
+    "music_long": [
+      {
+        "name": "musiclong1.mp4",
+        "path": "files\\music\\music_long\\musiclong1_230703_0848.mp4",
+        "playedAt": "2023-07-04T04:30:57.144Z"
+      },
+      {
+        "name": "musiclong2.mp4",
+        "path": "files\\music\\music_long\\musiclong2_230703_0848.mp4",
+        "playedAt": "2023-07-04T04:30:57.613Z"
+      },
+      {
+        "name": "musiclong3.mp4",
+        "path": "files\\music\\music_long\\musiclong3_230703_0848.mp4",
+        "playedAt": "2023-07-04T04:30:58.201Z"
+      },
+      {
+        "name": "musiclong4.mp4",
+        "path": "files\\music\\music_long\\musiclong4_230703_0848.mp4",
+        "playedAt": "2023-07-04T05:01:24.505Z"
+      }
+    ]
+  }
+}

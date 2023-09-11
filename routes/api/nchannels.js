@@ -10,6 +10,13 @@ const dirPath = path.join(config.get('uploadDirectory'), "channels")
 // FILE UPLOAD
 const createMulterInstance = require("../../utils/createMulterInstance");
 const getCurrentTimeFilePath = require("../../utils/getCurrentTimeFilePath")
+const getChannelWithSlug = require("../../utils/getChannelWithSlug")
+const getFirstVideo = require("../../utils/getFirstVideo")
+const getMusicVideos = require("../../utils/getMusicVideos")
+const getNewsVideos = require("../../utils/getNewsVideos")
+
+let serverNews
+let serverMusics
 
 router.post("/create-channel/", async (req, res) => {
   let uploadPath = path.join(dirPath, getCurrentTimeFilePath())
@@ -47,12 +54,34 @@ router.post("/create-channel/", async (req, res) => {
     fs.writeFileSync(channelJsonPath, JSON.stringify(channelData, null, 2))
 
     const playListData = {
-      jingle_int: "",
-      jingle_nat: "",
-      news_int: "",
-      news_nat: "",
-      next_news_30: "",
-      next_news_60: "",
+      jingle_int: {
+        video: "",
+        playedAt: ""
+      },
+      jingle_nat: {
+        video: "",
+        playedAt: ""
+      },
+      news_int: {
+        video: "",
+        playedAt: ""
+      },
+      news_nat: {
+        video: "",
+        playedAt: ""
+      },
+      next_news_30: {
+        video: "",
+        playedAt: ""
+      },
+      next_news_60: {
+        video: "",
+        playedAt: ""
+      },
+      music: {
+        video: "",
+        playedAt: ""
+      }
     }
 
     const playListJsonPath = path.join(uploadPath, 'playList.json')
@@ -206,5 +235,84 @@ router.delete("/delete-channel/:channelPath", async (req, res) => {
     })
   })
 })
+
+router.get("/get-first-video/:channelslug", async (req, res) => {
+  const channelSlug = req.params.channelslug;
+  serverMusics = await getMusicVideos();
+  serverNews = await getNewsVideos("day");
+  let currentTime = new Date();
+  let currentMinute = currentTime.getMinutes();
+  let currentSecond = currentTime.getSeconds();
+
+  let video = await getFirstVideo(channelSlug, serverMusics, serverNews);
+
+  if (video) {
+    res.json({
+      success: true,
+      video,
+      currentMinute,
+      currentSecond,
+    });
+  } else {
+    return res.status(404).json({ success: false, message: "No videos found" });
+  }
+});
+
+router.get("/get-next-video", async (req, res) => {
+  try {
+    const channelSlug = req.query.slug;
+    const videoName = req.query.videoName;
+    const videoType = req.query.type;
+    let videos = [];
+
+    // Fetch videos
+    serverMusics = await getMusicVideos();
+    serverNews = await getNewsVideos();
+
+    if (videoType === "music") {
+      const channel = serverMusics.find(music => music.slug === channelSlug);
+      if (channel) {
+        videos = channel.musics;
+      }
+    }
+
+    if (videoType === "news") {
+      const channel = serverNews.find(news => news.slug === channelSlug);
+      if (channel) {
+        videos = channel.news;
+      }
+    }
+
+    if (videos.length === 0) {
+      return res.status(404).json({ success: false, message: "No videos found" });
+    }
+
+    let currentVideoIndex = 0
+
+    if (String(videoName) !== "0") {
+      currentVideoIndex = videos.findIndex(video => video.name === videoName);
+    }
+    
+    let nextVideo = null;
+    if (currentVideoIndex === -1) {
+      return res.status(404).json({ success: false, message: "Video not found" });
+    } else if (currentVideoIndex === videos.length - 1) {
+      nextVideo = videos[0];
+    } else {
+      nextVideo = videos[currentVideoIndex + 1];
+    }
+
+    nextVideo.type = videoType
+
+    res.json({
+      success: true,
+      video: nextVideo,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred" });
+  }
+});
 
 module.exports = router;

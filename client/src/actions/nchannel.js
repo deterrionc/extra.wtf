@@ -68,3 +68,21 @@ export const deleteChannel = (channelID) => async (dispatch) => {
     dispatch(getChannels())
   }
 }
+
+export const getFirstVideo = async (slug) => {
+  const res = await api.get(`/nchannels/get-first-video/${slug}`);
+
+  if (res.data.success) {
+    return res.data;
+  }
+};
+
+export const getNextVideo = async (videoName, videoType, slug) => {
+  const res = await api.get(
+    `/nchannels/get-next-video/?videoName=${videoName}&type=${videoType}&slug=${slug}`
+  );
+
+  if (res.data.success) {
+    return res.data.video;
+  }
+};
