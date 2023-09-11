@@ -86,3 +86,11 @@ export const getNextVideo = async (videoName, videoType, slug) => {
     return res.data.video;
   }
 };
+
+export const updatePlayList = async (slug, category, name) => {
+  const res = await api.post("/nchannels/update-playlist", {slug, category, name})
+
+  if (res.data.success) {
+    return true
+  }
+}

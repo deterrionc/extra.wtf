@@ -59,6 +59,7 @@ const getNewsVideos = async () => {
                 name: file,
                 path: path.join("upload/channels", channelDir, category, file),
                 createdAt: new Date(stats.birthtime).getTime(),
+                category
               };
             });
 

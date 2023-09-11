@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import {
   getFirstVideo,
   getNextVideo,
+  updatePlayList,
 } from "../../../../actions/nchannel";
 
 import VideoHeader from "./components/VideoHeader";
@@ -19,6 +20,7 @@ const ChannelRoom = () => {
   const video = videoList.music[0];
   const [state, setState] = useState({
     firstVideo: null,
+    currentVideo: null,  // Add this line
     nextVideo: null,
     minuteDifference: 0,
     secondDifference: 0,
@@ -93,13 +95,15 @@ const ChannelRoom = () => {
     } else {
       _nextVideo = state.nextVideo;
     }
-
-    updateState({ nextVideo: _nextVideo });
+  
+    updateState({ currentVideo: state.nextVideo, nextVideo: _nextVideo }); 
   }, [state.nextVideo, channelSlug]);
 
   const onVideoEnd = useCallback(() => {
-    playVideo(state.nextVideo);
-  }, [state.nextVideo, playVideo]);
+    updatePlayList(channelSlug, state.currentVideo.category, state.currentVideo.name)
+    updateState({ currentVideo: state.nextVideo });
+    playVideo(state.nextVideo); 
+  }, [state.nextVideo, playVideo, channelSlug, state.currentVideo]);
 
   useEffect(() => {
     let timerId = setInterval(() => {

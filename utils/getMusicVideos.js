@@ -47,6 +47,7 @@ const getMusicVideos = async () => {
               name: file,
               path: path.join("upload/channels", channelDir, 'music', file),
               createdAt: new Date(stats.birthtime).getTime(),
+              category: "music"
             };
           });
 

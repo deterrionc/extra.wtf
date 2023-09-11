@@ -22,14 +22,14 @@ router.post("/create-channel/", async (req, res) => {
   let uploadPath = path.join(dirPath, getCurrentTimeFilePath())
 
   try {
-    fs.mkdirSync(uploadPath)
-    fs.mkdirSync(`${uploadPath}/music`)
-    fs.mkdirSync(`${uploadPath}/jingle_int`)
-    fs.mkdirSync(`${uploadPath}/jingle_nat`)
-    fs.mkdirSync(`${uploadPath}/news_nat`)
-    fs.mkdirSync(`${uploadPath}/news_int`)
-    fs.mkdirSync(`${uploadPath}/next_news_30`)
-    fs.mkdirSync(`${uploadPath}/next_news_60`)
+    fs.mkdirSync(uploadPath, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/music`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/jingle_int`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/jingle_nat`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/news_nat`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/news_int`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/next_news_30`, { mode: 0o777 })
+    fs.mkdirSync(`${uploadPath}/next_news_60`, { mode: 0o777 })
     const imageUpload = createMulterInstance(uploadPath)
 
     await new Promise((resolve, reject) => {
@@ -312,6 +312,35 @@ router.get("/get-next-video", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occurred" });
+  }
+});
+
+router.post('/update-playlist', async (req, res) => {
+  try {
+    const { slug, category, name } = req.body;
+
+    const channel = await getChannelWithSlug(slug);
+    const playListJSONPath = path.join(dirPath, channel.path, "playList.json");
+
+    const playListRaw = fs.readFileSync(playListJSONPath, 'utf8');
+    const playList = JSON.parse(playListRaw);
+
+    if (playList[category]) {
+      playList[category].video = name;
+      playList[category].playedAt = Date.now().toString();
+    } else {
+      playList[category] = {
+        video: name,
+        playedAt: Date.now().toString(),
+      };
+    }
+
+    fs.writeFileSync(playListJSONPath, JSON.stringify(playList, null, 2));
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, error: 'An error occurred while updating the playlist' });
   }
 });
 
