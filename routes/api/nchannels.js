@@ -6,6 +6,7 @@ const config = require('config')
 const fs = require("fs");
 const path = require("path");
 const dirPath = path.join(config.get('uploadDirectory'), "channels")
+const oldMask = process.umask(0);
 
 // FILE UPLOAD
 const createMulterInstance = require("../../utils/createMulterInstance");
@@ -22,7 +23,7 @@ router.post("/create-channel/", async (req, res) => {
   let uploadPath = path.join(dirPath, getCurrentTimeFilePath())
 
   try {
-    fs.mkdirSync(uploadPath, { mode: 0o777 })
+    fs.mkdirSync(uploadPath, { mode: 0o777 });
     fs.mkdirSync(`${uploadPath}/music`, { mode: 0o777 })
     fs.mkdirSync(`${uploadPath}/jingle_int`, { mode: 0o777 })
     fs.mkdirSync(`${uploadPath}/jingle_nat`, { mode: 0o777 })
