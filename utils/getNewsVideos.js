@@ -35,16 +35,30 @@ const getNewsVideos = async () => {
       const channelData = JSON.parse(fs.readFileSync(channelJSONPath, 'utf-8'));
       const playListData = JSON.parse(fs.readFileSync(playListJSONPath, 'utf-8'));
 
-      const newsOrder = [
-        { category: 'jingle_nat', count: 1 },
-        { category: 'news_nat', count: 3 },
-        { category: 'jingle_int', count: 1 },
-        { category: 'news_int', count: 3 },
-        { category: 'next_news_30', count: 3 },
-        { category: 'next_news_60', count: 3 },
-        { category: 'music', count: 3 }
-      ];
+      const newsOrder = []
 
+      if (currentHour >= 6 && currentHour <= 18) {
+        // Day time
+        newsOrder = [
+          { category: 'jingle_nat', count: 1 },
+          { category: 'news_nat', count: 3 },
+          { category: 'jingle_int', count: 1 },
+          { category: 'news_int', count: 3 },
+          { category: 'next_news_30', count: 3 },
+          { category: 'music', count: 3 }
+        ];
+      } else {
+        // Night Time
+        newsOrder = [
+          { category: 'jingle_nat', count: 1 },
+          { category: 'news_nat', count: 3 },
+          { category: 'jingle_int', count: 1 },
+          { category: 'news_int', count: 3 },
+          { category: 'next_news_60', count: 3 },
+          { category: 'music', count: 3 }
+        ];
+      }
+      
       let newsFiles = [];
 
       for (const { category, count } of newsOrder) {
