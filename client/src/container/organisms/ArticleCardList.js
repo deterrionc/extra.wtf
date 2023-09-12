@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Article from "../molecules/ArticleCard";
 import { FaIcon } from "../atoms/FaIcon";
 import { Link } from "react-router-dom";
-import Slider from "react-slick";
+// import Slider from "react-slick";
 
 const ArticleCardList = ({ articles }) => {
   const [_articles, setArticles] = useState([]);
@@ -11,39 +11,39 @@ const ArticleCardList = ({ articles }) => {
     setArticles(articles);
   }, [articles]);
 
-  const settings = {
-    dots: true,
-    infinite: _articles.length > 6,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 5,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 4,
-        },
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-    ],
-  };
+  // const settings = {
+  //   dots: true,
+  //   infinite: _articles.length > 6,
+  //   speed: 500,
+  //   slidesToShow: 6,
+  //   slidesToScroll: 1,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1280,
+  //       settings: {
+  //         slidesToShow: 5,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 768,
+  //       settings: {
+  //         slidesToShow: 4,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 640,
+  //       settings: {
+  //         slidesToShow: 3,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 480,
+  //       settings: {
+  //         slidesToShow: 2,
+  //       },
+  //     },
+  //   ],
+  // };
 
   useEffect(() => {
     const cards = Array.from(document.querySelectorAll('.m-1.width-calc.bg-article-card.rounded.overflow-hidden'));

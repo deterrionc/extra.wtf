@@ -305,6 +305,10 @@ router.get("/get-next-video", async (req, res) => {
 
     nextVideo.type = videoType
 
+    if (nextVideo.category === 'music') {
+      nextVideo.type = nextVideo.category
+    }
+
     res.json({
       success: true,
       video: nextVideo,

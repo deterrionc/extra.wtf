@@ -41,7 +41,8 @@ const getNewsVideos = async () => {
         { category: 'jingle_int', count: 1 },
         { category: 'news_int', count: 3 },
         { category: 'next_news_30', count: 3 },
-        { category: 'next_news_60', count: 3 }
+        { category: 'next_news_60', count: 3 },
+        { category: 'music', count: 3 }
       ];
 
       let newsFiles = [];
