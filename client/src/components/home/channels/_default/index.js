@@ -13,7 +13,7 @@ const Channels = ({ getChannels, channels }) => {
   return (
     <React.Fragment>
       <div className="py-3">
-        <Link to="/video-channels">
+        <Link to="/channels">
           <h5 className="m-1 pb-3 text-lg font-bold leading-6">
             Start <FaIcon iconName="fa-arrow-right" />
           </h5>
