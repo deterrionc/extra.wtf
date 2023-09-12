@@ -46,27 +46,20 @@ const ArticleCardList = ({ articles }) => {
   };
 
   useEffect(() => {
-    // After the component mounts, get the list of all cards
     const cards = Array.from(document.querySelectorAll('.m-1.width-calc.bg-article-card.rounded.overflow-hidden'));
     let maxHeight = 0;
-  
-    // Reset each card height to auto before calculating the natural height
     cards.forEach(card => {
       card.style.height = 'auto';
     });
-  
-    // Find the maximum height among all cards
     cards.forEach(card => {
       if (card.offsetHeight > maxHeight) {
         maxHeight = card.offsetHeight;
       }
     });
-  
-    // Set each card height to the maximum height
     cards.forEach(card => {
       card.style.height = `${maxHeight}px`;
     });
-  }, [_articles]); // Run this whenever the _articles state changes
+  }, [_articles]);
   
 
   return (
@@ -76,14 +69,23 @@ const ArticleCardList = ({ articles }) => {
           Articles <FaIcon iconName="fa-arrow-right" />
         </h5>
       </Link>
-      <Slider {...settings}>
+      {/* This is For Slider show */}
+      {/* <Slider {...settings}>
         {_articles.length &&
           _articles.map((article, index) => (
             <div key={index}>
               <Article article={article} />
             </div>
           ))}
-      </Slider>
+      </Slider> */}
+      <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {_articles.length &&
+          _articles.map((article, index) => (
+            <div key={index}>
+              <Article article={article} />
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
