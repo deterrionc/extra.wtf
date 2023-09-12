@@ -25,6 +25,8 @@ const getNewsVideos = async () => {
     .map(dirent => dirent.name);
 
   const news = [];
+  let currentTime = new Date();
+  let currentHour = currentTime.getHours();
 
   for (const channelDir of channelDirectories) {
     const channelPath = path.join(dirPath, channelDir);
@@ -35,7 +37,7 @@ const getNewsVideos = async () => {
       const channelData = JSON.parse(fs.readFileSync(channelJSONPath, 'utf-8'));
       const playListData = JSON.parse(fs.readFileSync(playListJSONPath, 'utf-8'));
 
-      const newsOrder = []
+      let newsOrder = []
 
       if (currentHour >= 6 && currentHour <= 18) {
         // Day time
